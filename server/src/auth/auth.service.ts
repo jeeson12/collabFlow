@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { prismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
 
@@ -9,7 +9,7 @@ import { stringify } from 'querystring';
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: prismaService,
+    private prisma: PrismaService,
     private jwt: JwtService,
   ) {}
 
