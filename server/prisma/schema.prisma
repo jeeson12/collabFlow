@@ -9,8 +9,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-    url      = env("DATABASE_URL")
-
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -58,32 +57,46 @@ model Project {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  task Task[]
+  tasks       Task[]
   memberships ProjectMembership[]
 }
 
-model ProjectMembership{
-  id String @id @default(cuid())
-  userId String
+model ProjectMembership {
+  id        String @id @default(cuid())
+  userId    String
   projectId String
-  role String
+  role      String
 
-  user        User      @relation(fields: [userId], references: [id])
-  project     Project   @relation(fields: [projectId], references: [id])
-createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id])
+  createdAt DateTime @default(now())
+
   @@unique([userId, projectId])
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  HIGH
+  MEDIUM
+  LOW
 }
 
 model Task {
   id          String  @id @default(cuid())
   title       String
-  description String
-  status      String  @default("TO DO")
+  description String?
   projectId   String
   assigneeId  String?
 
-  project  Project @relation(fields: [projectId], references: [id])
-  assignee User?   @relation(fields: [assigneeId], references: [id])
+  status   TaskStatus   @default(TODO)
+  priority TaskPriority @default(LOW)
+  project  Project      @relation(fields: [projectId], references: [id])
+  assignee User?        @relation(fields: [assigneeId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

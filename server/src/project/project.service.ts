@@ -1,6 +1,11 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createProjectDto } from './dto/create-project.dto';
+import { error } from 'console';
 
 @Injectable()
 export class ProjectService {
@@ -46,5 +51,28 @@ export class ProjectService {
     });
 
     return membership;
+  }
+
+  async getProjectbyId(projectId: string, userId: string) {
+    const membership = await this.prisma.projectMembership.findFirst({
+      where: {
+        projectId,
+        userId,
+      },
+    });
+
+    if (!membership) {
+      throw new ForbiddenException('You are not a member of this project');
+    }
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    return project;
   }
 }
