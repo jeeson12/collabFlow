@@ -5,7 +5,9 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createProjectDto } from './dto/create-project.dto';
-import { error } from 'console';
+import { error, time } from 'console';
+import { updateProjectDto } from './dto/update-project.dto';
+import { MembershipRole } from '@prisma/client';
 
 @Injectable()
 export class ProjectService {
@@ -33,7 +35,7 @@ export class ProjectService {
       data: {
         userId,
         projectId: project.id,
-        role: 'admin',
+        role: MembershipRole.ADMIN,
       },
     });
 
@@ -74,5 +76,87 @@ export class ProjectService {
       throw new NotFoundException('Project not found');
     }
     return project;
+  }
+
+  async updateProject(
+    projectId: string,
+    body: updateProjectDto,
+    userId: string,
+  ) {
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    const permission =
+      (await this.prisma.projectMembership.findFirst({
+        where: {
+          projectId,
+          userId,
+          role: MembershipRole.ADMIN,
+        },
+      })) ||
+      (await this.prisma.workspaceMembership.findFirst({
+        where: {
+          workspaceId: project.workspaceId,
+          userId,
+          role: MembershipRole.ADMIN,
+        },
+      }));
+
+    if (!permission) {
+      throw new ForbiddenException(
+        'You are not authorized to update this project',
+      );
+    }
+
+    return this.prisma.project.update({
+      where: { id: projectId },
+      data: {
+        name: body.name,
+        description: body.description,
+      },
+    });
+  }
+
+  async deleteProject(projectId: string, userId: string) {
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    const permission =
+      (await this.prisma.projectMembership.findFirst({
+        where: {
+          projectId,
+          userId,
+          role: MembershipRole.ADMIN,
+        },
+      })) ||
+      (await this.prisma.workspaceMembership.findFirst({
+        where: {
+          workspaceId: project.workspaceId,
+          userId,
+          role: MembershipRole.ADMIN,
+        },
+      }));
+
+    if (!permission) {
+      throw new ForbiddenException(
+        'You are not authorized to delete this project',
+      );
+    }
+
+    await this.prisma.project.delete({
+      where: { id: projectId },
+    });
+    return {
+      message: 'Project deleted successfully',
+    };
   }
 }

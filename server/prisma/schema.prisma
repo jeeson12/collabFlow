@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,65 +8,92 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  memberships       WorkspaceMembership[]
+  id                String                @id @default(cuid())
+  email             String                @unique
+  name              String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  password          String
+  comments          Comment[]
   projectMembership ProjectMembership[]
   assignedTasks     Task[]
-  comments          Comment[]
+  memberships       WorkspaceMembership[]
 }
 
 model Workspace {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  memberships WorkspaceMembership[]
+  id          String                @id @default(cuid())
+  name        String
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
   projects    Project[]
+  memberships WorkspaceMembership[]
 }
 
 model WorkspaceMembership {
-  id          String    @id @default(cuid())
+  id          String         @id @default(cuid())
   userId      String
-  role        String
+  role        MembershipRole
   workspaceId String
-  user        User      @relation(fields: [userId], references: [id])
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime       @default(now())
+  user        User           @relation(fields: [userId], references: [id])
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([userId, workspaceId])
 }
 
 model Project {
-  id          String    @id @default(cuid())
+  id          String              @id @default(cuid())
   name        String
   description String?
   workspaceId String
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  tasks       Task[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  workspace   Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   memberships ProjectMembership[]
+  tasks       Task[]
 }
 
 model ProjectMembership {
-  id        String @id @default(cuid())
+  id        String         @id @default(cuid())
   userId    String
   projectId String
-  role      String
-
-  user      User     @relation(fields: [userId], references: [id])
-  project   Project  @relation(fields: [projectId], references: [id])
-  createdAt DateTime @default(now())
+  role      MembershipRole
+  createdAt DateTime       @default(now())
+  project   Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id])
 
   @@unique([userId, projectId])
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  projectId   String
+  assigneeId  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  priority    TaskPriority @default(LOW)
+  status      TaskStatus   @default(TODO)
+  comments    Comment[]
+  assignee    User?        @relation(fields: [assigneeId], references: [id])
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  taskId    String
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(fields: [authorId], references: [id])
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+enum MembershipRole {
+  ADMIN
+  MEMBER
 }
 
 enum TaskStatus {
@@ -84,36 +106,4 @@ enum TaskPriority {
   HIGH
   MEDIUM
   LOW
-}
-
-model Task {
-  id          String  @id @default(cuid())
-  title       String
-  description String?
-  projectId   String
-  assigneeId  String?
-
-  status   TaskStatus   @default(TODO)
-  priority TaskPriority @default(LOW)
-  project  Project      @relation(fields: [projectId], references: [id])
-  assignee User?        @relation(fields: [assigneeId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  comments Comment[]
-}
-
-model Comment {
-  id      String @id @default(cuid())
-  content String
-
-  taskId   String
-  authorId String
-
-  task   Task @relation(fields: [taskId], references: [id])
-  author User @relation(fields: [authorId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
