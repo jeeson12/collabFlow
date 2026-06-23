@@ -138,4 +138,31 @@ export class WorkspaceService {
     });
     return { message: 'member added' };
   }
+
+  async getMember(workspaceId: string, requesterId: string) {
+    const requesterMembership =
+      await this.prisma.workspaceMembership.findUnique({
+        where: {
+          userId_workspaceId: { userId: requesterId, workspaceId },
+        },
+      });
+    if (!requesterMembership) {
+      throw new ForbiddenException('access denied');
+    }
+
+    return this.prisma.workspaceMembership.findMany({
+      where: {
+        workspaceId,
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+            id: true,
+          },
+        },
+      },
+    });
+  }
 }

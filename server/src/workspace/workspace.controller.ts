@@ -56,4 +56,9 @@ export class WorkspaceController {
   ) {
     return this.workspaceService.addMember(workspaceId, req.user.userId, body);
   }
+
+  @Get(':workspaceId/members')
+  getMember(@Param('workspaceId') workspaceId: string, @Req() req) {
+    return this.workspaceService.getMember(workspaceId, req.user.userId);
+  }
 }
