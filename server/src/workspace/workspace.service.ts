@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -7,6 +8,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { updateWorkspaceDto } from './dto/update-workspace.dto';
 import { MembershipRole } from '@prisma/client';
+import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 
 @Injectable()
 export class WorkspaceService {
@@ -83,5 +85,57 @@ export class WorkspaceService {
       where: { id: workspaceId },
     });
     return { message: 'Workspace deleted successfully' };
+  }
+
+  async addMember(
+    workspaceId: string,
+    requesterId: string,
+    body: AddWorkspaceMemberDto,
+  ) {
+    const requesterMembership =
+      await this.prisma.workspaceMembership.findUnique({
+        where: {
+          userId_workspaceId: {
+            userId: requesterId,
+            workspaceId,
+          },
+        },
+      });
+
+    if (!requesterMembership) {
+      throw new NotFoundException('you are not a part of this workspace');
+    }
+    if (requesterMembership.role !== MembershipRole.ADMIN) {
+      throw new ForbiddenException('You are not authorized to add members');
+    }
+    const userExists = await this.prisma.user.findUnique({
+      where: { email: body.email },
+    });
+    if (!userExists) {
+      throw new NotFoundException('User not found');
+    }
+
+    const existingMembership = await this.prisma.workspaceMembership.findUnique(
+      {
+        where: {
+          userId_workspaceId: {
+            userId: userExists.id,
+            workspaceId,
+          },
+        },
+      },
+    );
+
+    if (existingMembership) {
+      throw new ConflictException('user is already a member of this workspace');
+    }
+    await this.prisma.workspaceMembership.create({
+      data: {
+        userId: userExists.id,
+        workspaceId: workspaceId,
+        role: body.role,
+      },
+    });
+    return { message: 'member added' };
   }
 }
