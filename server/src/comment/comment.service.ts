@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createCommentDto } from './dto/create-comment.dto';
+import { updateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -67,5 +68,50 @@ export class CommentService {
       orderBy: { createdAt: 'asc' },
     });
     return { comment, count: comment.length };
+  }
+
+  async updateComment(
+    body: updateCommentDto,
+    userId: string,
+    commentId: string,
+  ) {
+    const comment = await this.prisma.comment.findUnique({
+      where: { id: commentId },
+    });
+    if (!comment) {
+      throw new NotFoundException('comment not found');
+    }
+
+    if (comment.authorId !== userId) {
+      throw new ForbiddenException('You can only edit your own comments');
+    }
+
+    const updatecomment = await this.prisma.comment.update({
+      where: { id: commentId },
+      data: { content: body.content },
+    });
+
+    return updatecomment;
+  }
+
+  async deleteComment(commentId: string, userId: string) {
+    const comment = await this.prisma.comment.findUnique({
+      where: {
+        id: commentId,
+      },
+    });
+    if (!comment) {
+      throw new NotFoundException('comment not found');
+    }
+    if (comment.authorId !== userId) {
+      throw new ForbiddenException('You can only delete your own comments');
+    }
+
+    await this.prisma.comment.delete({
+      where: {
+        id: commentId,
+      },
+    });
+    return { message: 'Comment deleted successfully' };
   }
 }
