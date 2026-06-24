@@ -61,4 +61,17 @@ export class WorkspaceController {
   getMember(@Param('workspaceId') workspaceId: string, @Req() req) {
     return this.workspaceService.getMember(workspaceId, req.user.userId);
   }
+
+  @Delete(':workspaceId/members/:targetUserId')
+  deleteMember(
+    @Param('workspaceId') workspaceId: string,
+    @Param('targetUserId') targetUserId: string,
+    @Req() req,
+  ) {
+    return this.workspaceService.deleteMember(
+      workspaceId,
+      req.user.userId,
+      targetUserId,
+    );
+  }
 }

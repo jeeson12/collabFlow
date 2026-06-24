@@ -165,4 +165,47 @@ export class WorkspaceService {
       },
     });
   }
+
+  async deleteMember(
+    workspaceId: string,
+    requesterId: string,
+    targetUserId: string,
+  ) {
+    const requesterMembership =
+      await this.prisma.workspaceMembership.findUnique({
+        where: {
+          userId_workspaceId: { workspaceId, userId: requesterId },
+        },
+      });
+    if (!requesterMembership) {
+      throw new ForbiddenException('access denied');
+    }
+
+    const targetMembership = await this.prisma.workspaceMembership.findUnique({
+      where: {
+        userId_workspaceId: { workspaceId, userId: targetUserId },
+      },
+    });
+
+    if (!targetMembership) {
+      throw new NotFoundException('user is not a member');
+    }
+
+    if (targetMembership.role == MembershipRole.ADMIN) {
+      const adminCount = await this.prisma.workspaceMembership.count({
+        where: { workspaceId, role: MembershipRole.ADMIN },
+      });
+      if (adminCount === 1) {
+        throw new ForbiddenException('cannot delete last admin');
+      }
+    }
+
+    await this.prisma.workspaceMembership.delete({
+      where: {
+        userId_workspaceId: { workspaceId, userId: targetUserId },
+      },
+    });
+
+    return { message: 'user removed' };
+  }
 }
