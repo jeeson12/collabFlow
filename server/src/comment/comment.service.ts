@@ -6,10 +6,14 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createCommentDto } from './dto/create-comment.dto';
 import { updateCommentDto } from './dto/update-comment.dto';
+import { ActivityService } from 'src/activity/activity.service';
 
 @Injectable()
 export class CommentService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activity: ActivityService,
+  ) {}
 
   async createComment(body: createCommentDto, userId: string) {
     const task = await this.prisma.task.findUnique({
@@ -30,7 +34,7 @@ export class CommentService {
       },
     });
     if (!member) {
-      throw new NotFoundException('You are not a member of this project');
+      throw new ForbiddenException('You are not a member of this project');
     }
 
     const comment = await this.prisma.comment.create({
@@ -40,6 +44,12 @@ export class CommentService {
         authorId: userId,
       },
     });
+    await this.activity.createActivity({
+      userId,
+      projectId: task.projectId,
+      message: `commented on task "${task.title}"`,
+    });
+
     return comment;
   }
 
@@ -90,6 +100,15 @@ export class CommentService {
       where: { id: commentId },
       data: { content: body.content },
     });
+    const task = await this.prisma.task.findUnique({
+      where: { id: comment.taskId },
+    });
+
+    await this.activity.createActivity({
+      userId,
+      projectId: task?.projectId,
+      message: `updated a comment on task "${task?.title}"`,
+    });
 
     return updatecomment;
   }
@@ -103,6 +122,9 @@ export class CommentService {
     if (!comment) {
       throw new NotFoundException('comment not found');
     }
+    const task = await this.prisma.task.findUnique({
+      where: { id: comment.taskId },
+    });
     if (comment.authorId !== userId) {
       throw new ForbiddenException('You can only delete your own comments');
     }
@@ -111,6 +133,11 @@ export class CommentService {
       where: {
         id: commentId,
       },
+    });
+    await this.activity.createActivity({
+      userId,
+      projectId: task?.projectId,
+      message: `deleted a comment on task "${task?.title}"`,
     });
     return { message: 'Comment deleted successfully' };
   }

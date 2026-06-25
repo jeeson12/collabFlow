@@ -10,10 +10,14 @@ import { error, time } from 'console';
 import { updateProjectDto } from './dto/update-project.dto';
 import { MembershipRole } from '@prisma/client';
 import { AddProjectMemberDto } from './add-project-member.dto';
+import { ActivityService } from 'src/activity/activity.service';
 
 @Injectable()
 export class ProjectService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private activity: ActivityService,
+  ) {}
   async createProject(body: createProjectDto, userId: string) {
     const membership = await this.prisma.workspaceMembership.findFirst({
       where: {
@@ -31,6 +35,12 @@ export class ProjectService {
         description: body.description,
         workspaceId: body.workspaceId,
       },
+    });
+    await this.activity.createActivity({
+      userId,
+      projectId: project.id,
+      workspaceId: body.workspaceId,
+      message: `created project "${project.name}"`,
     });
 
     await this.prisma.projectMembership.create({
@@ -115,13 +125,20 @@ export class ProjectService {
       );
     }
 
-    return this.prisma.project.update({
+    const updatedProject = await this.prisma.project.update({
       where: { id: projectId },
       data: {
         name: body.name,
         description: body.description,
       },
     });
+    await this.activity.createActivity({
+      userId,
+      projectId: project.id,
+      workspaceId: body.workspaceId,
+      message: `updated project "${project.name}"`,
+    });
+    return updatedProject;
   }
 
   async deleteProject(projectId: string, userId: string) {
@@ -153,6 +170,13 @@ export class ProjectService {
         'You are not authorized to delete this project',
       );
     }
+    const projectName = project.name;
+    await this.activity.createActivity({
+      userId,
+      projectId,
+      workspaceId: project.workspaceId,
+      message: `deleted project "${projectName}"`,
+    });
 
     await this.prisma.project.delete({
       where: { id: projectId },
@@ -226,6 +250,7 @@ export class ProjectService {
         projectId,
       },
     });
+
     return {
       message: 'Member added successfully',
       member: newMember,

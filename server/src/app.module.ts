@@ -7,6 +7,8 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { ProjectModule } from './project/project.module';
 import { TaskModule } from './task/task.module';
 import { CommentModule } from './comment/comment.module';
+import { ActivityService } from './activity/activity.service';
+import { ActivityModule } from './activity/activity.module';
 
 @Module({
   imports: [
@@ -16,6 +18,7 @@ import { CommentModule } from './comment/comment.module';
     ProjectModule,
     TaskModule,
     CommentModule,
+    ActivityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

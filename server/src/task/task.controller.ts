@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
@@ -19,22 +20,22 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  createTask(@Body() body: createTaskDto) {
-    return this.taskService.createTask(body);
+  createTask(@Body() body: createTaskDto, @Req() req) {
+    return this.taskService.createTask(body, req.user.userId);
   }
 
-  @Get('/project/:projectId')
-  getTasks(@Param('projectId') projectId: string) {
-    return this.taskService.gettasks(projectId);
+  @Get('project/:projectId')
+  getTasks(@Param('projectId') projectId: string, @Req() req) {
+    return this.taskService.gettasks(projectId, req.user.userId);
   }
 
   @Patch(':id')
-  updateTask(@Param('id') id: string, @Body() body: updateTaskDto) {
-    return this.taskService.updateTask(id, body);
+  updateTask(@Param('id') id: string, @Body() body: updateTaskDto, @Req() req) {
+    return this.taskService.updateTask(id, body, req.user.userId);
   }
 
   @Delete(':id')
-  deleteTask(@Param('id') id: string) {
-    return this.taskService.deleteTask(id);
+  deleteTask(@Param('id') id: string, @Req() req) {
+    return this.taskService.deleteTask(id, req.user.userId);
   }
 }

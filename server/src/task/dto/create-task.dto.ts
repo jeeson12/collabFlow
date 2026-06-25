@@ -1,5 +1,5 @@
 import { TaskPriority, TaskStatus } from '@prisma/client';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class createTaskDto {
   @IsString()
@@ -23,4 +23,8 @@ export class createTaskDto {
   @IsOptional()
   @IsEnum(TaskPriority)
   priority?: TaskPriority;
+
+  @IsOptional()
+  @IsDate()
+  dueDate?: Date;
 }

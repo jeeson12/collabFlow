@@ -16,8 +16,10 @@ model User {
   password          String
   comments          Comment[]
   projectMembership ProjectMembership[]
-  assignedTasks     Task[]
+  assignedTasks     Task[]                @relation("taskAssignee")
+  createdTasks      Task[]                @relation("taskCreator")
   memberships       WorkspaceMembership[]
+  activities         activity[]  
 }
 
 model Workspace {
@@ -71,12 +73,15 @@ model Task {
   description String?
   projectId   String
   assigneeId  String?
+  creatorId String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   priority    TaskPriority @default(LOW)
   status      TaskStatus   @default(TODO)
+  dueDate     DateTime?
   comments    Comment[]
-  assignee    User?        @relation(fields: [assigneeId], references: [id])
+  creator     User?        @relation("taskCreator",fields:[creatorId], references:[id])
+  assignee    User?        @relation("taskAssignee",fields:[assigneeId], references:[id])
   project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
@@ -89,6 +94,17 @@ model Comment {
   updatedAt DateTime @updatedAt
   author    User     @relation(fields: [authorId], references: [id])
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model activity{
+  id String @id @default(cuid())
+  message String
+  projectId String?
+  workspaceId String?
+  userId String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields:[userId],references:[id])
 }
 
 enum MembershipRole {
