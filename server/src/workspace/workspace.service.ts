@@ -9,17 +9,28 @@ import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { updateWorkspaceDto } from './dto/update-workspace.dto';
 import { MembershipRole } from '@prisma/client';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
+import { ActivityService } from 'src/activity/activity.service';
 
 @Injectable()
 export class WorkspaceService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private activity: ActivityService,
+  ) {}
   async createWorkspace(body: CreateWorkspaceDto, userId: string) {
     const workspace = await this.prisma.workspace.create({
       data: { name: body.name },
     });
+    await this.activity.createActivity({
+      userId,
+      workspaceId: workspace.id,
+      message: `created workspace "${workspace.name}"`,
+    });
+
     await this.prisma.workspaceMembership.create({
       data: { workspaceId: workspace.id, userId, role: MembershipRole.ADMIN },
     });
+
     return workspace;
   }
 
@@ -55,10 +66,17 @@ export class WorkspaceService {
       );
     }
 
-    return this.prisma.workspace.update({
+    const updateWorkspace = await this.prisma.workspace.update({
       where: { id: workspaceId },
       data: { name: body.name },
     });
+    await this.activity.createActivity({
+      userId,
+      workspaceId,
+      message: `updated workspace "${updateWorkspace.name}"`,
+    });
+
+    return updateWorkspace;
   }
 
   async deleteWorkspace(workspaceId: string, userId: string) {
@@ -80,6 +98,12 @@ export class WorkspaceService {
         'You are not authorized to delete this workspace',
       );
     }
+
+    await this.activity.createActivity({
+      userId,
+      workspaceId,
+      message: `deleted workspace "${workspace.name}"`,
+    });
 
     await this.prisma.workspace.delete({
       where: { id: workspaceId },
@@ -136,6 +160,11 @@ export class WorkspaceService {
         role: body.role,
       },
     });
+    await this.activity.createActivity({
+      userId: requesterId,
+      workspaceId,
+      message: `added ${userExists.name} to the workspace`,
+    });
     return { message: 'member added' };
   }
 
@@ -180,6 +209,9 @@ export class WorkspaceService {
     if (!requesterMembership) {
       throw new ForbiddenException('access denied');
     }
+    if (requesterMembership.role !== MembershipRole.ADMIN) {
+      throw new ForbiddenException('You are not authorized to remove members');
+    }
 
     const targetMembership = await this.prisma.workspaceMembership.findUnique({
       where: {
@@ -199,6 +231,20 @@ export class WorkspaceService {
         throw new ForbiddenException('cannot delete last admin');
       }
     }
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: targetUserId,
+      },
+      select: {
+        name: true,
+      },
+    });
+    await this.activity.createActivity({
+      userId: requesterId,
+      workspaceId,
+      message: `removed ${user?.name} from the workspace`,
+    });
 
     await this.prisma.workspaceMembership.delete({
       where: {

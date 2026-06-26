@@ -135,8 +135,8 @@ export class ProjectService {
     await this.activity.createActivity({
       userId,
       projectId: project.id,
-      workspaceId: body.workspaceId,
-      message: `updated project "${project.name}"`,
+      workspaceId: project.workspaceId,
+      message: `updated project "${updatedProject.name}"`,
     });
     return updatedProject;
   }
@@ -250,7 +250,22 @@ export class ProjectService {
         projectId,
       },
     });
-
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: body.userId,
+      },
+      select: {
+        name: true,
+        email: true,
+        id: true,
+      },
+    });
+    await this.activity.createActivity({
+      userId: requesterId,
+      workspaceId: project.workspaceId,
+      projectId,
+      message: `added ${user?.name} to the project`,
+    });
     return {
       message: 'Member added successfully',
       member: newMember,
@@ -328,6 +343,22 @@ export class ProjectService {
     if (!membership) {
       throw new NotFoundException('Member not found');
     }
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: targetId,
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    await this.activity.createActivity({
+      userId: requesterId,
+      workspaceId: project.workspaceId,
+      projectId,
+      message: `removed ${user?.name} from the project`,
+    });
     await this.prisma.projectMembership.delete({
       where: {
         userId_projectId: {

@@ -102,11 +102,13 @@ export class CommentService {
     });
     const task = await this.prisma.task.findUnique({
       where: { id: comment.taskId },
+      include: { project: true },
     });
 
     await this.activity.createActivity({
       userId,
-      projectId: task?.projectId,
+      projectId: task?.project.id,
+      workspaceId: task?.project.workspaceId,
       message: `updated a comment on task "${task?.title}"`,
     });
 
@@ -124,21 +126,23 @@ export class CommentService {
     }
     const task = await this.prisma.task.findUnique({
       where: { id: comment.taskId },
+      include: { project: true },
     });
     if (comment.authorId !== userId) {
       throw new ForbiddenException('You can only delete your own comments');
     }
-
+    await this.activity.createActivity({
+      userId,
+      projectId: task?.project.id,
+      workspaceId: task?.project.workspaceId,
+      message: `deleted a comment on task "${task?.title}"`,
+    });
     await this.prisma.comment.delete({
       where: {
         id: commentId,
       },
     });
-    await this.activity.createActivity({
-      userId,
-      projectId: task?.projectId,
-      message: `deleted a comment on task "${task?.title}"`,
-    });
+
     return { message: 'Comment deleted successfully' };
   }
 }
