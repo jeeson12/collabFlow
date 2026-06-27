@@ -7,12 +7,16 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { ProjectModule } from './project/project.module';
 import { TaskModule } from './task/task.module';
 import { CommentModule } from './comment/comment.module';
-import { ActivityService } from './activity/activity.service';
 import { ActivityModule } from './activity/activity.module';
 import { AttachmentModule } from './attachment/attachment.module';
+import { SupabaseModule } from './supabase/supabase.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     PrismaModule,
     AuthModule,
     WorkspaceModule,
@@ -21,6 +25,7 @@ import { AttachmentModule } from './attachment/attachment.module';
     CommentModule,
     ActivityModule,
     AttachmentModule,
+    SupabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
