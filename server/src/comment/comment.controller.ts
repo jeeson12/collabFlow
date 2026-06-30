@@ -10,7 +10,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/strategies/auth-guards/jwt-auth.guard';
 import { createCommentDto } from './dto/create-comment.dto';
 import { updateCommentDto } from './dto/update-comment.dto';
 

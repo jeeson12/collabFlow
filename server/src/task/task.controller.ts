@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/strategies/auth-guards/jwt-auth.guard';
 import { createTaskDto } from './dto/create-task.dto';
 import { get } from 'http';
 import { updateTaskDto } from './dto/upate-task.dto';

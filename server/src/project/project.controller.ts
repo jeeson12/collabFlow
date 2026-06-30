@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/strategies/auth-guards/jwt-auth.guard';
 import { createProjectDto } from './dto/create-project.dto';
 import { updateProjectDto } from './dto/update-project.dto';
 import { AddProjectMemberDto } from './add-project-member.dto';

@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
-import { stringify } from 'querystring';
 
 @Injectable()
 export class AuthService {
@@ -47,5 +46,35 @@ export class AuthService {
     const token = this.jwt.sign({ userId: user.id, userEmail: user.email });
 
     return token;
+  }
+
+  async googleLogin(profile: any) {
+    const email = profile?.emails[0]?.value;
+    const name = profile.displayName;
+
+    if (!email) {
+      throw new UnauthorizedException('Incomplete email profile from google');
+    }
+
+    let user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          name,
+          email,
+          password: '',
+        },
+      });
+    }
+    return this.generateToken(user.id, user.email);
+  }
+
+  generateToken(userId: string, email: string) {
+    return this.jwt.sign({
+      userId,
+      userEmail: email,
+    });
   }
 }
