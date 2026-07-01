@@ -29,11 +29,25 @@ export class ProjectService {
       throw new ForbiddenException('You are not a member of this workspace');
     }
 
+    const existingProject = await this.prisma.project.findFirst({
+      where: {
+        workspaceId: body.workspaceId,
+        projectKey: body.projectKey,
+      },
+    });
+
+    if (existingProject) {
+      throw new ConflictException(
+        'Project key already exists in this workspace',
+      );
+    }
+
     const project = await this.prisma.project.create({
       data: {
         name: body.name,
         description: body.description,
         workspaceId: body.workspaceId,
+        projectKey: body.projectKey,
       },
     });
     await this.activity.createActivity({

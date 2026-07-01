@@ -45,15 +45,19 @@ model WorkspaceMembership {
 }
 
 model Project {
-  id          String              @id @default(cuid())
-  name        String
-  description String?
-  workspaceId String
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  workspace   Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  memberships ProjectMembership[]
-  tasks       Task[]
+  id           String              @id @default(cuid())
+  name         String
+  description  String?
+  workspaceId  String
+  projectKey   String?
+  taskSequence Int                 @default(0)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  workspace    Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  memberships  ProjectMembership[]
+  tasks        Task[]
+
+  @@unique([workspaceId, projectKey])
 }
 
 model ProjectMembership {
@@ -75,6 +79,7 @@ model Task {
   projectId   String
   assigneeId  String?
   creatorId   String?
+  ticketId    String?      @unique
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   priority    TaskPriority @default(LOW)

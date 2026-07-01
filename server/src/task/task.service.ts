@@ -41,17 +41,47 @@ export class TaskService {
         throw new ForbiddenException('user is not a member of this project');
     }
 
-    const task = await this.prisma.task.create({
-      data: {
-        title: body.title,
-        description: body.description,
-        projectId: body.projectId,
-        assigneeId: body.assigneeId,
-        creatorId: userId,
-        status: body.status,
-        priority: body.priority,
-        dueDate: body.dueDate,
-      },
+    const task = await this.prisma.$transaction(async (tx) => {
+      const project = await tx.project.findUnique({
+        where: {
+          id: body.projectId,
+        },
+      });
+
+      if (!project) {
+        throw new NotFoundException('Project not found');
+      }
+
+      const nextSequence = project.taskSequence + 1;
+
+      const ticketId = `${project.projectKey}-${nextSequence}`;
+
+      const createdTask = await tx.task.create({
+        data: {
+          title: body.title,
+          description: body.description,
+          projectId: body.projectId,
+          assigneeId: body.assigneeId,
+          creatorId: userId,
+          status: body.status,
+          priority: body.priority,
+          dueDate: body.dueDate,
+          ticketId,
+        },
+      });
+
+      await tx.project.update({
+        where: {
+          id: project.id,
+        },
+        data: {
+          taskSequence: {
+            increment: 1,
+          },
+        },
+      });
+
+      return createdTask;
     });
 
     await this.activity.createActivity({
