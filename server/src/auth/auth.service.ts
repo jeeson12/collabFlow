@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -35,17 +39,19 @@ export class AuthService {
     });
 
     if (!user) {
-      return 'no user found';
+      throw new NotFoundException('no user found');
     }
     const passwordMatch = await bcrypt.compare(data.password, user.password);
 
     if (!passwordMatch) {
-      return 'invalid credentials';
+      throw new UnauthorizedException('invalid credentials');
     }
 
     const token = this.jwt.sign({ userId: user.id, userEmail: user.email });
 
-    return token;
+    return {
+      accessToken: token,
+    };
   }
 
   async googleLogin(profile: any) {
