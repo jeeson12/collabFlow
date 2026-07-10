@@ -1,8 +1,17 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './strategies/auth-guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './strategies/auth-guards/google-auth.guard';
+import * as express from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -13,8 +22,19 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() body: any) {
-    return this.authService.login(body);
+  async login(
+    @Body() body: any,
+    @Res({ passthrough: true }) res: express.Response,
+  ) {
+    const result = await this.authService.login(body);
+
+    res.cookie('access_token', result.token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+    return result.user;
   }
 
   @Get('profile')

@@ -3,12 +3,10 @@ export interface LoginDto {
   password: string;
 }
 
-export interface LoginResponse {
-  accessToken: string;
-}
-
 export interface User {
   id: string;
   name: string;
   email: string;
 }
+
+export type LoginResponse = User;
