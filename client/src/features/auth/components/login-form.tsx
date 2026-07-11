@@ -1,14 +1,16 @@
 "use client";
 
-import { LoginFormData, loginSchema } from "../auth.schema";
+import { LoginFormData, loginSchema } from "../schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMutation } from "@tanstack/react-query";
-import { login } from "../api/login";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { login } from "../api";
+import { useRouter } from "next/navigation";
+
 export function LoginForm() {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -17,11 +19,15 @@ export function LoginForm() {
       password: "",
     },
   });
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
   const loginMutation = useMutation({
     mutationFn: login,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       console.log("login success", data);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      router.push("/dashboard");
     },
     onError: (error) => {
       console.log("login error", error);
