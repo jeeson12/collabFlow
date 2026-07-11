@@ -52,4 +52,11 @@ export class AuthController {
   googleCallback(@Req() req) {
     return this.authService.googleLogin(req.user);
   }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  logout(@Res({ passthrough: true }) res: express.Response) {
+    res.clearCookie('access_token');
+    return { message: 'logout success' };
+  }
 }
