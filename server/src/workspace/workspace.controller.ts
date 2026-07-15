@@ -25,6 +25,11 @@ export class WorkspaceController {
     return this.workspaceService.createWorkspace(body, req.user.userId);
   }
 
+  @Get()
+  getUserWorkspaces(@Req() req) {
+    return this.workspaceService.getUserWorkspaces(req.user.userId);
+  }
+
   @Get(':workspaceId')
   getWorkspace(@Param('workspaceId') workspaceId: string, @Req() req) {
     return this.workspaceService.getWorkspace(workspaceId, req.user.userId);
