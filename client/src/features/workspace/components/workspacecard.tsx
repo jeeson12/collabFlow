@@ -1,8 +1,13 @@
 import { FolderKanban, Users, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { workspace } from "../type";
 
-export function WorkspaceCard() {
+type WorkspaceCardProps = {
+  workspace: workspace;
+};
+
+export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
   return (
     <div className="rounded-2xl border bg-card p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
       <div className="flex items-start justify-between">
@@ -14,7 +19,7 @@ export function WorkspaceCard() {
       </div>
 
       <div className="mt-6 space-y-2">
-        <h3 className="text-lg font-semibold">Personal Workspace</h3>
+        <h3 className="text-lg font-semibold">{workspace.name}</h3>
 
         <p className="text-sm text-muted-foreground">
           Team collaboration workspace
@@ -29,7 +34,8 @@ export function WorkspaceCard() {
 
         <div className="flex items-center gap-2">
           <FolderKanban className="h-4 w-4" />
-          <span>8 Projects</span>
+          {workspace._count.projects}{" "}
+          {workspace._count.projects === 1 ? "Project" : "Projects"}
         </div>
       </div>
 

@@ -45,9 +45,7 @@ export function AppHeader() {
           <NotificationDropdown />
 
           {/* Avatar */}
-          <button>
-            <ProfileDropdown />
-          </button>
+          <ProfileDropdown />
         </div>
       </div>
     </header>
