@@ -27,7 +27,7 @@ export function LoginForm() {
     onSuccess: async (data) => {
       console.log("login success", data);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      router.push("/dashboard");
+      router.push("/workspace");
     },
     onError: (error) => {
       console.log("login error", error);
