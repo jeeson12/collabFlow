@@ -30,6 +30,14 @@ export class ProjectController {
     return this.projectService.getProject(req.user.userId);
   }
 
+  @Get('workspace/:workspaceId')
+  getWorkspaceProject(@Param('workspaceId') workspaceId: string, @Req() req) {
+    return this.projectService.getWorkspaceProjects(
+      workspaceId,
+      req.user.userId,
+    );
+  }
+
   @Get(':projectId')
   getProjectbyId(@Param('projectId') projectId: string, @Req() req) {
     return this.projectService.getProjectbyId(projectId, req.user.userId);

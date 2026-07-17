@@ -81,6 +81,38 @@ export class ProjectService {
     return membership;
   }
 
+  async getWorkspaceProjects(workspaceId: string, userId: string) {
+    const membership = await this.prisma.workspaceMembership.findUnique({
+      where: {
+        userId_workspaceId: {
+          userId,
+          workspaceId,
+        },
+      },
+    });
+
+    if (!membership) {
+      throw new ForbiddenException('You are not a member of this workspace');
+    }
+
+    return this.prisma.project.findMany({
+      where: {
+        workspaceId,
+      },
+      include: {
+        _count: {
+          select: {
+            memberships: true,
+            tasks: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
   async getProjectbyId(projectId: string, userId: string) {
     const membership = await this.prisma.projectMembership.findFirst({
       where: {
