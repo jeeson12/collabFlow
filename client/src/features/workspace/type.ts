@@ -15,3 +15,14 @@ export interface createWorkspaceDto {
 export interface updateWorkspaceDto {
   name: string;
 }
+
+export interface WorkspaceMember {
+  id: string;
+  role: "ADMIN" | "MEMBER";
+
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}

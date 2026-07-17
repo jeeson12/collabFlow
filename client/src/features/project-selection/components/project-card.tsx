@@ -4,73 +4,61 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-export function ProjectCard() {
+import { Project } from "../type";
+
+type ProjectCardProps = {
+  project: Project;
+};
+
+export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border bg-card transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-      {/* Header */}
-      <div className="space-y-6 p-6">
+    <div className="overflow-hidden rounded-xl border bg-card transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+      <div className="space-y-4 p-4">
+        {/* Header */}
         <div className="flex items-start justify-between">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-            <FolderKanban className="h-6 w-6 text-primary" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <FolderKanban className="h-5 w-5 text-primary" />
           </div>
 
-          <Badge>In Progress</Badge>
+          <Badge className="text-xs">{project.projectKey ?? "PROJECT"}</Badge>
         </div>
 
         {/* Title */}
-        <div className="space-y-2">
-          <h3 className="text-2xl font-semibold">Website Redesign</h3>
+        <div className="space-y-1">
+          <h3 className="line-clamp-1 text-lg font-semibold">{project.name}</h3>
 
-          <p className="line-clamp-2 text-sm text-muted-foreground">
-            Overhauling the marketing site with the new brand guidelines and
-            optimized conversion paths.
+          <p className="line-clamp-2 text-xs text-muted-foreground">
+            {project.description || "No description provided."}
           </p>
         </div>
 
         {/* Progress */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm font-medium">
-            <span>Task Progress</span>
-
-            <span>70%</span>
+        <div className="space-y-1">
+          <div className="flex justify-between text-xs font-medium">
+            <span>Progress</span>
+            <span>0%</span>
           </div>
 
-          <Progress value={70} />
+          <Progress value={0} className="h-2" />
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between">
-          <div className="flex -space-x-3">
-            <Avatar className="border-2 border-background">
-              <AvatarFallback>J</AvatarFallback>
-            </Avatar>
+          <Avatar className="h-8 w-8 border border-background">
+            <AvatarFallback>?</AvatarFallback>
+          </Avatar>
 
-            <Avatar className="border-2 border-background">
-              <AvatarFallback>A</AvatarFallback>
-            </Avatar>
-
-            <Avatar className="border-2 border-background">
-              <AvatarFallback>R</AvatarFallback>
-            </Avatar>
-
-            <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-background bg-muted text-xs font-semibold">
-              +3
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <CheckCircle2 className="h-4 w-4" />
-
-            <span>24 / 32 Tasks</span>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            <span>0 / {project._count.tasks}</span>
           </div>
         </div>
       </div>
 
       {/* Activity */}
-      <div className="flex items-center gap-2 border-t px-6 py-4 text-sm text-muted-foreground">
-        <Clock3 className="h-4 w-4" />
-
-        <span>Sarah updated "Hero Section" 2h ago</span>
+      <div className="flex items-center gap-2 border-t px-4 py-3 text-xs text-muted-foreground">
+        <Clock3 className="h-3.5 w-3.5" />
+        <span>No recent activity</span>
       </div>
     </div>
   );
