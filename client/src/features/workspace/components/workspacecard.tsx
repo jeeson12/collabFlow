@@ -1,13 +1,16 @@
+"use client";
 import { FolderKanban, Users, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { workspace } from "../type";
+import { useRouter } from "next/navigation";
 
 type WorkspaceCardProps = {
   workspace: workspace;
 };
 
 export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
+  const router = useRouter();
   return (
     <div className="rounded-2xl border bg-card p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
       <div className="flex items-start justify-between">
@@ -39,7 +42,10 @@ export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
         </div>
       </div>
 
-      <Button className="mt-8 w-full justify-between">
+      <Button
+        className="mt-8 w-full justify-between"
+        onClick={() => router.push(`/workspace/${workspace.id}/projects`)}
+      >
         Open Workspace
         <ArrowRight className="h-4 w-4" />
       </Button>
