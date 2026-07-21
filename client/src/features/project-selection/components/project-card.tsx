@@ -1,16 +1,34 @@
-import { FolderKanban, CheckCircle2, Clock3 } from "lucide-react";
+import {
+  FolderKanban,
+  CheckCircle2,
+  Clock3,
+  MoreVertical,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import { Project } from "../type";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { DeleteProject } from "./deleteProject";
 
 type ProjectCardProps = {
   project: Project;
+  onEdit: () => void;
 };
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, onEdit }: ProjectCardProps) {
+  const [deleteOpen, setDeleteOpen] = useState(false);
   return (
     <div className="overflow-hidden rounded-xl border bg-card transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
       <div className="space-y-4 p-4">
@@ -20,9 +38,33 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <FolderKanban className="h-5 w-5 text-primary" />
           </div>
 
-          <Badge className="text-xs">{project.projectKey ?? "PROJECT"}</Badge>
-        </div>
+          <div className="flex items-center gap-2">
+            <Badge className="text-xs">{project.projectKey ?? "PROJECT"}</Badge>
 
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onEdit}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => setDeleteOpen(true)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
         {/* Title */}
         <div className="space-y-1">
           <h3 className="line-clamp-1 text-lg font-semibold">{project.name}</h3>
@@ -60,6 +102,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <Clock3 className="h-3.5 w-3.5" />
         <span>No recent activity</span>
       </div>
+      <DeleteProject
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        project={project}
+      />
     </div>
   );
 }

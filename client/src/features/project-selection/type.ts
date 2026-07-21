@@ -15,12 +15,13 @@ export interface Project {
 
 export interface CreateProjectDto {
   workspaceId: string;
-
   name: string;
+  projectKey: string;
   description?: string;
 }
 
 export interface updateProjectDto {
   name?: string;
   description?: string;
+  projectKey?: string;
 }

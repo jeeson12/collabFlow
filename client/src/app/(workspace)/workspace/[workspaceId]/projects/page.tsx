@@ -9,7 +9,5 @@ type Props = {
 export default async function Page({ params }: Props) {
   const { workspaceId } = await params;
 
-  return (
-    <ProjectSelectionPage workspaceId={workspaceId} />
-  );
+  return <ProjectSelectionPage workspaceId={workspaceId} />;
 }

@@ -10,7 +10,9 @@ import { ProjectCard } from "@/features/project-selection/components/project-car
 import { CreateProjectCard } from "@/features/project-selection/components/create-project-card";
 import { EmptyProjectState } from "@/features/project-selection/components/emptyProject";
 import { ActiveMembersCard } from "@/features/project-selection/components/members";
-import { CreateProjectDialog } from "@/features/project-selection/components/create-project-dialog";
+import { ProjectDialog } from "@/features/project-selection/components/project-dialog";
+
+import { Project } from "./type";
 
 type ProjectSelectionPageProps = {
   workspaceId: string;
@@ -20,6 +22,8 @@ export default function ProjectSelectionPage({
   workspaceId,
 }: ProjectSelectionPageProps) {
   const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"create" | "edit">("create");
+  const [selectedProject, setSelectedProject] = useState<Project>();
 
   const {
     data: projects = [],
@@ -42,49 +46,71 @@ export default function ProjectSelectionPage({
     );
   }
 
-  if (projects.length === 0) {
-    return (
-      <>
-        <EmptyProjectState onCreate={() => setOpen(true)} />
-
-        <CreateProjectDialog
-          workspaceId={workspaceId}
-          open={open}
-          onOpenChange={setOpen}
-        />
-      </>
-    );
-  }
-
   return (
     <>
-      <div className="mx-auto max-w-7xl space-y-8 px-8 py-8">
-        <ProjectHero />
+      {projects.length === 0 ? (
+        <>
+          <EmptyProjectState
+            onCreate={() => {
+              setMode("create");
+              setSelectedProject(undefined);
+              setOpen(true);
+            }}
+          />
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-          {/* Left Side */}
-          <div>
-            <section className="grid gap-6 md:grid-cols-2">
-              {projects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
+          <ProjectDialog
+            workspaceId={workspaceId}
+            open={open}
+            onOpenChange={setOpen}
+            mode={mode}
+            project={selectedProject}
+          />
+        </>
+      ) : (
+        <>
+          <div className="mx-auto max-w-7xl space-y-8 px-8 py-8">
+            <ProjectHero />
 
-              <CreateProjectCard onClick={() => setOpen(true)} />
-            </section>
+            <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+              <div>
+                <section className="grid gap-6 md:grid-cols-2">
+                  {projects.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      onEdit={() => {
+                        setMode("edit");
+                        setSelectedProject(project);
+                        setOpen(true);
+                      }}
+                    />
+                  ))}
+
+                  <CreateProjectCard
+                    onClick={() => {
+                      setMode("create");
+                      setSelectedProject(undefined);
+                      setOpen(true);
+                    }}
+                  />
+                </section>
+              </div>
+
+              <aside className="sticky top-8 h-fit">
+                <ActiveMembersCard workspaceId={workspaceId} />
+              </aside>
+            </div>
           </div>
 
-          {/* Right Side */}
-          <aside className="sticky top-8 h-fit">
-            <ActiveMembersCard workspaceId={workspaceId} />
-          </aside>
-        </div>
-      </div>
-
-      <CreateProjectDialog
-        workspaceId={workspaceId}
-        open={open}
-        onOpenChange={setOpen}
-      />
+          <ProjectDialog
+            workspaceId={workspaceId}
+            open={open}
+            onOpenChange={setOpen}
+            mode={mode}
+            project={selectedProject}
+          />
+        </>
+      )}
     </>
   );
 }

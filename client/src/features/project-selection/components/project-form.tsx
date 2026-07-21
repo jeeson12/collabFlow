@@ -1,14 +1,21 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import z from "zod";
-import { createProject } from "../api";
+import { createProject, updateProject } from "../api";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Project } from "../type";
+import { useEffect } from "react";
 
-type CreateProjectFormProps = { workspaceId: string; onSuccess: () => void };
+type CreateProjectFormProps = {
+  mode: "create" | "edit";
+  project?: Project;
+  workspaceId: string;
+  onSuccess: () => void;
+};
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
@@ -20,7 +27,9 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-export function CreateProjectForm({
+export function ProjectForm({
+  mode,
+  project,
   workspaceId,
   onSuccess,
 }: CreateProjectFormProps) {
@@ -35,9 +44,25 @@ export function CreateProjectForm({
     },
   });
 
+  useEffect(() => {
+    if (mode === "edit" && project) {
+      form.reset({
+        name: project.name,
+        projectKey: project.projectKey || "",
+        description: project.description || "",
+      });
+    }
+  }, [mode, project, form]);
+
   const projectMutation = useMutation({
-    mutationFn: (values: FormValues) =>
-      createProject({ workspaceId, ...values }),
+    mutationFn: (values: FormValues) => {
+      if (mode === "create") {
+        return createProject({ workspaceId, ...values });
+      }
+      if (!project) throw new Error("Project not found");
+      return updateProject(project?.id, values);
+    },
+
     onSuccess: () => {
       toast.success("Project created successfully");
       queryClient.invalidateQueries({ queryKey: ["projects", workspaceId] });

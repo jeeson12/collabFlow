@@ -6,16 +6,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CreateProjectForm } from "./create-project-form";
+import { ProjectForm } from "./project-form";
+import { Project } from "../type";
 
 type CreateProjectDialogProps = {
   workspaceId: string;
-
+  project?: Project;
+  mode: "create" | "edit";
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export function CreateProjectDialog({
+export function ProjectDialog({
+  project,
+  mode,
   workspaceId,
   open,
   onOpenChange,
@@ -24,10 +28,12 @@ export function CreateProjectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create Project</DialogTitle>
+          <DialogTitle>{mode === "create" ? "Create" : "Edit"}</DialogTitle>
         </DialogHeader>
 
-        <CreateProjectForm
+        <ProjectForm
+          mode={mode}
+          project={project}
           onSuccess={() => onOpenChange(false)}
           workspaceId={workspaceId}
         />
