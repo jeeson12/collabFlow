@@ -1,16 +1,16 @@
 "use client";
 import { Plus } from "lucide-react";
-import { useState } from "react";
-import { CreateWorkspaceDialog } from "./createWorkspace-dialog";
 
-export function CreateWorkspaceCard() {
-  const [open, setOpen] = useState(false);
+interface CreateWorkspaceCardProps {
+  onClick?: () => void;
+}
 
+export function CreateWorkspaceCard({ onClick }: CreateWorkspaceCardProps) {
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
-        className="flex min-h-[260px] flex-col items-center justify-center rounded-2xl border-2 border-dashed transition hover:border-primary hover:bg-muted/50"
+        onClick={onClick}
+        className="flex min-h-65 flex-col items-center justify-center rounded-2xl border-2 border-dashed transition hover:border-primary hover:bg-muted/50"
       >
         <Plus className="mb-4 h-8 w-8" />
 
@@ -20,8 +20,6 @@ export function CreateWorkspaceCard() {
           Start a new workspace
         </p>
       </button>
-
-      <CreateWorkspaceDialog open={open} onOpenChange={setOpen} />
     </>
   );
 }

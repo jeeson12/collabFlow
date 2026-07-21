@@ -1,7 +1,10 @@
 import { Building2, Plus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function EmptyWorkspaceState() {
+type EmptyWorkspaceProps = {
+  onCreate: () => void;
+};
+export function EmptyWorkspaceState({ onCreate }: EmptyWorkspaceProps) {
   return (
     <section className="flex min-h-[70vh] items-center justify-center px-6">
       <div className="flex max-w-lg flex-col items-center text-center">
@@ -25,7 +28,7 @@ export function EmptyWorkspaceState() {
 
         {/* Actions */}
         <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Button size="lg">
+          <Button onClick={onCreate} size="lg">
             <Plus className="mr-2 h-4 w-4" />
             Create Workspace
           </Button>
