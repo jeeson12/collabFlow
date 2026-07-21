@@ -1,7 +1,11 @@
 import { FolderKanban, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function EmptyProjectState() {
+type EmptyProjectStateProps = {
+  onCreate: () => void;
+};
+
+export function EmptyProjectState({ onCreate }: EmptyProjectStateProps) {
   return (
     <section className="flex min-h-[70vh] items-center justify-center">
       <div className="max-w-md text-center">
@@ -16,7 +20,7 @@ export function EmptyProjectState() {
           collaboration.
         </p>
 
-        <Button className="mt-8">
+        <Button onClick={onCreate} className="mt-8">
           <Plus className="mr-2 h-4 w-4" />
           Create Project
         </Button>

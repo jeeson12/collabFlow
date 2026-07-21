@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/axios";
-import { createProjectDto, Project, updateProjectDto } from "./type";
+import { CreateProjectDto, Project, updateProjectDto } from "./type";
 
 export async function getWorkspaceProject(
   workspaceId: string,
@@ -8,11 +8,8 @@ export async function getWorkspaceProject(
   return response.data;
 }
 
-export async function createProject(
-  workspaceId: string,
-  params: createProjectDto,
-) {
-  const response = await api.post(`/project/${workspaceId}`, params);
+export async function createProject(params: CreateProjectDto) {
+  const response = await api.post(`/project`, params);
   return response.data;
 }
 

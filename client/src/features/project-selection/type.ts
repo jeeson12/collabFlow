@@ -13,11 +13,11 @@ export interface Project {
   };
 }
 
-export interface createProjectDto {
+export interface CreateProjectDto {
+  workspaceId: string;
+
   name: string;
   description?: string;
-  workspaceId: string;
-  userId: string;
 }
 
 export interface updateProjectDto {

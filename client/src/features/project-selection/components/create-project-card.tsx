@@ -1,8 +1,9 @@
 import { Plus, FolderKanban } from "lucide-react";
 
-export function CreateProjectCard() {
+export function CreateProjectCard({ onClick }: { onClick: () => void }) {
   return (
     <button
+      onClick={onClick}
       className="
         flex h-full min-h-[320px] flex-col items-center justify-center
         rounded-2xl border-2 border-dashed
