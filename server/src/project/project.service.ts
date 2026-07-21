@@ -170,12 +170,30 @@ export class ProjectService {
         'You are not authorized to update this project',
       );
     }
+    if (body.projectKey) {
+      const existing = await this.prisma.project.findFirst({
+        where: {
+          workspaceId: project.workspaceId,
+          projectKey: body.projectKey,
+          NOT: {
+            id: projectId,
+          },
+        },
+      });
+
+      if (existing) {
+        throw new ConflictException(
+          'Project key already exists in this workspace',
+        );
+      }
+    }
 
     const updatedProject = await this.prisma.project.update({
       where: { id: projectId },
       data: {
         name: body.name,
         description: body.description,
+        projectKey: body.projectKey,
       },
     });
     await this.activity.createActivity({

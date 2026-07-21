@@ -11,33 +11,42 @@ model User {
   id                String                @id @default(cuid())
   email             String                @unique
   name              String?
+  password          String
+
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
-  password          String
-  comments          Comment[]
-  projectMembership ProjectMembership[]
-  assignedTasks     Task[]                @relation("taskAssignee")
-  createdTasks      Task[]                @relation("taskCreator")
+
   memberships       WorkspaceMembership[]
-  activities        activity[]
+  projectMembership ProjectMembership[]
+
+  createdTasks      Task[]                @relation("taskCreator")
+  assignedTasks     Task[]                @relation("taskAssignee")
+
+  comments          Comment[]
   attachments       Attachment[]
+  activities        Activity[]
 }
 
 model Workspace {
   id          String                @id @default(cuid())
   name        String
+
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt
-  projects    Project[]
+
   memberships WorkspaceMembership[]
+  projects    Project[]
 }
 
 model WorkspaceMembership {
   id          String         @id @default(cuid())
+
   userId      String
-  role        MembershipRole
   workspaceId String
+  role        MembershipRole
+
   createdAt   DateTime       @default(now())
+
   user        User           @relation(fields: [userId], references: [id])
   workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
@@ -46,13 +55,17 @@ model WorkspaceMembership {
 
 model Project {
   id           String              @id @default(cuid())
+
   name         String
   description  String?
-  workspaceId  String
-  projectKey   String?
+  projectKey   String
   taskSequence Int                 @default(0)
+
+  workspaceId  String
+
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
+
   workspace    Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   memberships  ProjectMembership[]
   tasks        Task[]
@@ -61,74 +74,96 @@ model Project {
 }
 
 model ProjectMembership {
-  id        String         @id @default(cuid())
-  userId    String
-  projectId String
-  role      MembershipRole
-  createdAt DateTime       @default(now())
-  project   Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user      User           @relation(fields: [userId], references: [id])
+  id         String         @id @default(cuid())
+
+  userId     String
+  projectId  String
+  role       MembershipRole
+
+  createdAt  DateTime       @default(now())
+
+  user        User          @relation(fields: [userId], references: [id])
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@unique([userId, projectId])
 }
 
 model Task {
-  id          String       @id @default(cuid())
-  title       String
-  description String?
-  projectId   String
-  assigneeId  String?
-  creatorId   String?
-  ticketId    String?      @unique
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  priority    TaskPriority @default(LOW)
-  status      TaskStatus   @default(TODO)
-  dueDate     DateTime?
-  comments    Comment[]
-  creator     User?        @relation("taskCreator", fields: [creatorId], references: [id])
-  assignee    User?        @relation("taskAssignee", fields: [assigneeId], references: [id])
-  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  attachments Attachment[]
+  id           String       @id @default(cuid())
+
+  title        String
+  description  String?
+
+  ticketId     String       @unique
+
+  projectId    String
+  creatorId    String
+  assigneeId   String?
+
+  priority     TaskPriority @default(LOW)
+  status       TaskStatus   @default(TODO)
+
+  dueDate      DateTime?
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  project       Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  creator       User         @relation("taskCreator", fields: [creatorId], references: [id])
+  assignee      User?        @relation("taskAssignee", fields: [assigneeId], references: [id])
+
+  comments      Comment[]
+  attachments   Attachment[]
 }
 
 model Attachment {
-  id               String   @id @default(cuid())
-  originalFileName String
-  storagePath      String
-  mimeType         String
-  size             Int
-  taskId           String
-  uploadedBy       String
-  createdAt        DateTime @default(now())
+  id                String    @id @default(cuid())
 
-  task     Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  uploader User @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+  originalFileName  String
+  storagePath       String
+  mimeType          String
+  size              Int
+
+  taskId            String
+  uploadedBy        String
+
+  createdAt         DateTime  @default(now())
+
+  task              Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  uploader          User      @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
 
   @@index([taskId])
   @@index([uploadedBy])
 }
 
 model Comment {
-  id        String   @id @default(cuid())
-  content   String
-  taskId    String
-  authorId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id])
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  id         String    @id @default(cuid())
+
+  content    String
+
+  taskId     String
+  authorId   String
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author      User     @relation(fields: [authorId], references: [id])
 }
 
-model activity {
-  id          String   @id @default(cuid())
-  message     String
-  projectId   String?
-  workspaceId String?
-  userId      String
-  createdAt   DateTime @default(now())
+model Activity {
+  id          String    @id @default(cuid())
 
-  user User @relation(fields: [userId], references: [id])
+  message     String
+
+  workspaceId String?
+  projectId   String?
+
+  userId      String
+
+  createdAt   DateTime  @default(now())
+
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 enum MembershipRole {
