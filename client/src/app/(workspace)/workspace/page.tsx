@@ -50,8 +50,6 @@ export default function WorkspacePage() {
         <div className="mx-auto max-w-7xl space-y-8 px-8 py-8">
           <HeroSection />
 
-          <ResumeCard />
-
           <section>
             <h2 className="mb-5 text-2xl font-semibold">Your Workspaces</h2>
 

@@ -2,23 +2,23 @@ import { api } from "@/lib/api/axios";
 import {
   createWorkspaceDto,
   updateWorkspaceDto,
-  workspace,
+  Workspace,
   WorkspaceMember,
 } from "./type";
 
-export async function getWorkspaces(): Promise<workspace[]> {
+export async function getWorkspaces(): Promise<Workspace[]> {
   const response = await api.get("/workspace");
   return response.data;
 }
 
-export async function getWorkspaceById(id: string): Promise<workspace> {
+export async function getWorkspaceById(id: string): Promise<Workspace> {
   const response = await api.get(`/workspace/${id}`);
   return response.data;
 }
 
 export async function createWorkspace(
   input: createWorkspaceDto,
-): Promise<workspace> {
+): Promise<Workspace> {
   const response = await api.post("/workspace", input);
   return response.data;
 }
@@ -26,7 +26,7 @@ export async function createWorkspace(
 export async function updateWorkspace(
   workspaceId: string,
   input: updateWorkspaceDto,
-): Promise<workspace> {
+): Promise<Workspace> {
   const response = await api.patch(`/workspace/${workspaceId}`, input);
   return response.data;
 }

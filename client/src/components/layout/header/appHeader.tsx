@@ -15,14 +15,12 @@ export function AppHeader() {
         {/* Left */}
         <div className="flex h-full items-center gap-10">
           {/* Logo */}
-          <Link href="/workspaces" className="flex items-center gap-3">
+          <Link href="/workspace" className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
               CF
             </div>
-
-            <WorkspaceSwitcher />
           </Link>
-
+          <WorkspaceSwitcher />
           {/* Navigation */}
           <nav className="flex h-full items-center">
             <button className="relative flex h-full items-center px-4 text-sm font-medium text-foreground">
