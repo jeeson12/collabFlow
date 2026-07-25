@@ -4,8 +4,10 @@ import { CircleDot } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Project } from "../project-selection/type";
 
-export function ProjectDetails() {
+type projectDetailsProps = { project: Project };
+export function ProjectDetails({ project }: projectDetailsProps) {
   return (
     <div className="mx-4 mt-2 rounded-xl border bg-muted/40 p-2">
       <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -14,9 +16,12 @@ export function ProjectDetails() {
 
       <div className="space-y-3">
         <div>
-          <h3 className="font-semibold">CollabFlow</h3>
+          <h3 className="font-semibold">{project.name}</h3>
 
-          <p className="text-sm text-muted-foreground">CF-101</p>
+          <p className="text-sm text-muted-foreground">
+            {" "}
+            {project.projectKey ?? "PROJECT"}
+          </p>
         </div>
 
         <Badge variant="secondary" className="w-fit gap-1">
@@ -37,7 +42,7 @@ export function ProjectDetails() {
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Members</span>
 
-          <span className="font-medium">5</span>
+          <span className="font-medium"> {project._count.memberships}</span>
         </div>
       </div>
     </div>

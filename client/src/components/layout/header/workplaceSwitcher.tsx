@@ -36,7 +36,7 @@ export function WorkspaceSwitcher() {
         >
           <Building2 className="h-4 w-4 shrink-0" />
 
-          <span className="max-w-[180px] truncate font-medium">
+          <span className="max-w-45 truncate font-medium">
             <p className="text-sm">Switch Workspace</p>
           </span>
 

@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { DeleteProject } from "./deleteProject";
+import { useParams, useRouter } from "next/navigation";
 
 type ProjectCardProps = {
   project: Project;
@@ -28,9 +29,19 @@ type ProjectCardProps = {
 };
 
 export function ProjectCard({ project, onEdit }: ProjectCardProps) {
+  const router = useRouter();
+  const { workspaceId } = useParams<{ workspaceId: string }>();
   const [deleteOpen, setDeleteOpen] = useState(false);
   return (
-    <div className="overflow-hidden rounded-xl border bg-card transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+    <div
+      onClick={() =>
+        router.push(
+          `/workspace/${workspaceId}/projects/${project.id}/dashboard`,
+        )
+      }
+      className="cursor-pointer overflow-hidden rounded-xl border bg-card transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+    >
+      {" "}
       <div className="space-y-4 p-4">
         {/* Header */}
         <div className="flex items-start justify-between">
@@ -40,29 +51,30 @@ export function ProjectCard({ project, onEdit }: ProjectCardProps) {
 
           <div className="flex items-center gap-2">
             <Badge className="text-xs">{project.projectKey ?? "PROJECT"}</Badge>
+            <div onClick={(e) => e.stopPropagation()}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={onEdit}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit
+                  </DropdownMenuItem>
 
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onEdit}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Edit
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={() => setDeleteOpen(true)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={() => setDeleteOpen(true)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
         {/* Title */}
@@ -96,7 +108,6 @@ export function ProjectCard({ project, onEdit }: ProjectCardProps) {
           </div>
         </div>
       </div>
-
       {/* Activity */}
       <div className="flex items-center gap-2 border-t px-4 py-3 text-xs text-muted-foreground">
         <Clock3 className="h-3.5 w-3.5" />

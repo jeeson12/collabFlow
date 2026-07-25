@@ -11,8 +11,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useParams, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { getWorkspaceProject } from "../project-selection/api";
 
 export function ProjectSwitcher() {
+  const { workspaceId, projectId } = useParams<{
+    workspaceId: string;
+    projectId: string;
+  }>();
+  const router = useRouter();
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ["projects", workspaceId],
+    queryFn: () => getWorkspaceProject(workspaceId),
+  });
+
+  const currentProject = projects.find((project) => project.id === projectId);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,7 +38,7 @@ export function ProjectSwitcher() {
           <div className="flex items-center gap-2 overflow-hidden">
             <FolderKanban className="h-4 w-4 shrink-0" />
 
-            <span className="truncate font-medium">CollabFlow</span>
+            <span className="truncate font-medium">{currentProject?.name}</span>
           </div>
 
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
@@ -39,31 +54,31 @@ export function ProjectSwitcher() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="flex cursor-pointer items-center justify-between rounded-md p-3 bg-muted">
-          <div className="space-y-1">
-            <p className="font-medium">CollabFlow</p>
+        {projects.map((project) => (
+          <DropdownMenuItem
+            key={project.id}
+            onClick={() =>
+              router.push(
+                `/workspace/${workspaceId}/projects/${project.id}/dashboard`,
+              )
+            }
+            className={`flex cursor-pointer items-center justify-between rounded-md p-3 ${
+              project.id === projectId ? "bg-muted" : ""
+            }`}
+          >
+            <div className="space-y-1">
+              <p className="font-medium">{project.name}</p>
 
-            <p className="text-xs text-muted-foreground">CF</p>
-          </div>
+              <p className="text-xs text-muted-foreground">
+                {project.projectKey}
+              </p>
+            </div>
 
-          <Check className="h-4 w-4 text-primary" />
-        </DropdownMenuItem>
-
-        <DropdownMenuItem className="flex cursor-pointer items-center justify-between rounded-md p-3">
-          <div className="space-y-1">
-            <p className="font-medium">Portfolio Website</p>
-
-            <p className="text-xs text-muted-foreground">PORT</p>
-          </div>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem className="flex cursor-pointer items-center justify-between rounded-md p-3">
-          <div className="space-y-1">
-            <p className="font-medium">HR Management</p>
-
-            <p className="text-xs text-muted-foreground">HR</p>
-          </div>
-        </DropdownMenuItem>
+            {project.id === projectId && (
+              <Check className="h-4 w-4 text-primary" />
+            )}
+          </DropdownMenuItem>
+        ))}
 
         <DropdownMenuSeparator />
 
