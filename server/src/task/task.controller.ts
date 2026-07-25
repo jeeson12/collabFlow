@@ -21,21 +21,21 @@ export class TaskController {
 
   @Post()
   createTask(@Body() body: createTaskDto, @Req() req) {
-    return this.taskService.createTask(body, req.user.userId);
+    return this.taskService.createTask(body, req.user.id);
   }
 
   @Get('project/:projectId')
   getTasks(@Param('projectId') projectId: string, @Req() req) {
-    return this.taskService.gettasks(projectId, req.user.userId);
+    return this.taskService.gettasks(projectId, req.user.id);
   }
 
   @Patch(':id')
   updateTask(@Param('id') id: string, @Body() body: updateTaskDto, @Req() req) {
-    return this.taskService.updateTask(id, body, req.user.userId);
+    return this.taskService.updateTask(id, body, req.user.id);
   }
 
   @Delete(':id')
   deleteTask(@Param('id') id: string, @Req() req) {
-    return this.taskService.deleteTask(id, req.user.userId);
+    return this.taskService.deleteTask(id, req.user.id);
   }
 }

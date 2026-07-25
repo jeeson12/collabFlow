@@ -20,6 +20,6 @@ export class AttachmentController {
     @Body() body: UploadAttachmentDto,
     @Req() req,
   ) {
-    return this.attachmentService.upload(file, body, req.user.userId);
+    return this.attachmentService.upload(file, body, req.user.id);
   }
 }

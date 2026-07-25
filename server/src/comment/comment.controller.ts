@@ -21,12 +21,12 @@ export class CommentController {
 
   @Post()
   createComment(@Req() req, @Body() body: createCommentDto) {
-    return this.commentService.createComment(body, req.user.userId);
+    return this.commentService.createComment(body, req.user.id);
   }
 
   @Get('task/:taskId')
   getComment(@Param('taskId') taskId: string, @Req() req) {
-    return this.commentService.getComment(taskId, req.user.userId);
+    return this.commentService.getComment(taskId, req.user.id);
   }
 
   @Patch(':commentId')
@@ -35,11 +35,11 @@ export class CommentController {
     @Req() req,
     @Param('commentId') commentId: string,
   ) {
-    return this.commentService.updateComment(body, req.user.userId, commentId);
+    return this.commentService.updateComment(body, req.user.id, commentId);
   }
 
   @Delete(':commentId')
   deleteComment(@Param('commentId') commentId: string, @Req() req) {
-    return this.commentService.deleteComment(commentId, req.user.userId);
+    return this.commentService.deleteComment(commentId, req.user.id);
   }
 }

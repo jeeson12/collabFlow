@@ -22,17 +22,17 @@ export class WorkspaceController {
 
   @Post()
   createWorkspace(@Body() body: CreateWorkspaceDto, @Req() req) {
-    return this.workspaceService.createWorkspace(body, req.user.userId);
+    return this.workspaceService.createWorkspace(body, req.user.id);
   }
 
   @Get()
   getUserWorkspaces(@Req() req) {
-    return this.workspaceService.getUserWorkspaces(req.user.userId);
+    return this.workspaceService.getUserWorkspaces(req.user.id);
   }
 
   @Get(':workspaceId')
   getWorkspace(@Param('workspaceId') workspaceId: string, @Req() req) {
-    return this.workspaceService.getWorkspace(workspaceId, req.user.userId);
+    return this.workspaceService.getWorkspace(workspaceId, req.user.id);
   }
 
   @Patch(':workspaceId')
@@ -43,14 +43,14 @@ export class WorkspaceController {
   ) {
     return this.workspaceService.updateWorkspace(
       workspaceId,
-      req.user.userId,
+      req.user.id,
       body,
     );
   }
 
   @Delete(':workspaceId')
   deleteWorkspace(@Param('workspaceId') workspaceId: string, @Req() req) {
-    return this.workspaceService.deleteWorkspace(workspaceId, req.user.userId);
+    return this.workspaceService.deleteWorkspace(workspaceId, req.user.id);
   }
 
   @Post(':workspaceId/members')
@@ -59,12 +59,12 @@ export class WorkspaceController {
     @Req() req,
     @Body() body: AddWorkspaceMemberDto,
   ) {
-    return this.workspaceService.addMember(workspaceId, req.user.userId, body);
+    return this.workspaceService.addMember(workspaceId, req.user.id, body);
   }
 
   @Get(':workspaceId/members')
   getMember(@Param('workspaceId') workspaceId: string, @Req() req) {
-    return this.workspaceService.getMember(workspaceId, req.user.userId);
+    return this.workspaceService.getMember(workspaceId, req.user.id);
   }
 
   @Delete(':workspaceId/members/:targetUserId')
@@ -75,7 +75,7 @@ export class WorkspaceController {
   ) {
     return this.workspaceService.deleteMember(
       workspaceId,
-      req.user.userId,
+      req.user.id,
       targetUserId,
     );
   }

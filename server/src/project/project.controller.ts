@@ -22,25 +22,22 @@ export class ProjectController {
 
   @Post()
   createProject(@Body() body: createProjectDto, @Req() req) {
-    return this.projectService.createProject(body, req.user.userId);
+    return this.projectService.createProject(body, req.user.id);
   }
 
   @Get()
   getProject(@Req() req) {
-    return this.projectService.getProject(req.user.userId);
+    return this.projectService.getProject(req.user.id);
   }
 
   @Get('workspace/:workspaceId')
   getWorkspaceProject(@Param('workspaceId') workspaceId: string, @Req() req) {
-    return this.projectService.getWorkspaceProjects(
-      workspaceId,
-      req.user.userId,
-    );
+    return this.projectService.getWorkspaceProjects(workspaceId, req.user.id);
   }
 
   @Get(':projectId')
   getProjectbyId(@Param('projectId') projectId: string, @Req() req) {
-    return this.projectService.getProjectbyId(projectId, req.user.userId);
+    return this.projectService.getProjectbyId(projectId, req.user.id);
   }
 
   @Patch(':projectId')
@@ -49,12 +46,12 @@ export class ProjectController {
     @Req() req,
     @Body() body: updateProjectDto,
   ) {
-    return this.projectService.updateProject(projectId, body, req.user.userId);
+    return this.projectService.updateProject(projectId, body, req.user.id);
   }
 
   @Delete(':projectId')
   deleteProject(@Param('projectId') projectId: string, @Req() req) {
-    return this.projectService.deleteProject(projectId, req.user.userId);
+    return this.projectService.deleteProject(projectId, req.user.id);
   }
 
   @Post('/:projectId/member')
@@ -63,12 +60,12 @@ export class ProjectController {
     @Req() req,
     @Body() body: AddProjectMemberDto,
   ) {
-    return this.projectService.addMember(projectId, req.user.userId, body);
+    return this.projectService.addMember(projectId, req.user.id, body);
   }
 
   @Get(':projectId/member')
   getMember(@Param('projectId') projectId: string, @Req() req) {
-    return this.projectService.getMember(projectId, req.user.userId);
+    return this.projectService.getMember(projectId, req.user.id);
   }
 
   @Delete(':projectId/member/:targetId')
@@ -79,10 +76,6 @@ export class ProjectController {
   ) {
     console.log('DELETE HIT');
 
-    return this.projectService.deleteMember(
-      projectid,
-      req.user.userId,
-      targetId,
-    );
+    return this.projectService.deleteMember(projectid, req.user.id, targetId);
   }
 }
