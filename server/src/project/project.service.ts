@@ -9,8 +9,9 @@ import { createProjectDto } from './dto/create-project.dto';
 import { error, time } from 'console';
 import { updateProjectDto } from './dto/update-project.dto';
 import { MembershipRole } from '@prisma/client';
-import { AddProjectMemberDto } from './add-project-member.dto';
+import { AddProjectMemberDto } from './dto/add-project-member.dto';
 import { ActivityService } from 'src/activity/activity.service';
+import { UpdateProjectMemberDto } from './dto/update-project-member.dto';
 
 @Injectable()
 export class ProjectService {
@@ -127,6 +128,14 @@ export class ProjectService {
     const project = await this.prisma.project.findUnique({
       where: {
         id: projectId,
+      },
+      include: {
+        _count: {
+          select: {
+            memberships: true,
+            tasks: true,
+          },
+        },
       },
     });
 
@@ -434,5 +443,80 @@ export class ProjectService {
     return {
       message: 'Member deleted successfully',
     };
+  }
+
+  async updateMember(
+    projectId: string,
+    targetId: string,
+    requesterId: string,
+    body: UpdateProjectMemberDto,
+  ) {
+    // Check requester membership
+    const requester = await this.prisma.projectMembership.findUnique({
+      where: {
+        userId_projectId: {
+          userId: requesterId,
+          projectId,
+        },
+      },
+    });
+
+    if (!requester) {
+      throw new ForbiddenException('You are not a member of this project');
+    }
+
+    // Only admins can change roles
+    if (requester.role !== 'ADMIN') {
+      throw new ForbiddenException('Only admins can change member roles');
+    }
+
+    // Prevent changing your own role
+    if (requesterId === targetId) {
+      throw new ForbiddenException('You cannot change your own role');
+    }
+
+    // Check target member
+    const targetMember = await this.prisma.projectMembership.findUnique({
+      where: {
+        userId_projectId: {
+          userId: targetId,
+          projectId,
+        },
+      },
+    });
+
+    if (!targetMember) {
+      throw new NotFoundException('Member not found');
+    }
+
+    // Update role
+    const updatedMember = await this.prisma.projectMembership.update({
+      where: {
+        userId_projectId: {
+          userId: targetId,
+          projectId,
+        },
+      },
+      data: {
+        role: body.role,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    await this.activity.createActivity({
+      userId: requesterId,
+      projectId,
+      message: `changed ${updatedMember.user.name}'s role to ${body.role}`,
+    });
+
+    return updatedMember;
   }
 }

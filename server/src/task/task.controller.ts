@@ -14,6 +14,7 @@ import { JwtAuthGuard } from 'src/auth/strategies/auth-guards/jwt-auth.guard';
 import { createTaskDto } from './dto/create-task.dto';
 import { get } from 'http';
 import { updateTaskDto } from './dto/upate-task.dto';
+import { UpdateProjectMemberDto } from 'src/project/dto/update-project-member.dto';
 @UseGuards(JwtAuthGuard)
 @Controller('task')
 export class TaskController {
@@ -37,5 +38,14 @@ export class TaskController {
   @Delete(':id')
   deleteTask(@Param('id') id: string, @Req() req) {
     return this.taskService.deleteTask(id, req.user.id);
+  }
+
+  @Get('project/:projectId/stats')
+  getTaskStats(
+    @Param('projectId') projectId: string,
+    @Req() req,
+    @Body() body: UpdateProjectMemberDto,
+  ) {
+    return this.taskService.getTaskStats(projectId, req.user.id);
   }
 }

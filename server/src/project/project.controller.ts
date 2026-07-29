@@ -13,7 +13,8 @@ import { ProjectService } from './project.service';
 import { JwtAuthGuard } from 'src/auth/strategies/auth-guards/jwt-auth.guard';
 import { createProjectDto } from './dto/create-project.dto';
 import { updateProjectDto } from './dto/update-project.dto';
-import { AddProjectMemberDto } from './add-project-member.dto';
+import { AddProjectMemberDto } from './dto/add-project-member.dto';
+import { UpdateProjectMemberDto } from './dto/update-project-member.dto';
 
 @Controller('project')
 @UseGuards(JwtAuthGuard)
@@ -77,5 +78,20 @@ export class ProjectController {
     console.log('DELETE HIT');
 
     return this.projectService.deleteMember(projectid, req.user.id, targetId);
+  }
+
+  @Patch(':projectId/member/:targetId')
+  updateMemberRole(
+    @Param('projectId') projectId: string,
+    @Param('targetId') targetId: string,
+    @Req() req,
+    @Body() body: UpdateProjectMemberDto,
+  ) {
+    return this.projectService.updateMember(
+      projectId,
+      targetId,
+      req.user.id,
+      body,
+    );
   }
 }

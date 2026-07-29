@@ -201,4 +201,79 @@ export class TaskService {
     });
     return deletedTask;
   }
+
+  async getTaskStats(projectId: string, userId: string) {
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+    if (!project) throw new NotFoundException('project not found');
+    const membership = await this.prisma.projectMembership.findUnique({
+      where: {
+        userId_projectId: {
+          userId,
+          projectId,
+        },
+      },
+    });
+
+    if (!membership) {
+      throw new ForbiddenException('you are not a member of this project');
+    }
+
+    const statusCounts = await this.prisma.task.groupBy({
+      by: ['status'],
+      where: {
+        projectId,
+      },
+      _count: {
+        status: true,
+      },
+    });
+
+    const stats = {
+      todo: 0,
+      inprogress: 0,
+      completed: 0,
+    };
+
+    for (const item of statusCounts) {
+      switch (item.status) {
+        case 'TODO':
+          stats.todo = item._count.status;
+          break;
+        case 'IN_PROGRESS':
+          stats.inprogress = item._count.status;
+          break;
+        case 'DONE':
+          stats.completed = item._count.status;
+          break;
+      }
+    }
+    const total = await this.prisma.task.count({
+      where: {
+        projectId,
+      },
+    });
+
+    const overdue = await this.prisma.task.count({
+      where: {
+        projectId,
+        dueDate: {
+          lt: new Date(),
+        },
+        status: {
+          not: 'DONE',
+        },
+      },
+    });
+    return {
+      total: total,
+      overdue: overdue,
+      todo: stats.todo,
+      inprogress: stats.inprogress,
+      completed: stats.completed,
+    };
+  }
 }
