@@ -1,18 +1,49 @@
 "use client";
 
-import { ProjectHeader } from "@/features/dashboard/components/projectHeader";
-import { TaskOverview } from "@/features/dashboard/components/task-card";
-import { MembersCard } from "@/features/dashboard/components/members-card";
-import { RecentActivity } from "@/features/dashboard/components/activity-card";
-import { AnalyticsCard } from "@/features/dashboard/components/analytics";
-import { FilesCard } from "@/features/dashboard/components/files-card";
+import { ProjectHeader } from "@/features/project/dashboard/components/projectHeader";
+import { TaskOverview } from "@/features/project/dashboard/components/task-card";
+import { MembersCard } from "@/features/project/dashboard/components/members-card";
+import { RecentActivity } from "@/features/project/dashboard/components/activity-card";
+import { AnalyticsCard } from "@/features/project/dashboard/components/analytics";
+import { FilesCard } from "@/features/project/dashboard/components/files-card";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import {
+  getMembers,
+  getProject,
+  getTaskStats,
+} from "@/features/project/dashboard/api";
 
 export default function DashboardPage() {
+  const { projectId } = useParams<{ projectId: string }>();
+
+  const { data: project, isLoading } = useQuery({
+    queryKey: ["project", projectId],
+    queryFn: () => getProject(projectId),
+  });
+
+  const { data: membersData } = useQuery({
+    queryKey: ["project-members", projectId],
+    queryFn: () => getMembers(projectId),
+  });
+
+  const { data: taskData } = useQuery({
+    queryKey: ["task-details", projectId],
+    queryFn: () => getTaskStats(projectId),
+  });
+
+  if (isLoading || !project) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-6 pt-6 pb-4">
       {/* Project Header */}
-      <ProjectHeader />
 
+      <ProjectHeader
+        project={project}
+        members={membersData?.members ?? []}
+        memberCount={membersData?.count ?? 0}
+      />
       {/* ========================= */}
       {/* Main Content */}
       {/* ========================= */}
@@ -21,38 +52,15 @@ export default function DashboardPage() {
         <section className="grid gap-6 lg:grid-cols-3 items-start">
           {/* Task Overview Widget */}
           <TaskOverview
-            totalTasks={42}
-            completedTasks={10}
-            todoTasks={12}
-            inProgressTasks={18}
-            overdueTasks={2}
+            totalTasks={taskData?.total ?? 0}
+            completedTasks={taskData?.completed ?? 0}
+            todoTasks={taskData?.todo ?? 0}
+            inProgressTasks={taskData?.inprogress ?? 0}
+            overdueTasks={taskData?.overdue ?? 0}
           />
 
           {/* Project Members */}
-          <MembersCard
-            members={[
-              {
-                id: "1",
-                name: "Jeeson Jacob",
-                role: "Owner",
-              },
-              {
-                id: "2",
-                name: "Alice Rose",
-                role: "Developer",
-              },
-              {
-                id: "3",
-                name: "Mike Kent",
-                role: "Designer",
-              },
-              {
-                id: "4",
-                name: "Dave Brown",
-                role: "Developer",
-              },
-            ]}
-          />
+          <MembersCard members={membersData?.members ?? []} />
 
           {/* Recent Activity */}
           <RecentActivity
