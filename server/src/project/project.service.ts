@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { createProjectDto } from './dto/create-project.dto';
-import { error, time } from 'console';
 import { updateProjectDto } from './dto/update-project.dto';
 import { MembershipRole } from '@prisma/client';
 import { AddProjectMemberDto } from './dto/add-project-member.dto';
@@ -451,24 +450,41 @@ export class ProjectService {
     requesterId: string,
     body: UpdateProjectMemberDto,
   ) {
-    // Check requester membership
-    const requester = await this.prisma.projectMembership.findUnique({
+    const project = await this.prisma.project.findUnique({
       where: {
-        userId_projectId: {
-          userId: requesterId,
-          projectId,
-        },
+        id: projectId,
       },
     });
 
-    if (!requester) {
-      throw new ForbiddenException('You are not a member of this project');
+    if (!project) {
+      throw new NotFoundException('Project not found');
     }
 
-    // Only admins can change roles
-    if (requester.role !== 'ADMIN') {
+    const permission =
+      (await this.prisma.projectMembership.findFirst({
+        where: {
+          userId: requesterId,
+          projectId,
+          role: MembershipRole.ADMIN,
+        },
+      })) ||
+      (await this.prisma.workspaceMembership.findFirst({
+        where: {
+          userId: requesterId,
+          workspaceId: project.workspaceId,
+          role: MembershipRole.ADMIN,
+        },
+      }));
+
+    if (!permission) {
       throw new ForbiddenException('Only admins can change member roles');
     }
+    if (requesterId === targetId) {
+      throw new ForbiddenException(
+        'You cannot remove yourself from the project',
+      );
+    }
+    // Check requester membership
 
     // Prevent changing your own role
     if (requesterId === targetId) {
@@ -487,6 +503,26 @@ export class ProjectService {
 
     if (!targetMember) {
       throw new NotFoundException('Member not found');
+    }
+
+    if (targetMember.role === body.role) {
+      throw new ConflictException('User already has this role');
+    }
+
+    if (
+      targetMember.role === MembershipRole.ADMIN &&
+      body.role === MembershipRole.MEMBER
+    ) {
+      const adminCount = await this.prisma.projectMembership.count({
+        where: {
+          projectId,
+          role: MembershipRole.ADMIN,
+        },
+      });
+
+      if (adminCount === 1) {
+        throw new ForbiddenException('Cannot demote the last admin');
+      }
     }
 
     // Update role
@@ -513,8 +549,10 @@ export class ProjectService {
 
     await this.activity.createActivity({
       userId: requesterId,
+      workspaceId: project.workspaceId,
+
       projectId,
-      message: `changed ${updatedMember.user.name}'s role to ${body.role}`,
+      message: `changed ${updatedMember.user.name}'s role from ${targetMember.role} to ${body.role}`,
     });
 
     return updatedMember;

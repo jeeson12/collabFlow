@@ -64,7 +64,7 @@ export class ProjectController {
     return this.projectService.addMember(projectId, req.user.id, body);
   }
 
-  @Get(':projectId/member')
+  @Get(':projectId/members')
   getMember(@Param('projectId') projectId: string, @Req() req) {
     return this.projectService.getMember(projectId, req.user.id);
   }
