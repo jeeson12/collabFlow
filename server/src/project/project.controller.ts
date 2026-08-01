@@ -94,4 +94,9 @@ export class ProjectController {
       body,
     );
   }
+
+  @Get(':projectId/members/available')
+  getAvailableMembers(@Param('projectId') projectId: string, @Req() req) {
+    return this.projectService.availableMembers(projectId, req.user.id);
+  }
 }

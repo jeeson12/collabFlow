@@ -519,4 +519,66 @@ export class ProjectService {
 
     return updatedMember;
   }
+
+  async availableMembers(projectId: string, userId: string) {
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException('project not found');
+    }
+
+    const membership = await this.prisma.projectMembership.findUnique({
+      where: {
+        userId_projectId: {
+          userId,
+          projectId,
+        },
+      },
+    });
+
+    if (!membership) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+    const workspaceMembers = await this.prisma.workspaceMembership.findMany({
+      where: {
+        workspaceId: project.workspaceId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    const projectMembers = await this.prisma.projectMembership.findMany({
+      where: {
+        projectId: projectId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    const projectmembersIds = new Set(
+      projectMembers.map((member) => member.user.id),
+    );
+
+    const availableMembers = workspaceMembers
+      .filter((member) => !projectmembersIds.has(member.user.id))
+      .map((member) => member.user);
+    return availableMembers;
+  }
 }
