@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { handleApiError } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { login } from "../api";
 import { useRouter } from "next/navigation";
@@ -30,7 +31,7 @@ export function LoginForm() {
       router.push("/workspace");
     },
     onError: (error) => {
-      console.log("login error", error);
+      handleApiError(error);
     },
   });
 

@@ -51,7 +51,7 @@ export async function updatedMember(
 export async function getAvailableMembers(
   projectId: string,
 ): Promise<AvailableMember[]> {
-  const response = await api.get(`/project/${projectId}/available-members`);
+  const response = await api.get(`/project/${projectId}/members/available`);
 
   return response.data;
 }

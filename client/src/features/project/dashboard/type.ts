@@ -2,7 +2,7 @@ export interface ProjectMember {
   userId: string;
   projectId: string;
   role: "ADMIN" | "MEMBER";
-  user: { id: string; name: string };
+  user: { id: string; name: string; email: string };
 }
 
 export interface TaskStats {

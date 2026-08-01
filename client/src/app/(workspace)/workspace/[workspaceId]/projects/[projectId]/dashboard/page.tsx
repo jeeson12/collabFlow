@@ -14,7 +14,7 @@ import {
   getTaskStats,
 } from "@/features/project/dashboard/api";
 import { useState } from "react";
-import { ProjectMembersDrawer } from "@/features/project/dashboard/components/member-dialog";
+import { ProjectMembersDialog } from "@/features/project/dashboard/components/member-dialog";
 import { AddMemberDialog } from "@/features/project/dashboard/components/addMember-dialog";
 
 export default function DashboardPage() {
@@ -136,10 +136,11 @@ export default function DashboardPage() {
           />
         </section>
       </div>
-      <ProjectMembersDrawer
+      <ProjectMembersDialog
         open={membersDialogOpen}
         onOpenChange={setMembersDialogOpen}
         members={membersData?.members ?? []}
+        projectId={projectId}
       />
       <AddMemberDialog
         open={addMembersDialogOpen}

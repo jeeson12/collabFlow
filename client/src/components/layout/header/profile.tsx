@@ -14,6 +14,7 @@ import { useAuth } from "@/features/auth/authProvider";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logout } from "@/features/auth/api";
+import { getInitials, handleApiError } from "@/lib/utils";
 
 export function ProfileDropdown() {
   const { user } = useAuth();
@@ -27,6 +28,9 @@ export function ProfileDropdown() {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       router.push("/");
     },
+    onError: (error) => {
+      handleApiError(error);
+    },
   });
 
   return (
@@ -36,7 +40,7 @@ export function ProfileDropdown() {
           <Avatar className="size-9 cursor-pointer">
             <AvatarImage src="" />
             <AvatarFallback>
-              {user?.name?.charAt(0).toUpperCase()}
+              {user?.name ? getInitials(user.name) : "?"}
             </AvatarFallback>
           </Avatar>
         </button>

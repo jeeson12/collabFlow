@@ -16,6 +16,7 @@ import { toast } from "sonner";
 
 import { deleteWorkspace } from "../api";
 import { Workspace } from "../type";
+import { handleApiError } from "@/lib/utils";
 
 type DeleteWorkspaceDialogProps = {
   open: boolean;
@@ -43,8 +44,8 @@ export function DeleteWorkspaceDialog({
       onOpenChange(false);
     },
 
-    onError: () => {
-      toast.error("Failed to delete workspace");
+    onError: (error) => {
+      handleApiError(error);
     },
   });
 

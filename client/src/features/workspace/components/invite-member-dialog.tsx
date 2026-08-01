@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { AppDialog } from "@/components/common/dialogBox";
 import { addWorkspaceMember } from "../api";
+import { handleApiError } from "@/lib/utils";
 
 type InviteWorkspaceMemberDialogProps = {
   open: boolean;
@@ -44,6 +45,9 @@ export function InviteWorkspaceMemberDialog({
       setRole("MEMBER");
 
       onOpenChange(false);
+    },
+    onError: (error) => {
+      handleApiError(error);
     },
   });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { getInitials } from "@/lib/utils";
 import { useAuth } from "../auth/authProvider";
 
 export function Profile() {
@@ -21,11 +22,7 @@ export function Profile() {
       <div className="flex items-center gap-3 rounded-lg border p-3">
         <Avatar>
           <AvatarFallback>
-            {user?.name
-              ?.split(" ")
-              .map((word) => word[0])
-              .join("")
-              .toUpperCase() ?? "?"}
+            {user?.name ? getInitials(user.name) : "?"}
           </AvatarFallback>
         </Avatar>
 

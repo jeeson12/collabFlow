@@ -13,6 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { handleApiError } from "@/lib/utils";
 
 import { deleteProject } from "../api";
 import { Project } from "../type";
@@ -42,8 +43,8 @@ export function DeleteProject({
       onOpenChange(false);
     },
 
-    onError: () => {
-      toast.error("Failed to delete project");
+    onError: (error) => {
+      handleApiError(error);
     },
   });
 

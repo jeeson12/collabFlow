@@ -9,6 +9,7 @@ import z from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { handleApiError } from "@/lib/utils";
 
 import { createWorkspace, updateWorkspace } from "../api";
 import { Workspace } from "../type";
@@ -79,12 +80,8 @@ export function WorkspaceForm({
       onSuccess();
     },
 
-    onError: () => {
-      toast.error(
-        mode === "create"
-          ? "Failed to create workspace"
-          : "Failed to update workspace",
-      );
+    onError: (error) => {
+      handleApiError(error);
     },
   });
 

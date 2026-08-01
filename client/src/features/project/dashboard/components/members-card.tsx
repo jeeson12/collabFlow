@@ -1,10 +1,11 @@
 "use client";
 
-import { UserPlus } from "lucide-react";
+import { ShieldCheck, Star, UserPlus } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getInitials } from "@/lib/utils";
 
 import { ProjectMember } from "../type";
 
@@ -27,8 +28,7 @@ export function MembersCard({
         <Button
           variant="outline"
           size="icon"
-          className="h-8 w-8 
-"
+          className="h-8 w-8"
           onClick={onOpenAddMembers}
         >
           <UserPlus className="h-4 w-4" />
@@ -46,25 +46,29 @@ export function MembersCard({
           </div>
         ) : (
           <>
-            <div className="space-y-4">
+            <div className="divide-y">
               {members.slice(0, 5).map((member) => (
                 <div
                   key={member.user.id}
-                  className="flex items-center justify-between rounded-lg border p-3 transition hover:bg-muted/50"
+                  className="flex items-center justify-between py-3"
                 >
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">
                       <AvatarFallback>
-                        {member.user.name
-                          ?.split(" ")
-                          .map((word) => word[0])
-                          .join("")
-                          .toUpperCase()}
+                        {getInitials(member.user.name ?? "")}
                       </AvatarFallback>
                     </Avatar>
 
                     <div>
-                      <p className="text-sm font-medium">{member.user.name}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium">
+                          {member.user.name}
+                        </p>
+
+                        {member.role === "ADMIN" && (
+                          <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                        )}
+                      </div>
 
                       <p className="text-xs text-muted-foreground">
                         {member.role === "ADMIN" ? "Admin" : "Member"}
@@ -75,7 +79,7 @@ export function MembersCard({
               ))}
             </div>
 
-            <div className="mt-4 pt-4">
+            <div className="mt-4">
               <Button
                 variant="outline"
                 className="w-full"

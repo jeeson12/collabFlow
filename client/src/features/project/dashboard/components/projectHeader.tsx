@@ -5,7 +5,9 @@ import { Plus, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Project, ProjectMember } from "@/features/project-selection/type";
+import { Project } from "@/features/project-selection/type";
+import { getInitials } from "@/lib/utils";
+import { ProjectMember } from "../type";
 
 type projectHeaderProp = {
   project: Project;
@@ -34,13 +36,7 @@ export function ProjectHeader({
         <div className="flex items-center gap-2">
           {members.slice(0, 4).map((member) => (
             <Avatar key={member.user.id}>
-              <AvatarFallback>
-                {member.user.name
-                  .split(" ")
-                  .map((word) => word[0])
-                  .join("")
-                  .toUpperCase()}
-              </AvatarFallback>
+              <AvatarFallback>{getInitials(member.user.name)}</AvatarFallback>
             </Avatar>
           ))}
 

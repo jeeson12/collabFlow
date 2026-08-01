@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { RegisterFormData, registerSchema } from "../schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
+import { handleApiError } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { register } from "../api";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ export function RegisterForm() {
       router.push("/login");
     },
     onError: (error) => {
-      console.log("register error", error);
+      handleApiError(error);
     },
   });
 

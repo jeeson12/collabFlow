@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { handleApiError } from "@/lib/utils";
 import { Project } from "../type";
 import { useEffect } from "react";
 
@@ -69,8 +70,8 @@ export function ProjectForm({
       form.reset();
       onSuccess();
     },
-    onError: () => {
-      toast.error("Failed to create project");
+    onError: (error) => {
+      handleApiError(error);
     },
   });
 

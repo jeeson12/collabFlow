@@ -6,6 +6,7 @@ import { Search, UserPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { getInitials, handleApiError } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 type AddMemberDialogProps = {
@@ -38,6 +39,9 @@ export function AddMemberDialog({
       queryClient.invalidateQueries({
         queryKey: ["available-members", projectId],
       });
+    },
+    onError: (error) => {
+      handleApiError(error);
     },
   });
 
@@ -84,11 +88,7 @@ export function AddMemberDialog({
                   <div className="flex items-center gap-3">
                     <Avatar>
                       <AvatarFallback>
-                        {member.name
-                          ?.split(" ")
-                          .map((word) => word[0])
-                          .join("")
-                          .toUpperCase()}
+                        {getInitials(member.name ?? "")}
                       </AvatarFallback>
                     </Avatar>
 
