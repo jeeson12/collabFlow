@@ -25,7 +25,7 @@ export function ProfileDropdown() {
     mutationFn: logout,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      router.push("/login");
+      router.push("/");
     },
   });
 

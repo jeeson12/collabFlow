@@ -13,9 +13,15 @@ import {
   getProject,
   getTaskStats,
 } from "@/features/project/dashboard/api";
+import { useState } from "react";
+import { ProjectMembersDrawer } from "@/features/project/dashboard/components/member-dialog";
+import { AddMemberDialog } from "@/features/project/dashboard/components/addMember-dialog";
 
 export default function DashboardPage() {
   const { projectId } = useParams<{ projectId: string }>();
+
+  const [membersDialogOpen, setMembersDialogOpen] = useState(false);
+  const [addMembersDialogOpen, setAddMembersDialogOpen] = useState(false);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ["project", projectId],
@@ -60,7 +66,11 @@ export default function DashboardPage() {
           />
 
           {/* Project Members */}
-          <MembersCard members={membersData?.members ?? []} />
+          <MembersCard
+            members={membersData?.members ?? []}
+            onOpenMembers={() => setMembersDialogOpen(true)}
+            onOpenAddMembers={() => setAddMembersDialogOpen(true)}
+          />
 
           {/* Recent Activity */}
           <RecentActivity
@@ -126,6 +136,16 @@ export default function DashboardPage() {
           />
         </section>
       </div>
+      <ProjectMembersDrawer
+        open={membersDialogOpen}
+        onOpenChange={setMembersDialogOpen}
+        members={membersData?.members ?? []}
+      />
+      <AddMemberDialog
+        open={addMembersDialogOpen}
+        onOpenChange={setAddMembersDialogOpen}
+        projectId={projectId}
+      />
     </div>
   );
 }

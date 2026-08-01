@@ -44,3 +44,15 @@ export async function getWorkspaceMembers(
   );
   return response.data;
 }
+
+export async function addWorkspaceMember(
+  workspaceId: string,
+  email: string,
+  role: "ADMIN" | "MEMBER",
+): Promise<{ message: string }> {
+  const response = await api.post(`/workspace/${workspaceId}/members`, {
+    email,
+    role,
+  });
+  return response.data;
+}

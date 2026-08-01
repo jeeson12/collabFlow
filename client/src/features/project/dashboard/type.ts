@@ -12,3 +12,9 @@ export interface TaskStats {
   inprogress: number;
   completed: number;
 }
+
+export interface AvailableMember {
+  id: string;
+  name: string;
+  email: string;
+}

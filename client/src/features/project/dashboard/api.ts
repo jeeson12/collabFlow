@@ -1,6 +1,6 @@
 import { Project } from "@/features/project-selection/type";
 import { api } from "@/lib/api/axios";
-import { ProjectMember, TaskStats } from "./type";
+import { AvailableMember, ProjectMember, TaskStats } from "./type";
 
 export async function getProject(projectId: string): Promise<Project> {
   const response = await api.get(`/project/${projectId}`);
@@ -21,11 +21,11 @@ export async function getMembers(
 
 export async function addMember(
   projectId: string,
-  emailId: string,
+  userId: string,
   role: "ADMIN" | "MEMBER",
 ): Promise<ProjectMember> {
   return api.post(`/project/${projectId}/member`, {
-    emailId,
+    userId,
     role,
   });
 }
@@ -46,5 +46,12 @@ export async function updatedMember(
   const response = await api.patch(`/project/${projectId}/member/${memberId}`, {
     role,
   });
+  return response.data;
+}
+export async function getAvailableMembers(
+  projectId: string,
+): Promise<AvailableMember[]> {
+  const response = await api.get(`/project/${projectId}/available-members`);
+
   return response.data;
 }

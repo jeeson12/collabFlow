@@ -10,15 +10,27 @@ import { ProjectMember } from "../type";
 
 type MembersCardProps = {
   members: ProjectMember[];
+  onOpenMembers: () => void;
+  onOpenAddMembers: () => void;
 };
 
-export function MembersCard({ members }: MembersCardProps) {
+export function MembersCard({
+  members,
+  onOpenMembers,
+  onOpenAddMembers,
+}: MembersCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-3">
         <CardTitle>Members</CardTitle>
 
-        <Button variant="outline" size="icon" className="h-8 w-8">
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 
+"
+          onClick={onOpenAddMembers}
+        >
           <UserPlus className="h-4 w-4" />
         </Button>
       </CardHeader>
@@ -64,7 +76,11 @@ export function MembersCard({ members }: MembersCardProps) {
             </div>
 
             <div className="mt-4 pt-4">
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={onOpenMembers}
+              >
                 View All Members
               </Button>
             </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { getWorkspaceProject } from "@/features/project-selection/api";
+import { getWorkspaceMembers } from "@/features/workspace/api";
 
 import { ProjectHero } from "@/features/project-selection/components/hero";
 import { ProjectCard } from "@/features/project-selection/components/project-card";
@@ -12,7 +13,10 @@ import { EmptyProjectState } from "@/features/project-selection/components/empty
 import { ActiveMembersCard } from "@/features/project-selection/components/members";
 import { ProjectDialog } from "@/features/project-selection/components/project-dialog";
 
+import { WorkspaceMembersDialog } from "@/features/workspace/components/member-dialog";
+
 import { Project } from "./type";
+import { InviteWorkspaceMemberDialog } from "../workspace/components/invite-member-dialog";
 
 type ProjectSelectionPageProps = {
   workspaceId: string;
@@ -25,6 +29,9 @@ export default function ProjectSelectionPage({
   const [mode, setMode] = useState<"create" | "edit">("create");
   const [selectedProject, setSelectedProject] = useState<Project>();
 
+  const [membersDialogOpen, setMembersDialogOpen] = useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+
   const {
     data: projects = [],
     isLoading,
@@ -32,6 +39,11 @@ export default function ProjectSelectionPage({
   } = useQuery({
     queryKey: ["projects", workspaceId],
     queryFn: () => getWorkspaceProject(workspaceId),
+  });
+
+  const { data: members = [] } = useQuery({
+    queryKey: ["workspace-members", workspaceId],
+    queryFn: () => getWorkspaceMembers(workspaceId),
   });
 
   if (isLoading) {
@@ -97,7 +109,11 @@ export default function ProjectSelectionPage({
               </div>
 
               <aside className="sticky top-8 h-fit">
-                <ActiveMembersCard workspaceId={workspaceId} />
+                <ActiveMembersCard
+                  members={members}
+                  onOpenMembers={() => setMembersDialogOpen(true)}
+                  onOpenInvite={() => setInviteDialogOpen(true)}
+                />
               </aside>
             </div>
           </div>
@@ -108,6 +124,19 @@ export default function ProjectSelectionPage({
             onOpenChange={setOpen}
             mode={mode}
             project={selectedProject}
+          />
+
+          <WorkspaceMembersDialog
+            open={membersDialogOpen}
+            onOpenChange={setMembersDialogOpen}
+            members={members}
+            onOpenInvite={() => setInviteDialogOpen(true)}
+          />
+
+          <InviteWorkspaceMemberDialog
+            open={inviteDialogOpen}
+            onOpenChange={setInviteDialogOpen}
+            workspaceId={workspaceId}
           />
         </>
       )}
