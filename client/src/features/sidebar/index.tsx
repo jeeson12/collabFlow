@@ -15,7 +15,7 @@ export function Sidebar() {
   }>();
 
   const { data: projects = [] } = useQuery({
-    queryKey: ["project", workspaceId],
+    queryKey: ["projects", workspaceId],
     queryFn: () => getWorkspaceProject(workspaceId),
   });
 

@@ -41,10 +41,11 @@ export default function ProjectSelectionPage({
     queryFn: () => getWorkspaceProject(workspaceId),
   });
 
-  const { data: members = [] } = useQuery({
+  const { data } = useQuery({
     queryKey: ["workspace-members", workspaceId],
     queryFn: () => getWorkspaceMembers(workspaceId),
   });
+  const members = data?.members ?? [];
 
   if (isLoading) {
     return <div className="mx-auto max-w-7xl px-8 py-8">Loading...</div>;
@@ -127,6 +128,7 @@ export default function ProjectSelectionPage({
           />
 
           <WorkspaceMembersDialog
+            workspaceId={workspaceId}
             open={membersDialogOpen}
             onOpenChange={setMembersDialogOpen}
             members={members}

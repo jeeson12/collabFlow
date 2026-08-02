@@ -38,8 +38,8 @@ export async function deleteWorkspace(workspaceId: string) {
 
 export async function getWorkspaceMembers(
   workspaceId: string,
-): Promise<WorkspaceMember[]> {
-  const response = await api.get<WorkspaceMember[]>(
+): Promise<{ members: WorkspaceMember[]; count: number }> {
+  const response = await api.get<{ members: WorkspaceMember[]; count: number }>(
     `/workspace/${workspaceId}/members`,
   );
   return response.data;
@@ -54,5 +54,29 @@ export async function addWorkspaceMember(
     email,
     role,
   });
+  return response.data;
+}
+
+export async function updateWorkspaceMember(
+  workspaceId: string,
+  userId: string,
+  role: "ADMIN" | "MEMBER",
+): Promise<WorkspaceMember> {
+  const response = await api.patch(
+    `/workspace/${workspaceId}/member/${userId}`,
+    {
+      role,
+    },
+  );
+  return response.data;
+}
+
+export async function deleteWorkspaceMember(
+  workspaceId: string,
+  targetUserId: string,
+): Promise<{ message: string }> {
+  const response = await api.delete(
+    `/workspace/${workspaceId}/members/${targetUserId}`,
+  );
   return response.data;
 }
