@@ -5,22 +5,28 @@ import { CreateActivityDto } from './dto/create-activity.dto';
 @Injectable()
 export class ActivityService {
   constructor(private prisma: PrismaService) {}
+
   async createActivity(data: CreateActivityDto) {
-    return this.prisma.activity.create({ data });
+    return this.prisma.activity.create({
+      data,
+    });
   }
 
-  async getActivity(projectId: string) {
+  async getRecentActivities(projectId: string) {
     return this.prisma.activity.findMany({
-      where: { projectId },
+      where: {
+        projectId,
+      },
+
       include: {
         user: {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
       },
+
       orderBy: {
         createdAt: 'desc',
       },
