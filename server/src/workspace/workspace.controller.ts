@@ -14,6 +14,7 @@ import { JwtAuthGuard } from 'src/auth/strategies/auth-guards/jwt-auth.guard';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { updateWorkspaceDto } from './dto/update-workspace.dto';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
+import { updateWorkspaceMemberDto } from './dto/update-workspace-member.dto';
 
 @Controller('workspace')
 @UseGuards(JwtAuthGuard)
@@ -77,6 +78,22 @@ export class WorkspaceController {
       workspaceId,
       req.user.id,
       targetUserId,
+    );
+  }
+
+  @Patch(':workspaceId/member/:targetUserId')
+  updateMember(
+    @Param('workspaceId')
+    workspaceId: string,
+    @Param('targetUserId') targetUserId: string,
+    @Req() req,
+    @Body() body: updateWorkspaceMemberDto,
+  ) {
+    return this.workspaceService.updateMember(
+      workspaceId,
+      req.user.id,
+      targetUserId,
+      body,
     );
   }
 }

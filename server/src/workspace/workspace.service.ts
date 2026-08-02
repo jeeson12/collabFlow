@@ -10,6 +10,7 @@ import { updateWorkspaceDto } from './dto/update-workspace.dto';
 import { MembershipRole } from '@prisma/client';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 import { ActivityService } from 'src/activity/activity.service';
+import { updateWorkspaceMemberDto } from './dto/update-workspace-member.dto';
 
 @Injectable()
 export class WorkspaceService {
@@ -198,20 +199,25 @@ export class WorkspaceService {
       throw new ForbiddenException('access denied');
     }
 
-    return this.prisma.workspaceMembership.findMany({
+    const members = await this.prisma.workspaceMembership.findMany({
       where: {
         workspaceId,
       },
       include: {
         user: {
           select: {
+            id: true,
             name: true,
             email: true,
-            id: true,
           },
         },
       },
     });
+
+    return {
+      members,
+      count: members.length,
+    };
   }
 
   async deleteMember(
@@ -259,18 +265,114 @@ export class WorkspaceService {
         name: true,
       },
     });
+
+    await this.prisma.projectMembership.deleteMany({
+      where: {
+        userId: targetUserId,
+        project: {
+          workspaceId,
+        },
+      },
+    });
+
+    await this.prisma.workspaceMembership.delete({
+      where: {
+        userId_workspaceId: {
+          userId: targetUserId,
+          workspaceId,
+        },
+      },
+    });
     await this.activity.createActivity({
       userId: requesterId,
       workspaceId,
       message: `removed ${user?.name} from the workspace`,
     });
 
-    await this.prisma.workspaceMembership.delete({
+    return { message: 'user removed' };
+  }
+
+  async updateMember(
+    workspaceId: string,
+    requesterId: string,
+    targetId: string,
+    body: updateWorkspaceMemberDto,
+  ) {
+    const requesterMembership =
+      await this.prisma.workspaceMembership.findUnique({
+        where: {
+          userId_workspaceId: { workspaceId, userId: requesterId },
+        },
+      });
+
+    if (!requesterMembership) {
+      throw new ForbiddenException('access denied');
+    }
+
+    if (requesterMembership.role != MembershipRole.ADMIN) {
+      throw new ForbiddenException('you are not authorized to update members');
+    }
+
+    if (requesterId === targetId) {
+      throw new ForbiddenException('you cannot update your own role');
+    }
+
+    const targetMembership = await this.prisma.workspaceMembership.findUnique({
       where: {
-        userId_workspaceId: { workspaceId, userId: targetUserId },
+        userId_workspaceId: { workspaceId, userId: targetId },
       },
     });
 
-    return { message: 'user removed' };
+    if (!targetMembership) {
+      throw new NotFoundException('user is not a member');
+    }
+
+    if (targetMembership.role === body.role) {
+      throw new ConflictException('User already has this role');
+    }
+
+    if (
+      targetMembership.role === MembershipRole.ADMIN &&
+      body.role === MembershipRole.MEMBER
+    ) {
+      const adminCount = await this.prisma.workspaceMembership.count({
+        where: {
+          workspaceId,
+          role: MembershipRole.ADMIN,
+        },
+      });
+
+      if (adminCount === 1) {
+        throw new ForbiddenException('Cannot demote the last workspace admin');
+      }
+    }
+
+    const updatedMember = await this.prisma.workspaceMembership.update({
+      where: {
+        userId_workspaceId: {
+          workspaceId,
+          userId: targetId,
+        },
+      },
+      data: {
+        role: body.role,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+    await this.activity.createActivity({
+      userId: requesterId,
+      workspaceId,
+      message: `changed ${updatedMember.user.name}'s role from ${targetMembership.role} to ${body.role}`,
+    });
+
+    return updatedMember;
   }
 }
