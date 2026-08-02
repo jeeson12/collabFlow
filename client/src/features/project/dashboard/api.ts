@@ -1,6 +1,6 @@
 import { Project } from "@/features/project-selection/type";
 import { api } from "@/lib/api/axios";
-import { AvailableMember, ProjectMember, TaskStats } from "./type";
+import { Activity, AvailableMember, ProjectMember, TaskStats } from "./type";
 
 export async function getProject(projectId: string): Promise<Project> {
   const response = await api.get(`/project/${projectId}`);
@@ -52,6 +52,12 @@ export async function getAvailableMembers(
   projectId: string,
 ): Promise<AvailableMember[]> {
   const response = await api.get(`/project/${projectId}/members/available`);
+
+  return response.data;
+}
+
+export async function getActivity(projectId: string): Promise<Activity[]> {
+  const response = await api.get(`/activity/project/${projectId}`);
 
   return response.data;
 }

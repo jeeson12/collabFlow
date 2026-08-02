@@ -1,3 +1,5 @@
+import { Action } from "sonner";
+
 export interface ProjectMember {
   userId: string;
   projectId: string;
@@ -17,4 +19,16 @@ export interface AvailableMember {
   id: string;
   name: string;
   email: string;
+}
+
+export interface Activity {
+  id: string;
+  message: string;
+
+  createdAt: string;
+
+  user: {
+    id: string;
+    name: string;
+  };
 }

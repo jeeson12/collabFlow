@@ -9,6 +9,7 @@ import { FilesCard } from "@/features/project/dashboard/components/files-card";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
+  getActivity,
   getMembers,
   getProject,
   getTaskStats,
@@ -16,12 +17,14 @@ import {
 import { useState } from "react";
 import { ProjectMembersDialog } from "@/features/project/dashboard/components/member-dialog";
 import { AddMemberDialog } from "@/features/project/dashboard/components/addMember-dialog";
+import { ActivityDialog } from "@/features/project/dashboard/components/activity-dialog";
 
 export default function DashboardPage() {
   const { projectId } = useParams<{ projectId: string }>();
 
   const [membersDialogOpen, setMembersDialogOpen] = useState(false);
   const [addMembersDialogOpen, setAddMembersDialogOpen] = useState(false);
+  const [activityDialogOpen, setActivityDialogOpen] = useState(false);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ["project", projectId],
@@ -36,6 +39,12 @@ export default function DashboardPage() {
   const { data: taskData } = useQuery({
     queryKey: ["task-details", projectId],
     queryFn: () => getTaskStats(projectId),
+  });
+
+  const { data: Activity = [] } = useQuery({
+    queryKey: ["activities", projectId],
+    queryFn: () => getActivity(projectId),
+    enabled: !!projectId,
   });
 
   if (isLoading || !project) {
@@ -74,38 +83,8 @@ export default function DashboardPage() {
 
           {/* Recent Activity */}
           <RecentActivity
-            activities={[
-              {
-                id: "1",
-                title: "John created Authentication task",
-                time: "5 minutes ago",
-                type: "activity",
-              },
-              {
-                id: "2",
-                title: "Mike completed Dashboard UI",
-                time: "1 hour ago",
-                type: "success",
-              },
-              {
-                id: "3",
-                title: "Payment API is overdue",
-                time: "Today",
-                type: "warning",
-              },
-              {
-                id: "4",
-                title: "Sarah commented on Dashboard UI",
-                time: "3 hours ago",
-                type: "activity",
-              },
-              {
-                id: "5",
-                title: "Workspace setup completed",
-                time: "Yesterday",
-                type: "success",
-              },
-            ]}
+            activities={Activity}
+            onViewAll={() => setActivityDialogOpen(true)}
           />
         </section>
 
@@ -146,6 +125,12 @@ export default function DashboardPage() {
         open={addMembersDialogOpen}
         onOpenChange={setAddMembersDialogOpen}
         projectId={projectId}
+      />
+
+      <ActivityDialog
+        open={activityDialogOpen}
+        onOpenChange={setActivityDialogOpen}
+        activities={Activity}
       />
     </div>
   );

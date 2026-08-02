@@ -44,7 +44,9 @@ export function AppDialog({
 }: AppDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn(widths[width], "max-h-[85vh] p-0")}>
+      <DialogContent
+        className={cn(widths[width], "flex max-h-[85vh] flex-col p-0")}
+      >
         <DialogHeader className="border-b px-6 py-5">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
@@ -58,10 +60,7 @@ export function AppDialog({
             {headerAction}
           </div>
         </DialogHeader>
-
-        <div className="max-h-[calc(85vh-88px)] overflow-y-auto p-6">
-          {children}
-        </div>
+        <div className="flex-1 overflow-y-auto p-6">{children}</div>
       </DialogContent>
     </Dialog>
   );
