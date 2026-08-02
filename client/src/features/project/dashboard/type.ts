@@ -13,6 +13,8 @@ export interface TaskStats {
   todo: number;
   inprogress: number;
   completed: number;
+  completionRate: number;
+  remaining: number;
 }
 
 export interface AvailableMember {

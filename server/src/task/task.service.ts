@@ -268,12 +268,17 @@ export class TaskService {
         },
       },
     });
+    const complitionRate =
+      total === 0 ? 0 : Math.round((stats.completed / total) * 100);
+    const remaining = total - stats.completed;
     return {
       total: total,
       overdue: overdue,
       todo: stats.todo,
       inprogress: stats.inprogress,
       completed: stats.completed,
+      completionRate: complitionRate,
+      remaining: remaining,
     };
   }
 }

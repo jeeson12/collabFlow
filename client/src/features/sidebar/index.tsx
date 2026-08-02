@@ -7,6 +7,7 @@ import { NavMenu } from "./nav-menu";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getWorkspaceProject } from "../project-selection/api";
+import { getTaskStats } from "../project/dashboard/api";
 
 export function Sidebar() {
   const { workspaceId, projectId } = useParams<{
@@ -17,6 +18,12 @@ export function Sidebar() {
   const { data: projects = [] } = useQuery({
     queryKey: ["projects", workspaceId],
     queryFn: () => getWorkspaceProject(workspaceId),
+  });
+
+  const { data: taskstats } = useQuery({
+    queryKey: ["task-stats", projectId],
+    queryFn: () => getTaskStats(projectId),
+    enabled: !!projectId,
   });
 
   const currentProject = projects.find((project) => project.id === projectId);
@@ -31,7 +38,13 @@ export function Sidebar() {
       <NavMenu />
 
       {/* Project Details */}
-      {currentProject && <ProjectDetails project={currentProject} />}
+      {currentProject && (
+        <ProjectDetails
+          project={currentProject}
+          completionRate={taskstats?.completionRate ?? 0}
+          totalTasks={taskstats?.total ?? 0}
+        />
+      )}
       {/* Push Profile to Bottom */}
       <div className="flex-1" />
 

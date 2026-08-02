@@ -8,7 +8,7 @@ export async function getProject(projectId: string): Promise<Project> {
 }
 
 export async function getTaskStats(projectId: string): Promise<TaskStats> {
-  const response = await api.get(`/project/${projectId}/tasks/stats`);
+  const response = await api.get(`/task/project/${projectId}/stats`);
   return response.data;
 }
 

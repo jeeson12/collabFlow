@@ -6,22 +6,28 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Project } from "../project-selection/type";
 
-type projectDetailsProps = { project: Project };
-export function ProjectDetails({ project }: projectDetailsProps) {
+type ProjectDetailsProps = {
+  project: Project;
+  completionRate: number;
+  totalTasks: number;
+};
+
+export function ProjectDetails({
+  project,
+  completionRate,
+  totalTasks,
+}: ProjectDetailsProps) {
   return (
-    <div className="mx-4 mt-2 rounded-xl border bg-muted/40 p-2">
+    <div className="mx-4 mt-2 rounded-xl border bg-muted/40 p-4">
       <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         Current Project
       </p>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div>
           <h3 className="font-semibold">{project.name}</h3>
 
-          <p className="text-sm text-muted-foreground">
-            {" "}
-            {project.projectKey ?? "PROJECT"}
-          </p>
+          <p className="text-sm text-muted-foreground">{project.projectKey}</p>
         </div>
 
         <Badge variant="secondary" className="w-fit gap-1">
@@ -30,19 +36,27 @@ export function ProjectDetails({ project }: projectDetailsProps) {
         </Badge>
 
         <div>
-          <div className="mb-2 flex justify-between text-sm">
+          <div className="mb-2 flex items-center justify-between text-sm">
             <span>Progress</span>
 
-            <span>68%</span>
+            <span className="font-medium">{completionRate}%</span>
           </div>
 
-          <Progress value={68} />
+          <Progress value={completionRate} />
         </div>
 
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Members</span>
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Members</span>
 
-          <span className="font-medium"> {project._count.memberships}</span>
+            <span className="font-medium">{project._count.memberships}</span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Tasks</span>
+
+            <span className="font-medium">{totalTasks}</span>
+          </div>
         </div>
       </div>
     </div>

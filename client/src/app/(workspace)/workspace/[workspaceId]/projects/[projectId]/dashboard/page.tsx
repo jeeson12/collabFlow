@@ -92,12 +92,11 @@ export default function DashboardPage() {
         <section className="grid gap-6 lg:grid-cols-2 items-start">
           {/* Analytics */}
           <AnalyticsCard
-            completionRate={72}
-            totalTasks={42}
-            completedTasks={30}
-            remainingTasks={12}
+            completionRate={taskData?.completionRate ?? 0}
+            totalTasks={taskData?.total ?? 0}
+            completedTasks={taskData?.completed ?? 0}
+            remainingTasks={taskData?.remaining ?? 0}
           />
-
           {/* Files */}
           <FilesCard
             files={[
