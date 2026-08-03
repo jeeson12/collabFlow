@@ -138,7 +138,10 @@ export class AttachmentService {
       );
     }
 
-    const url = await this.supabase.createSignedUrl(attachment.storagePath);
+    const url = await this.supabase.createSignedUrl(
+      attachment.storagePath,
+      true,
+    );
     return { url };
   }
 

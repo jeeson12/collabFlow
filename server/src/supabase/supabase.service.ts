@@ -21,13 +21,13 @@ export class SupabaseService {
     return data;
   }
 
-  async createSignedUrl(path: string) {
+  async createSignedUrl(path: string, download = false) {
     const { data, error } = await this.client.storage
       .from('attachments')
-      .createSignedUrl(path, 300);
+      .createSignedUrl(path, 300, { download });
 
     if (error) {
-      return error.message;
+      throw error;
     }
 
     return data.signedUrl;
