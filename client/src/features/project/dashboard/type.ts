@@ -34,3 +34,15 @@ export interface Activity {
     name: string;
   };
 }
+
+export interface Attachment {
+  id: string;
+  originalFileName: string;
+  mimeType: string;
+  fileSize: number;
+  uploader: {
+    id: string;
+    name: string;
+  };
+  createdAt: string;
+}

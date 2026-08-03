@@ -12,12 +12,15 @@ import {
   getActivity,
   getMembers,
   getProject,
+  getRecentFiles,
   getTaskStats,
 } from "@/features/project/dashboard/api";
 import { useState } from "react";
 import { ProjectMembersDialog } from "@/features/project/dashboard/components/member-dialog";
 import { AddMemberDialog } from "@/features/project/dashboard/components/addMember-dialog";
 import { ActivityDialog } from "@/features/project/dashboard/components/activity-dialog";
+import { downloadFiles, openFiles } from "@/lib/utils";
+import { FilesDialog } from "@/features/project/dashboard/components/file-dialog";
 
 export default function DashboardPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -25,6 +28,7 @@ export default function DashboardPage() {
   const [membersDialogOpen, setMembersDialogOpen] = useState(false);
   const [addMembersDialogOpen, setAddMembersDialogOpen] = useState(false);
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
+  const [filesDialogOpen, setFilesDialogOpen] = useState(false);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ["project", projectId],
@@ -44,6 +48,12 @@ export default function DashboardPage() {
   const { data: Activity = [] } = useQuery({
     queryKey: ["activities", projectId],
     queryFn: () => getActivity(projectId),
+    enabled: !!projectId,
+  });
+
+  const { data: files = [] } = useQuery({
+    queryKey: ["files", projectId],
+    queryFn: () => getRecentFiles(projectId),
     enabled: !!projectId,
   });
 
@@ -99,21 +109,16 @@ export default function DashboardPage() {
           />
           {/* Files */}
           <FilesCard
-            files={[
-              {
-                id: "1",
-                name: "design.fig",
-                updatedAt: "Updated today",
-              },
-              {
-                id: "2",
-                name: "api-docs.pdf",
-                updatedAt: "Yesterday",
-              },
-            ]}
+            onViewAll={() => setFilesDialogOpen(true)}
+            files={files}
+            onOpenFile={openFiles}
+            onDownloadFile={downloadFiles}
           />
         </section>
       </div>
+      {/* ========================= */}
+      {/* Dialogs */}
+      {/* ========================= */}
       <ProjectMembersDialog
         open={membersDialogOpen}
         onOpenChange={setMembersDialogOpen}
@@ -130,6 +135,13 @@ export default function DashboardPage() {
         open={activityDialogOpen}
         onOpenChange={setActivityDialogOpen}
         activities={Activity}
+      />
+      <FilesDialog
+        open={filesDialogOpen}
+        onOpenChange={setFilesDialogOpen}
+        files={files}
+        onOpenFile={openFiles}
+        onDownloadFile={downloadFiles}
       />
     </div>
   );

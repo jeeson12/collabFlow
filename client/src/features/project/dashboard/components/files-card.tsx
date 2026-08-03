@@ -1,21 +1,28 @@
 "use client";
 
-import { FileText } from "lucide-react";
+import { Download, FileText } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+
+import { Attachment } from "../type";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-type File = {
-  id: string;
-  name: string;
-  updatedAt: string;
-};
-
 type FilesCardProps = {
-  files: File[];
+  files: Attachment[];
+  onViewAll: () => void;
+  onOpenFile: (attachmentId: string) => void;
+  onDownloadFile: (attachmentId: string, fileName: string) => void;
 };
 
-export function FilesCard({ files }: FilesCardProps) {
+export function FilesCard({
+  files,
+  onViewAll,
+  onOpenFile,
+  onDownloadFile,
+}: FilesCardProps) {
+  const visibleFiles = files.slice(0, 5);
+
   return (
     <Card>
       <CardHeader>
@@ -25,18 +32,57 @@ export function FilesCard({ files }: FilesCardProps) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-3">
-        {files.map((file) => (
-          <div key={file.id} className="rounded-lg border p-3">
-            <p className="text-sm font-medium">{file.name}</p>
-
-            <p className="text-xs text-muted-foreground">{file.updatedAt}</p>
+      <CardContent>
+        {visibleFiles.length === 0 ? (
+          <div className="py-8 text-center text-sm text-muted-foreground">
+            No files uploaded yet.
           </div>
-        ))}
+        ) : (
+          <div className="space-y-3">
+            {visibleFiles.map((file) => (
+              <div
+                key={file.id}
+                onClick={() => onOpenFile(file.id)}
+                className="flex cursor-pointer items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <FileText className="h-5 w-5 shrink-0 text-blue-500" />
 
-        <Button variant="outline" className="w-full">
-          View Files
-        </Button>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">
+                      {file.originalFileName}
+                    </p>
+
+                    <p className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(file.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDownloadFile(file.id, file.originalFileName);
+                  }}
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {files.length > 0 && (
+          <div className="mt-4 border-t pt-4">
+            <Button variant="outline" className="w-full" onClick={onViewAll}>
+              View Files
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

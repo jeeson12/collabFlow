@@ -1,6 +1,12 @@
 import { Project } from "@/features/project-selection/type";
 import { api } from "@/lib/api/axios";
-import { Activity, AvailableMember, ProjectMember, TaskStats } from "./type";
+import {
+  Activity,
+  Attachment,
+  AvailableMember,
+  ProjectMember,
+  TaskStats,
+} from "./type";
 
 export async function getProject(projectId: string): Promise<Project> {
   const response = await api.get(`/project/${projectId}`);
@@ -60,4 +66,16 @@ export async function getActivity(projectId: string): Promise<Activity[]> {
   const response = await api.get(`/activity/project/${projectId}`);
 
   return response.data;
+}
+
+export async function getRecentFiles(projectId: string): Promise<Attachment[]> {
+  const response = await api.get(`/attachment/project/${projectId}/recent`);
+
+  return response.data.files;
+}
+
+export async function getAttachmentUrl(attachmentId: string): Promise<string> {
+  const response = await api.get(`/attachment/${attachmentId}/download`);
+
+  return response.data.url;
 }
