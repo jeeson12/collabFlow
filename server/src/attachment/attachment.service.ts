@@ -158,7 +158,7 @@ export class AttachmentService {
     const permission = await this.prisma.projectMembership.findUnique({
       where: {
         userId_projectId: {
-          userId: attachment.uploadedBy,
+          userId,
           projectId: attachment.task.projectId,
         },
       },
@@ -181,5 +181,39 @@ export class AttachmentService {
       message: `Deleted file ${attachment.originalFileName}`,
     });
     return { message: 'Attachment deleted successfully' };
+  }
+
+  async getReccentFiles(projectId: string, userId: string) {
+    const membership = await this.prisma.projectMembership.findUnique({
+      where: {
+        userId_projectId: {
+          projectId,
+          userId,
+        },
+      },
+    });
+
+    if (!membership) {
+      throw new ForbiddenException(
+        'you are not authorized to get recent files for this project',
+      );
+    }
+
+    const files = await this.prisma.attachment.findMany({
+      where: {
+        task: {
+          projectId,
+        },
+      },
+      include: {
+        uploader: {
+          select: { id: true, name: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
+
+    return { files, count: files.length };
   }
 }
