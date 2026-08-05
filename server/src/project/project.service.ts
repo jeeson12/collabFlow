@@ -42,13 +42,43 @@ export class ProjectService {
       );
     }
 
-    const project = await this.prisma.project.create({
-      data: {
-        name: body.name,
-        description: body.description,
-        workspaceId: body.workspaceId,
-        projectKey: body.projectKey,
-      },
+    const project = await this.prisma.$transaction(async (tx) => {
+      const project = await tx.project.create({
+        data: {
+          name: body.name,
+          description: body.description,
+          workspaceId: body.workspaceId,
+          projectKey: body.projectKey,
+        },
+      });
+
+      await tx.boardColumn.createMany({
+        data: [
+          {
+            name: 'TODO',
+            order: 1,
+            projectId: project.id,
+          },
+          {
+            name: 'IN_PROGRESS',
+            order: 2,
+            projectId: project.id,
+          },
+          {
+            name: 'DONE',
+            order: 3,
+            projectId: project.id,
+          },
+        ],
+      });
+      await tx.projectMembership.create({
+        data: {
+          userId,
+          projectId: project.id,
+          role: MembershipRole.ADMIN,
+        },
+      });
+      return project;
     });
     await this.activity.createActivity({
       userId,
@@ -56,15 +86,6 @@ export class ProjectService {
       workspaceId: body.workspaceId,
       message: `created project "${project.name}"`,
     });
-
-    await this.prisma.projectMembership.create({
-      data: {
-        userId,
-        projectId: project.id,
-        role: MembershipRole.ADMIN,
-      },
-    });
-
     return project;
   }
 
