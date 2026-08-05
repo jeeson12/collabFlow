@@ -48,4 +48,9 @@ export class TaskController {
   ) {
     return this.taskService.getTaskStats(projectId, req.user.id);
   }
+
+  @Get('my-task')
+  getMyTasks(@Req() req) {
+    return this.taskService.getMyTasks(req.user.id);
+  }
 }
