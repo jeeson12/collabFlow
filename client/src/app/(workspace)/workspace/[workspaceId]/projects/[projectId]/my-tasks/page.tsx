@@ -5,63 +5,30 @@ import { Clock3 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { getMyTasks } from "@/features/project/tasks/api";
+import { formatDistanceToNow } from "date-fns";
+import { priorityStyles } from "@/lib/utils";
 
 export default function MyTasksPage() {
   const [taskFilter, setTaskFilter] = useState<"all" | "priority" | "deadline">(
     "all",
   );
 
-  const tasks = [
-    {
-      title: "Authentication API",
-      type: "Backend",
-      priority: "HIGH",
-      due: "Tomorrow",
-      status: "In Progress",
-      description: "Complete login flow with JWT authentication.",
-    },
-    {
-      title: "Dashboard UI",
-      type: "Frontend",
-      priority: "MEDIUM",
-      due: "Friday",
-      status: "Todo",
-      description: "Build dashboard layout and responsive cards.",
-    },
-    {
-      title: "Payment Module",
-      type: "Backend",
-      priority: "HIGH",
-      due: "Next Week",
-      status: "Todo",
-      description: "Integrate Stripe payment flow.",
-    },
-    {
-      title: "Notification System",
-      type: "Backend",
-      priority: "LOW",
-      due: "Next Week",
-      status: "Todo",
-      description: "Add toast notifications for project events.",
-    },
-    {
-      title: "Socket Integration",
-      type: "Backend",
-      priority: "HIGH",
-      due: "Next Week",
-      status: "Todo",
-      description: "Real-time updates for workspace.",
-    },
-  ];
+  const { data: tasks = [], isLoading } = useQuery({
+    queryKey: ["my-tasks"],
+    queryFn: getMyTasks,
+  });
 
   const filteredTasks = tasks.filter((task) => {
     if (taskFilter === "priority") return task.priority === "HIGH";
     if (taskFilter === "deadline")
-      return (
-        task.due === "Tomorrow" || task.due === "Today" || task.due === "Friday"
-      );
+      return task.dueDate && new Date(task.dueDate).getTime() > Date.now();
     return true;
   });
+  if (isLoading) {
+    return <div className="flex justify-center py-20">Loading...</div>;
+  }
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-8 py-8">
@@ -123,24 +90,20 @@ export default function MyTasksPage() {
                   <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground pt-1">
                     <span className="flex items-center gap-1">
                       <Clock3 className="h-3 w-3" />
-                      {task.due}
+                      {task.dueDate
+                        ? formatDistanceToNow(new Date(task.dueDate), {
+                            addSuffix: true,
+                          })
+                        : "No due date"}
                     </span>
                     <span>•</span>
                     <span>{task.status}</span>
                     <span>•</span>
-                    <span>{task.type}</span>
+                    <span>{task.project.name}</span>
                   </div>
                 </div>
 
-                <Badge
-                  variant={
-                    task.priority === "HIGH"
-                      ? "destructive"
-                      : task.priority === "MEDIUM"
-                        ? "secondary"
-                        : "outline"
-                  }
-                >
+                <Badge className={priorityStyles[task.priority]}>
                   {task.priority}
                 </Badge>
               </div>

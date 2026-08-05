@@ -37,3 +37,12 @@ export async function downloadFiles(attachmentId: string, fileName: string) {
     toast.error("Failed to download file");
   }
 }
+
+export const priorityStyles = {
+  HIGH: "rounded-sm border border-red-300 bg-red-100 px-2 py-0.5 text-red-700 hover:bg-red-200 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300",
+
+  MEDIUM:
+    "rounded-sm border border-yellow-300 bg-yellow-100 px-2 py-0.5 text-yellow-800 hover:bg-yellow-200 dark:border-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-300",
+
+  LOW: "rounded-sm border border-green-300 bg-green-100 px-2 py-0.5 text-green-700 hover:bg-green-200 dark:border-green-800 dark:bg-green-950/40 dark:text-green-300",
+} as const;

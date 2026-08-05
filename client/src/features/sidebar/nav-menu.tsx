@@ -9,37 +9,75 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useParams, usePathname } from "next/navigation";
 
 export function NavMenu() {
+  const { workspaceId, projectId } = useParams<{
+    workspaceId: string;
+    projectId: string;
+  }>();
+  const pathname = usePathname();
+
   return (
     <nav className="space-y-1 p-4">
       {/* Dashboard */}
-      <Link href="#">
-        <Button variant="secondary" className="w-full justify-start">
+      <Link href={`/workspace/${workspaceId}/projects/${projectId}/dashboard`}>
+        <Button
+          variant={
+            pathname ===
+            `/workspace/${workspaceId}/projects/${projectId}/dashboard`
+              ? "default"
+              : "ghost"
+          }
+          className="w-full justify-start"
+        >
           <LayoutDashboard className="mr-2 h-4 w-4" />
           Dashboard
         </Button>
       </Link>
 
       {/* Board */}
-      <Link href="#">
-        <Button variant="ghost" className="w-full justify-start">
+      <Link href={`/workspace/${workspaceId}/projects/${projectId}/board`}>
+        <Button
+          variant={
+            pathname === `/workspace/${workspaceId}/projects/${projectId}/board`
+              ? "default"
+              : "ghost"
+          }
+          className="w-full justify-start"
+        >
           <KanbanSquare className="mr-2 h-4 w-4" />
           Board
         </Button>
       </Link>
 
       {/* My Tasks */}
-      <Link href="#">
-        <Button variant="ghost" className="w-full justify-start">
+      <Link href={`/workspace/${workspaceId}/projects/${projectId}/my-tasks`}>
+        <Button
+          variant={
+            pathname ===
+            `/workspace/${workspaceId}/projects/${projectId}/my-tasks`
+              ? "default"
+              : "ghost"
+          }
+          className="w-full justify-start"
+        >
           <ListTodo className="mr-2 h-4 w-4" />
           My Tasks
         </Button>
       </Link>
 
       {/* Settings */}
-      <Link href="#">
-        <Button variant="ghost" className="w-full justify-start">
+      <Link href={`/workspace/${workspaceId}/projects/${projectId}/settings`}>
+        <Button
+          variant={
+            pathname ===
+            `/workspace/${workspaceId}/projects/${projectId}/settings`
+              ? "default"
+              : "ghost"
+          }
+          className="w-full justify-start"
+        >
           <Settings className="mr-2 h-4 w-4" />
           Settings
         </Button>
