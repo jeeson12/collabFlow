@@ -4,7 +4,11 @@ export type Task = {
   title: string;
   description?: string;
   priority: "HIGH" | "MEDIUM" | "LOW";
-  status: "TODO" | "IN_PROGRESS" | "DONE";
+
+  column: {
+    id: string;
+    name: string;
+  };
 
   assignee: string;
   initials: string;
@@ -16,7 +20,7 @@ export type Task = {
 };
 
 export type Column = {
-  id: Task["status"];
-  title: string;
-  color: string;
+  id: string;
+  name: string;
+  order: number;
 };

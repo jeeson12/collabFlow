@@ -3,7 +3,10 @@ export interface MyTask {
   title: string;
   description: string | null;
   ticketId: string;
-  status: "TODO" | "IN_PROGRESS" | "DONE";
+  column: {
+    id: string;
+    name: string;
+  };
   priority: "LOW" | "MEDIUM" | "HIGH";
   dueDate: string | null;
   createdAt: string;

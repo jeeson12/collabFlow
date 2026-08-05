@@ -83,7 +83,7 @@ export default function MyTasksPage() {
                 className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border p-4 transition hover:bg-muted/50"
               >
                 <div className="space-y-1">
-                  <h4 className="font-medium">{task.title}</h4>
+                  <h4 className="font-medium">{task.id}</h4>
                   <p className="text-sm text-muted-foreground">
                     {task.description}
                   </p>
@@ -97,7 +97,7 @@ export default function MyTasksPage() {
                         : "No due date"}
                     </span>
                     <span>•</span>
-                    <span>{task.status}</span>
+                    <span>{task.column.name}</span>
                     <span>•</span>
                     <span>{task.project.name}</span>
                   </div>

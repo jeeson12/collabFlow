@@ -11,19 +11,19 @@ export default function BoardPage() {
 
   const columns: Column[] = [
     {
-      id: "TODO",
-      title: "To Do",
-      color: "bg-slate-500",
+      id: "todo",
+      name: "To Do",
+      order: 1,
     },
     {
-      id: "IN_PROGRESS",
-      title: "In Progress",
-      color: "bg-blue-500",
+      id: "in-progress",
+      name: "In Progress",
+      order: 2,
     },
     {
-      id: "DONE",
-      title: "Done",
-      color: "bg-green-500",
+      id: "done",
+      name: "Done",
+      order: 3,
     },
   ];
 
@@ -34,7 +34,10 @@ export default function BoardPage() {
       title: "Implement JWT Authentication",
       description: "Complete authentication flow with refresh tokens.",
       priority: "HIGH",
-      status: "TODO",
+      column: {
+        id: "todo",
+        name: "To Do",
+      },
       assignee: "Jeeson",
       initials: "JJ",
       due: "Tomorrow",
@@ -47,7 +50,10 @@ export default function BoardPage() {
       title: "Dashboard Statistics",
       description: "Finish project statistics widgets.",
       priority: "MEDIUM",
-      status: "TODO",
+      column: {
+        id: "todo",
+        name: "To Do",
+      },
       assignee: "Alex",
       initials: "AL",
       due: "Friday",
@@ -60,7 +66,10 @@ export default function BoardPage() {
       title: "Workspace Members",
       description: "Allow inviting workspace members.",
       priority: "LOW",
-      status: "TODO",
+      column: {
+        id: "todo",
+        name: "To Do",
+      },
       assignee: "Sarah",
       initials: "SA",
       due: "Next Week",
@@ -73,7 +82,10 @@ export default function BoardPage() {
       title: "Notification System",
       description: "Realtime notifications using sockets.",
       priority: "HIGH",
-      status: "IN_PROGRESS",
+      column: {
+        id: "in-progress",
+        name: "In Progress",
+      },
       assignee: "Jeeson",
       initials: "JJ",
       due: "Today",
@@ -86,7 +98,10 @@ export default function BoardPage() {
       title: "Dark Mode",
       description: "Theme switching with persistence.",
       priority: "MEDIUM",
-      status: "IN_PROGRESS",
+      column: {
+        id: "in-progress",
+        name: "In Progress",
+      },
       assignee: "Alex",
       initials: "AL",
       due: "Tomorrow",
@@ -99,7 +114,10 @@ export default function BoardPage() {
       title: "Comments API",
       description: "CRUD for task comments.",
       priority: "LOW",
-      status: "DONE",
+      column: {
+        id: "done",
+        name: "Done",
+      },
       assignee: "Sarah",
       initials: "SA",
       due: "Yesterday",
@@ -112,7 +130,10 @@ export default function BoardPage() {
       title: "File Upload",
       description: "Upload task attachments to Supabase.",
       priority: "HIGH",
-      status: "DONE",
+      column: {
+        id: "done",
+        name: "Done",
+      },
       assignee: "Jeeson",
       initials: "JJ",
       due: "Yesterday",

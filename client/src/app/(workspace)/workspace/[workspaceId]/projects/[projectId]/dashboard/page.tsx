@@ -76,13 +76,13 @@ export default function DashboardPage() {
         {/* Top Section */}
         <section className="grid gap-6 lg:grid-cols-3 items-start">
           {/* Task Overview Widget */}
-          <TaskOverview
+          {/* <TaskOverview
             totalTasks={taskData?.total ?? 0}
             completedTasks={taskData?.completed ?? 0}
             todoTasks={taskData?.todo ?? 0}
             inProgressTasks={taskData?.inprogress ?? 0}
             overdueTasks={taskData?.overdue ?? 0}
-          />
+          /> */}
 
           {/* Project Members */}
           <MembersCard
@@ -101,12 +101,12 @@ export default function DashboardPage() {
         {/* Bottom Section */}
         <section className="grid gap-6 lg:grid-cols-2 items-start">
           {/* Analytics */}
-          <AnalyticsCard
+          {/* <AnalyticsCard
             completionRate={taskData?.completionRate ?? 0}
             totalTasks={taskData?.total ?? 0}
             completedTasks={taskData?.completed ?? 0}
             remainingTasks={taskData?.remaining ?? 0}
-          />
+          /> */}
           {/* Files */}
           <FilesCard
             onViewAll={() => setFilesDialogOpen(true)}

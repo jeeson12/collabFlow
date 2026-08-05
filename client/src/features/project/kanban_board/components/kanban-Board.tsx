@@ -16,7 +16,7 @@ export function KanbanBoard({ columns, tasks, search }: KanbanBoardProps) {
         {columns.map((column) => {
           const columnTasks = tasks.filter(
             (task) =>
-              task.status === column.id &&
+              task.column.id === column.id &&
               task.title.toLowerCase().includes(search.toLowerCase()),
           );
 
