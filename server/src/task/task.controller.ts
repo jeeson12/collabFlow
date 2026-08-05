@@ -41,12 +41,8 @@ export class TaskController {
   }
 
   @Get('project/:projectId/stats')
-  getTaskStats(
-    @Param('projectId') projectId: string,
-    @Req() req,
-    @Body() body: UpdateProjectMemberDto,
-  ) {
-    return this.taskService.getTaskStats(projectId, req.user.id);
+  getTaskStats(@Param('projectId') projectId: string, @Req() req) {
+    return this.taskService.getTaskOverview(projectId, req.user.id);
   }
 
   @Get('my-task')

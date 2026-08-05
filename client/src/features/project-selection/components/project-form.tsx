@@ -65,7 +65,7 @@ export function ProjectForm({
     },
 
     onSuccess: () => {
-      toast.success("Project created successfully");
+      toast.success(mode === "create" ? "Project created" : "Project updated");
       queryClient.invalidateQueries({ queryKey: ["projects", workspaceId] });
       form.reset();
       onSuccess();
@@ -98,14 +98,12 @@ export function ProjectForm({
         <Input
           placeholder="CP"
           className="uppercase"
-          {...(form.register("projectKey"),
-          {
-            onChange: (e) => {
-              form.setValue("projectKey", e.target.value.toUpperCase(), {
-                shouldValidate: true,
-              });
-            },
-          })}
+          {...form.register("projectKey")}
+          onChange={(e) =>
+            form.setValue("projectKey", e.target.value.toUpperCase(), {
+              shouldValidate: true,
+            })
+          }
         />
 
         {form.formState.errors.projectKey && (
@@ -131,7 +129,13 @@ export function ProjectForm({
       </div>
 
       <Button className="w-full" disabled={projectMutation.isPending}>
-        {projectMutation.isPending ? "Creating..." : "Create Project"}
+        {projectMutation.isPending
+          ? mode === "create"
+            ? "Creating..."
+            : "Saving..."
+          : mode === "create"
+            ? "Create Project"
+            : "Save Changes"}
       </Button>
     </form>
   );

@@ -11,6 +11,7 @@ import { ActivityModule } from './activity/activity.module';
 import { AttachmentModule } from './attachment/attachment.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { ConfigModule } from '@nestjs/config';
+import { BoardColumnModule } from './board-column/board-column.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ConfigModule } from '@nestjs/config';
     ActivityModule,
     AttachmentModule,
     SupabaseModule,
+    BoardColumnModule,
   ],
   controllers: [AppController],
   providers: [AppService],

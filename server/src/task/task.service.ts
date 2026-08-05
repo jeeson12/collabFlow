@@ -56,6 +56,14 @@ export class TaskService {
 
       const ticketId = `${project.projectKey}-${nextSequence}`;
 
+      const column = await tx.boardColumn.findFirst({
+        where: {
+          id: body.columnId,
+          projectId: body.projectId,
+        },
+      });
+      if (!column) throw new NotFoundException('column not found');
+
       const createdTask = await tx.task.create({
         data: {
           title: body.title,
@@ -63,7 +71,7 @@ export class TaskService {
           projectId: body.projectId,
           assigneeId: body.assigneeId,
           creatorId: userId,
-          status: body.status,
+          columnId: column.id,
           priority: body.priority,
           dueDate: body.dueDate,
           ticketId,
@@ -110,6 +118,7 @@ export class TaskService {
         projectId,
       },
       include: {
+        column: true,
         creator: {
           select: {
             id: true,
@@ -124,9 +133,6 @@ export class TaskService {
             name: true,
           },
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
       },
     });
   }
@@ -162,10 +168,23 @@ export class TaskService {
         throw new ForbiddenException('user is not a member of this project');
     }
 
+    if (body.columnId) {
+      const column = await this.prisma.boardColumn.findFirst({
+        where: {
+          id: body.columnId,
+          projectId: hasTask.projectId,
+        },
+      });
+
+      if (!column) {
+        throw new NotFoundException('Invalid column');
+      }
+    }
     const updatedTask = await this.prisma.task.update({
       where: { id },
       data: body,
     });
+
     await this.activity.createActivity({
       userId,
       projectId: hasTask.projectId,
@@ -202,7 +221,7 @@ export class TaskService {
     return deletedTask;
   }
 
-  async getTaskStats(projectId: string, userId: string) {
+  async getTaskOverview(projectId: string, userId: string) {
     const project = await this.prisma.project.findUnique({
       where: {
         id: projectId,
@@ -222,35 +241,22 @@ export class TaskService {
       throw new ForbiddenException('you are not a member of this project');
     }
 
-    const statusCounts = await this.prisma.task.groupBy({
-      by: ['status'],
+    const columns = await this.prisma.boardColumn.findMany({
       where: {
         projectId,
       },
-      _count: {
-        status: true,
+      orderBy: {
+        order: 'asc',
+      },
+      include: {
+        _count: {
+          select: {
+            tasks: true,
+          },
+        },
       },
     });
 
-    const stats = {
-      todo: 0,
-      inprogress: 0,
-      completed: 0,
-    };
-
-    for (const item of statusCounts) {
-      switch (item.status) {
-        case 'TODO':
-          stats.todo = item._count.status;
-          break;
-        case 'IN_PROGRESS':
-          stats.inprogress = item._count.status;
-          break;
-        case 'DONE':
-          stats.completed = item._count.status;
-          break;
-      }
-    }
     const total = await this.prisma.task.count({
       where: {
         projectId,
@@ -263,22 +269,18 @@ export class TaskService {
         dueDate: {
           lt: new Date(),
         },
-        status: {
-          not: 'DONE',
-        },
       },
     });
-    const complitionRate =
-      total === 0 ? 0 : Math.round((stats.completed / total) * 100);
-    const remaining = total - stats.completed;
+
     return {
       total: total,
       overdue: overdue,
-      todo: stats.todo,
-      inprogress: stats.inprogress,
-      completed: stats.completed,
-      completionRate: complitionRate,
-      remaining: remaining,
+      columns: columns.map((column) => ({
+        id: column.id,
+        order: column.order,
+        name: column.name,
+        total: column._count.tasks,
+      })),
     };
   }
 
@@ -291,7 +293,12 @@ export class TaskService {
         id: true,
         description: true,
         title: true,
-        status: true,
+        column: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         priority: true,
         dueDate: true,
         ticketId: true,
