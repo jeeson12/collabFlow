@@ -3,10 +3,9 @@ import { TaskService } from './task.service';
 import { TaskController } from './task.controller';
 import { ActivityModule } from 'src/activity/activity.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
-import { AttachmentService } from 'src/attachment/attachment.service';
 
 @Module({
-  providers: [TaskService, AttachmentService],
+  providers: [TaskService],
   controllers: [TaskController],
   imports: [ActivityModule, PrismaModule],
 })
