@@ -49,6 +49,7 @@ export type CreateTaskPayload = {
   priority?: TaskPriority;
 
   dueDate?: Date;
+  files?: File[];
 };
 
 export type PriorityFilter = "ALL" | TaskPriority;

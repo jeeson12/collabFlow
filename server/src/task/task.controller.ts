@@ -34,7 +34,7 @@ export class TaskController {
   ) {
     const task = await this.taskService.createTask(body, req.user.id);
 
-    if (files.length) {
+    if (files?.length) {
       await this.attachmentService.upload(task.id, files, req.user.id);
     }
     return task;

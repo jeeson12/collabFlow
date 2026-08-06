@@ -1,8 +1,12 @@
 import { api } from "@/lib/api/axios";
 import { CreateTaskPayload } from "./type";
 
-export async function createTask(data: CreateTaskPayload) {
-  const task = await api.post("/task", data);
+export async function createTask(formData: FormData) {
+  const task = await api.post("/task", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return task.data;
 }

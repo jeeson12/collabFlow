@@ -24,6 +24,5 @@ export class createTaskDto {
   priority?: TaskPriority;
 
   @IsOptional()
-  @IsDate()
-  dueDate?: Date;
+  dueDate?: string;
 }

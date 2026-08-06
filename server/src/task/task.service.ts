@@ -73,7 +73,7 @@ export class TaskService {
           creatorId: userId,
           columnId: column.id,
           priority: body.priority,
-          dueDate: body.dueDate,
+          dueDate: body.dueDate ? new Date(body.dueDate) : null,
           ticketId,
         },
       });
@@ -182,7 +182,10 @@ export class TaskService {
     }
     const updatedTask = await this.prisma.task.update({
       where: { id },
-      data: body,
+      data: {
+        ...body,
+        dueDate: body.dueDate ? new Date(body.dueDate) : undefined,
+      },
     });
 
     await this.activity.createActivity({

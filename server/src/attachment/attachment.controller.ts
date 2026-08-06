@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -27,6 +28,10 @@ export class AttachmentController {
     @Body() body: UploadAttachmentDto,
     @Req() req,
   ) {
+    if (!file) {
+      throw new BadRequestException('File required');
+    }
+
     return this.attachmentService.upload(body.taskId, [file], req.user.id);
   }
 
