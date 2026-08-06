@@ -8,21 +8,36 @@ import {
   Post,
   Req,
   UseGuards,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { JwtAuthGuard } from 'src/auth/strategies/auth-guards/jwt-auth.guard';
 import { createTaskDto } from './dto/create-task.dto';
-import { get } from 'http';
 import { updateTaskDto } from './dto/upate-task.dto';
-import { UpdateProjectMemberDto } from 'src/project/dto/update-project-member.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { AttachmentService } from '../attachment/attachment.service';
 @UseGuards(JwtAuthGuard)
 @Controller('task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(
+    private readonly taskService: TaskService,
+    private readonly attachmentService: AttachmentService,
+  ) {}
 
   @Post()
-  createTask(@Body() body: createTaskDto, @Req() req) {
-    return this.taskService.createTask(body, req.user.id);
+  @UseInterceptors(FilesInterceptor('files'))
+  async createTask(
+    @Body() body: createTaskDto,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Req() req,
+  ) {
+    const task = await this.taskService.createTask(body, req.user.id);
+
+    if (files.length) {
+      await this.attachmentService.upload(task.id, files, req.user.id);
+    }
+    return task;
   }
 
   @Get('project/:projectId')

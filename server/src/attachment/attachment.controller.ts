@@ -27,7 +27,12 @@ export class AttachmentController {
     @Body() body: UploadAttachmentDto,
     @Req() req,
   ) {
-    return this.attachmentService.upload(file, body, req.user.id);
+    return this.attachmentService.upload(body.taskId, [file], req.user.id);
+  }
+
+  @Get('task/:taskId')
+  getAttachments(@Param('taskId') taskId: string, @Req() req) {
+    return this.attachmentService.getAttachment(taskId, req.user.id);
   }
 
   @Get('project/:projectId/recent')

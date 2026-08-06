@@ -9,6 +9,7 @@ import { UploadAttachmentDto } from './dto/upload-attachment.dto';
 import { randomUUID } from 'crypto';
 import { ActivityService } from 'src/activity/activity.service';
 import { count } from 'console';
+import { Attachment } from '@prisma/client';
 
 @Injectable()
 export class AttachmentService {
@@ -17,14 +18,10 @@ export class AttachmentService {
     private supabase: SupabaseService,
     private activity: ActivityService,
   ) {}
-  async upload(
-    file: Express.Multer.File,
-    body: UploadAttachmentDto,
-    userId: string,
-  ) {
+  async upload(taskId: string, files: Express.Multer.File[], userId: string) {
     const task = await this.prisma.task.findUnique({
       where: {
-        id: body.taskId,
+        id: taskId,
       },
     });
     if (!task) {
@@ -45,32 +42,39 @@ export class AttachmentService {
         'You are not authorized to upload attachments to this task',
       );
     }
-    const sanitizedFileName = file.originalname.replace(/\s+/g, '-');
-    const fileNme = `${randomUUID()}-${sanitizedFileName}`;
-    const storagePath = `tasks/${task.id}/${fileNme}`;
+    const attachments: Attachment[] = [];
+    for (const file of files) {
+      const sanitizedFileName = file.originalname.replace(/\s+/g, '-');
+      const fileName = `${randomUUID()}-${sanitizedFileName}`;
+      const storagePath = `tasks/${task.id}/${fileName}`;
 
-    const uploadedFile = await this.supabase.uploadFiles(
-      storagePath,
-      file.buffer,
-      file.mimetype,
-    );
+      const uploadedFile = await this.supabase.uploadFiles(
+        storagePath,
+        file.buffer,
+        file.mimetype,
+      );
 
-    const attachment = await this.prisma.attachment.create({
-      data: {
-        originalFileName: file.originalname,
-        storagePath: uploadedFile.path,
-        mimeType: file.mimetype,
-        size: file.size,
-        taskId: task.id,
-        uploadedBy: userId,
-      },
-    });
+      const attachment = await this.prisma.attachment.create({
+        data: {
+          originalFileName: file.originalname,
+          storagePath: uploadedFile.path,
+          mimeType: file.mimetype,
+          size: file.size,
+          taskId: task.id,
+          uploadedBy: userId,
+        },
+      });
+
+      attachments.push(attachment);
+    }
+
     await this.activity.createActivity({
       userId,
       projectId: task.projectId,
-      message: `Uploaded file "${file.originalname}" to task "${task.title}"`,
+      message: `Uploaded ${attachments.length} attachment${attachments.length === 1 ? '' : 's'} to task "${task.title}"`,
     });
-    return attachment;
+
+    return attachments;
   }
 
   async getAttachment(taskId: string, userId: string) {
