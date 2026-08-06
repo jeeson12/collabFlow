@@ -9,5 +9,6 @@ import { ActivityModule } from 'src/activity/activity.module';
   imports: [PrismaModule, SupabaseModule, ActivityModule],
   controllers: [AttachmentController],
   providers: [AttachmentService],
+  exports: [AttachmentService],
 })
 export class AttachmentModule {}
