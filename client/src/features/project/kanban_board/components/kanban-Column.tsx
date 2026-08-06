@@ -12,18 +12,21 @@ import { EmptyColumn } from "./emptyColumn";
 type KanbanColumnProps = {
   column: Column;
   tasks: Task[];
+  onCreateTask: (columnId: string) => void;
 };
 
-export function KanbanColumn({ column, tasks }: KanbanColumnProps) {
+export function KanbanColumn({
+  column,
+  tasks,
+  onCreateTask,
+}: KanbanColumnProps) {
   return (
-    <div className="flex w-72.5 shrink-0 flex-col">
+    <div className="flex w-64 shrink-0 flex-col ">
       {/* Header */}
-      <div className="sticky top-0 z-20 mb-3 flex items-center justify-between rounded-md bg-[#f7f8fa] py-1">
+      <div className="sticky top-0 z-20 mb-3 mx-auto flex w-[90%] items-center justify-between rounded-md bg-[#f7f8fa] py-1">
         <div className="flex items-center gap-2">
-          <div className={`h-2.5 w-2.5 rounded-full ${column.color}`} />
-
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            {column.title}
+            {column.name}
           </h2>
 
           <span className="rounded-full bg-background px-2 py-0.5 text-[10px] font-semibold shadow-sm">
@@ -42,7 +45,7 @@ export function KanbanColumn({ column, tasks }: KanbanColumnProps) {
           <TaskCard key={task.id} task={task} />
         ))}
 
-        <CreateTaskButton />
+        <CreateTaskButton onClick={() => onCreateTask(column.id)} />
 
         {tasks.length === 0 && <EmptyColumn />}
       </div>

@@ -1,21 +1,31 @@
+export type TaskPriority = "HIGH" | "MEDIUM" | "LOW";
+
 export type Task = {
   id: string;
-  ticket: string;
+
+  ticketId: string;
+
   title: string;
-  description?: string;
-  priority: "HIGH" | "MEDIUM" | "LOW";
+
+  description?: string | null;
+
+  priority: TaskPriority;
 
   column: {
     id: string;
     name: string;
   };
 
-  assignee: string;
-  initials: string;
+  assignee?: {
+    id: string;
+    name: string;
+    initials: string;
+  } | null;
 
-  due: string;
+  dueDate?: string | null;
 
   comments: number;
+
   attachments: number;
 };
 
@@ -24,3 +34,28 @@ export type Column = {
   name: string;
   order: number;
 };
+
+export type CreateTaskPayload = {
+  title: string;
+
+  description?: string;
+
+  projectId: string;
+
+  columnId: string;
+
+  assigneeId?: string;
+
+  priority?: TaskPriority;
+
+  dueDate?: Date;
+};
+
+export type PriorityFilter = "ALL" | TaskPriority;
+
+export type DueDateFilter =
+  | "ALL"
+  | "OVERDUE"
+  | "TODAY"
+  | "THIS_WEEK"
+  | "NO_DUE_DATE";
