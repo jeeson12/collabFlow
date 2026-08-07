@@ -5,6 +5,7 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { Column, Task } from "@/features/project/kanban_board/type";
+
 import { CreateTaskButton } from "./createTask-button";
 import { TaskCard } from "./task-card";
 import { EmptyColumn } from "./emptyColumn";
@@ -13,21 +14,21 @@ type KanbanColumnProps = {
   column: Column;
   tasks: Task[];
   onCreateTask: (columnId: string) => void;
+  onTaskClick: (task: Task) => void;
 };
 
 export function KanbanColumn({
   column,
   tasks,
   onCreateTask,
+  onTaskClick,
 }: KanbanColumnProps) {
   return (
-    <div className="flex w-64 shrink-0 flex-col ">
+    <div className="w-75 shrink-0 rounded-lg border bg-muted/30 p-3">
       {/* Header */}
-      <div className="sticky top-0 z-20 mb-3 mx-auto flex w-[90%] items-center justify-between rounded-md bg-[#f7f8fa] py-1">
+      <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            {column.name}
-          </h2>
+          <h2 className="text-sm font-semibold">{column.name}</h2>
 
           <span className="rounded-full bg-background px-2 py-0.5 text-[10px] font-semibold shadow-sm">
             {tasks.length}
@@ -42,7 +43,11 @@ export function KanbanColumn({
       {/* Cards */}
       <div className="space-y-3">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            onClick={() => onTaskClick(task)}
+          />
         ))}
 
         <CreateTaskButton onClick={() => onCreateTask(column.id)} />

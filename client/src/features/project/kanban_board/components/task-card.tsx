@@ -11,11 +11,13 @@ import { format } from "date-fns";
 
 type TaskCardProps = {
   task: Task;
+  onClick: () => void;
 };
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({ task, onClick }: TaskCardProps) {
   return (
     <Card
+      onClick={onClick}
       className="
     group
     w-[95%]

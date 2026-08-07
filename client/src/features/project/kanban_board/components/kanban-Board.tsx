@@ -16,6 +16,7 @@ type KanbanBoardProps = {
   priority: PriorityFilter;
   dueDateFilter: DueDateFilter;
   onCreateTask: (columnId: string) => void;
+  onTaskClick: (task: Task) => void;
 };
 
 export function KanbanBoard({
@@ -25,15 +26,17 @@ export function KanbanBoard({
   priority,
   dueDateFilter,
   onCreateTask,
+  onTaskClick,
 }: KanbanBoardProps) {
   const query = search.trim().toLowerCase();
 
   return (
     <div className="flex-1 overflow-x-auto p-5">
-      <div className="flex h-full w-full gap-1">
+      <div className="flex min-w-max gap-4">
         {columns.map((column) => {
           const columnTasks = tasks.filter((task) => {
             if (task.column.id !== column.id) return false;
+
             const matchSearch =
               query === "" ||
               task.ticketId.toLowerCase().includes(query) ||
@@ -80,10 +83,11 @@ export function KanbanBoard({
 
           return (
             <KanbanColumn
-              onCreateTask={onCreateTask}
               key={column.id}
               column={column}
               tasks={columnTasks}
+              onCreateTask={onCreateTask}
+              onTaskClick={onTaskClick}
             />
           );
         })}

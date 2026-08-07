@@ -4,6 +4,7 @@ export type Task = {
   id: string;
 
   ticketId: string;
+  projectId: string;
 
   title: string;
 
@@ -60,3 +61,23 @@ export type DueDateFilter =
   | "TODAY"
   | "THIS_WEEK"
   | "NO_DUE_DATE";
+
+export type Comment = {
+  id: string;
+  content: string;
+  createdAt: string;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
+
+export type Attachment = {
+  id: string;
+  originalFileName: string;
+  mimeType: string;
+  size: number;
+  createdAt: string;
+  url?: string;
+};

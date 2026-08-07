@@ -37,10 +37,13 @@ export function NavMenu() {
       </Link>
 
       {/* Board */}
-      <Link href={`/workspace/${workspaceId}/projects/${projectId}/board`}>
+      <Link
+        href={`/workspace/${workspaceId}/projects/${projectId}/kanban-board`}
+      >
         <Button
           variant={
-            pathname === `/workspace/${workspaceId}/projects/${projectId}/board`
+            pathname ===
+            `/workspace/${workspaceId}/projects/${projectId}/kanban-board`
               ? "default"
               : "ghost"
           }
