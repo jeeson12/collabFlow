@@ -3,13 +3,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Attachment } from '@prisma/client';
+
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SupabaseService } from 'src/supabase/supabase.service';
-import { UploadAttachmentDto } from './dto/upload-attachment.dto';
-import { randomUUID } from 'crypto';
 import { ActivityService } from 'src/activity/activity.service';
-import { count } from 'console';
-import { Attachment } from '@prisma/client';
+
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AttachmentService {
@@ -18,12 +18,18 @@ export class AttachmentService {
     private supabase: SupabaseService,
     private activity: ActivityService,
   ) {}
+
+  // ---------------------------------------
+  // Upload attachment
+  // ---------------------------------------
+
   async upload(taskId: string, files: Express.Multer.File[], userId: string) {
     const task = await this.prisma.task.findUnique({
       where: {
         id: taskId,
       },
     });
+
     if (!task) {
       throw new NotFoundException('Task not found');
     }
@@ -32,7 +38,7 @@ export class AttachmentService {
       where: {
         userId_projectId: {
           projectId: task.projectId,
-          userId: userId,
+          userId,
         },
       },
     });
@@ -42,10 +48,14 @@ export class AttachmentService {
         'You are not authorized to upload attachments to this task',
       );
     }
+
     const attachments: Attachment[] = [];
+
     for (const file of files) {
       const sanitizedFileName = file.originalname.replace(/\s+/g, '-');
+
       const fileName = `${randomUUID()}-${sanitizedFileName}`;
+
       const storagePath = `tasks/${task.id}/${fileName}`;
 
       const uploadedFile = await this.supabase.uploadFiles(
@@ -71,24 +81,33 @@ export class AttachmentService {
     await this.activity.createActivity({
       userId,
       projectId: task.projectId,
-      message: `Uploaded ${attachments.length} attachment${attachments.length === 1 ? '' : 's'} to task "${task.title}"`,
+      message: `Uploaded ${attachments.length} attachment${
+        attachments.length === 1 ? '' : 's'
+      } to task "${task.title}"`,
     });
 
     return attachments;
   }
 
+  // ---------------------------------------
+  // Get task attachments
+  // ---------------------------------------
+
   async getAttachment(taskId: string, userId: string) {
     const task = await this.prisma.task.findUnique({
-      where: { id: taskId },
+      where: {
+        id: taskId,
+      },
     });
+
     if (!task) {
-      throw new NotFoundException('task not found');
+      throw new NotFoundException('Task not found');
     }
 
     const permission = await this.prisma.projectMembership.findUnique({
       where: {
         userId_projectId: {
-          userId: userId,
+          userId,
           projectId: task.projectId,
         },
       },
@@ -96,60 +115,61 @@ export class AttachmentService {
 
     if (!permission) {
       throw new ForbiddenException(
-        'you are not authorized to get attachments for this task',
+        'You are not authorized to get attachments for this task',
       );
     }
 
-    const attachment = await this.prisma.attachment.findMany({
-      where: { taskId },
+    const attachments = await this.prisma.attachment.findMany({
+      where: {
+        taskId,
+      },
       include: {
         uploader: {
-          select: { id: true, name: true, email: true },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
         },
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
-    return { attachment, count: attachment.length };
-  }
 
-  async downloadAttachent(attachmentId: string, userId: string) {
-    const attachment = await this.prisma.attachment.findUnique({
-      where: {
-        id: attachmentId,
-      },
-      include: {
-        task: true,
-      },
-    });
-    if (!attachment) {
-      throw new NotFoundException('Attachment not found');
-    }
+    /*
+     * Generate PREVIEW URLs.
+     *
+     * false = don't force download.
+     *
+     * This allows images/PDFs/etc. to be displayed
+     * directly in the frontend preview.
+     */
+    const attachmentsWithUrl = await Promise.all(
+      attachments.map(async (attachment) => {
+        const url = await this.supabase.createSignedUrl(
+          attachment.storagePath,
+          false,
+        );
 
-    const permission = await this.prisma.projectMembership.findUnique({
-      where: {
-        userId_projectId: {
-          userId: userId,
-          projectId: attachment.task.projectId,
-        },
-      },
-    });
-
-    if (!permission) {
-      throw new ForbiddenException(
-        'you are not authorized to download this attachment',
-      );
-    }
-
-    const url = await this.supabase.createSignedUrl(
-      attachment.storagePath,
-      true,
+        return {
+          ...attachment,
+          url,
+        };
+      }),
     );
-    return { url };
+
+    return {
+      attachment: attachmentsWithUrl,
+      count: attachmentsWithUrl.length,
+    };
   }
 
-  async deleteAttachment(attachmentId: string, userId) {
+  // ---------------------------------------
+  // Download attachment
+  // ---------------------------------------
+
+  async downloadAttachment(attachmentId: string, userId: string) {
     const attachment = await this.prisma.attachment.findUnique({
       where: {
         id: attachmentId,
@@ -158,6 +178,7 @@ export class AttachmentService {
         task: true,
       },
     });
+
     if (!attachment) {
       throw new NotFoundException('Attachment not found');
     }
@@ -173,24 +194,83 @@ export class AttachmentService {
 
     if (!permission) {
       throw new ForbiddenException(
-        'you are not authorized to delete this attachment',
+        'You are not authorized to download this attachment',
       );
     }
 
+    /*
+     * true = force download.
+     */
+    const url = await this.supabase.createSignedUrl(
+      attachment.storagePath,
+      true,
+    );
+
+    return {
+      url,
+      fileName: attachment.originalFileName,
+    };
+  }
+
+  // ---------------------------------------
+  // Delete attachment
+  // ---------------------------------------
+
+  async deleteAttachment(attachmentId: string, userId: string) {
+    const attachment = await this.prisma.attachment.findUnique({
+      where: {
+        id: attachmentId,
+      },
+      include: {
+        task: true,
+      },
+    });
+
+    if (!attachment) {
+      throw new NotFoundException('Attachment not found');
+    }
+
+    const permission = await this.prisma.projectMembership.findUnique({
+      where: {
+        userId_projectId: {
+          userId,
+          projectId: attachment.task.projectId,
+        },
+      },
+    });
+
+    if (!permission) {
+      throw new ForbiddenException(
+        'You are not authorized to delete this attachment',
+      );
+    }
+
+    // Delete from Supabase first.
     await this.supabase.deleteFile(attachment.storagePath);
+
+    // Then delete the database record.
     await this.prisma.attachment.delete({
-      where: { id: attachmentId },
+      where: {
+        id: attachmentId,
+      },
     });
 
     await this.activity.createActivity({
-      userId: userId,
+      userId,
       projectId: attachment.task.projectId,
       message: `Deleted file ${attachment.originalFileName}`,
     });
-    return { message: 'Attachment deleted successfully' };
+
+    return {
+      message: 'Attachment deleted successfully',
+    };
   }
 
-  async getReccentFiles(projectId: string, userId: string) {
+  // ---------------------------------------
+  // Get recent project files
+  // ---------------------------------------
+
+  async getRecentFiles(projectId: string, userId: string) {
     const membership = await this.prisma.projectMembership.findUnique({
       where: {
         userId_projectId: {
@@ -202,7 +282,7 @@ export class AttachmentService {
 
     if (!membership) {
       throw new ForbiddenException(
-        'you are not authorized to get recent files for this project',
+        'You are not authorized to get recent files for this project',
       );
     }
 
@@ -214,13 +294,35 @@ export class AttachmentService {
       },
       include: {
         uploader: {
-          select: { id: true, name: true },
+          select: {
+            id: true,
+            name: true,
+          },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: {
+        createdAt: 'desc',
+      },
       take: 5,
     });
 
-    return { files, count: files.length };
+    const filesWithUrl = await Promise.all(
+      files.map(async (file) => {
+        const url = await this.supabase.createSignedUrl(
+          file.storagePath,
+          false,
+        );
+
+        return {
+          ...file,
+          url,
+        };
+      }),
+    );
+
+    return {
+      files: filesWithUrl,
+      count: filesWithUrl.length,
+    };
   }
 }

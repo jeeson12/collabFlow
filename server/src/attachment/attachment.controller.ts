@@ -2,15 +2,16 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
   Req,
-  UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AttachmentService } from './attachment.service';
@@ -22,17 +23,17 @@ export class AttachmentController {
   constructor(private readonly attachmentService: AttachmentService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FilesInterceptor('files', 10))
   uploadAttachment(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
     @Body() body: UploadAttachmentDto,
     @Req() req,
   ) {
-    if (!file) {
-      throw new BadRequestException('File required');
+    if (!files || files.length === 0) {
+      throw new BadRequestException('At least one file is required');
     }
 
-    return this.attachmentService.upload(body.taskId, [file], req.user.id);
+    return this.attachmentService.upload(body.taskId, files, req.user.id);
   }
 
   @Get('task/:taskId')
@@ -42,11 +43,16 @@ export class AttachmentController {
 
   @Get('project/:projectId/recent')
   getRecentFiles(@Param('projectId') projectId: string, @Req() req) {
-    return this.attachmentService.getReccentFiles(projectId, req.user.id);
+    return this.attachmentService.getRecentFiles(projectId, req.user.id);
   }
 
   @Get(':attachmentId/download')
   downloadAttachment(@Param('attachmentId') attachmentId: string, @Req() req) {
-    return this.attachmentService.downloadAttachent(attachmentId, req.user.id);
+    return this.attachmentService.downloadAttachment(attachmentId, req.user.id);
+  }
+
+  @Delete(':attachmentId')
+  deleteAttachment(@Param('attachmentId') attachmentId: string, @Req() req) {
+    return this.attachmentService.deleteAttachment(attachmentId, req.user.id);
   }
 }
