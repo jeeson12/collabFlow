@@ -7,13 +7,19 @@ import {
   Patch,
   Post,
   Req,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { ClassSerializerInterceptor } from '@nestjs/common';
 import { BoardColumnService } from './board-column.service';
 import { CreateColumnDto } from './dto/create-column.dto';
 import { UpdateColumnDto } from './dto/update-column.dto';
 import { ReorderColumnsDto } from './dto/reorder-column.dto';
+import { JwtAuthGuard } from 'src/auth/strategies/auth-guards/jwt-auth.guard';
 
 @Controller('board-column')
+@UseGuards(JwtAuthGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 export class BoardColumnController {
   constructor(private readonly boardColumnService: BoardColumnService) {}
 
@@ -26,7 +32,10 @@ export class BoardColumnController {
   getColumns(@Param('projectId') projectId: string, @Req() req) {
     return this.boardColumnService.getColumns(projectId, req.user.id);
   }
-
+  @Patch('reorder')
+  reorderColumns(@Body() body: ReorderColumnsDto, @Req() req) {
+    return this.boardColumnService.reorderColumns(body, req.user.id);
+  }
   @Patch(':columnId')
   updateColumn(
     @Param('columnId') columnId: string,
@@ -34,11 +43,6 @@ export class BoardColumnController {
     @Req() req,
   ) {
     return this.boardColumnService.updateColumn(columnId, body, req.user.id);
-  }
-
-  @Patch('reorder')
-  reorderColumns(@Body() body: ReorderColumnsDto, @Req() req) {
-    return this.boardColumnService.reorderColumns(body, req.user.id);
   }
 
   @Delete(':columnId')

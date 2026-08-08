@@ -117,6 +117,9 @@ export class TaskService {
       where: {
         projectId,
       },
+      orderBy: {
+        updatedAt: 'desc',
+      },
       include: {
         column: true,
         creator: {

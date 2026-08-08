@@ -40,10 +40,21 @@ export class TaskController {
     return task;
   }
 
+  @Get('my-task')
+  getMyTasks(@Req() req) {
+    return this.taskService.getMyTasks(req.user.id);
+  }
+
+  @Get('project/:projectId/stats')
+  getTaskStats(@Param('projectId') projectId: string, @Req() req) {
+    return this.taskService.getTaskOverview(projectId, req.user.id);
+  }
+
   @Get('project/:projectId')
   getTasks(@Param('projectId') projectId: string, @Req() req) {
     return this.taskService.gettasks(projectId, req.user.id);
   }
+
   @Patch(':id')
   updateTask(@Param('id') id: string, @Body() body: updateTaskDto, @Req() req) {
     return this.taskService.updateTask(id, body, req.user.id);
@@ -52,15 +63,5 @@ export class TaskController {
   @Delete(':id')
   deleteTask(@Param('id') id: string, @Req() req) {
     return this.taskService.deleteTask(id, req.user.id);
-  }
-
-  @Get('project/:projectId/stats')
-  getTaskStats(@Param('projectId') projectId: string, @Req() req) {
-    return this.taskService.getTaskOverview(projectId, req.user.id);
-  }
-
-  @Get('my-task')
-  getMyTasks(@Req() req) {
-    return this.taskService.getMyTasks(req.user.id);
   }
 }
