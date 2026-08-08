@@ -302,7 +302,7 @@ export function KanbanBoard({
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div className="flex gap-4 overflow-x-auto p-6">
+      <div className="flex gap-5 overflow-x-auto p-3 mt-1">
         <SortableContext
           items={orderedColumns.map((column) => column.id)}
           strategy={horizontalListSortingStrategy}

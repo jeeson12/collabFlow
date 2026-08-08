@@ -102,7 +102,7 @@ export function KanbanColumn({
         transform: CSS.Transform.toString(transform),
         transition,
       }}
-      className={`flex w-75 shrink-0 flex-col rounded-lg bg-muted/30 p-3 transition-opacity ${
+      className={`flex w-65 shrink-0 flex-col rounded-lg bg-muted/30  transition-opacity ${
         isDragging ? "opacity-30 border-2 border-dashed border-primary" : ""
       }`}
     >
@@ -110,7 +110,7 @@ export function KanbanColumn({
       <div
         {...attributes}
         {...listeners}
-        className="mb-4 flex cursor-grab items-center justify-between"
+        className="mb-2 flex cursor-grab items-center justify-between"
       >
         <div className="flex items-center gap-2">
           <span className="font-semibold">{column.name}</span>
@@ -145,7 +145,7 @@ export function KanbanColumn({
       {/* Droppable Column Area */}
       <div
         ref={setDroppableRef}
-        className={`min-h-125 flex-1 rounded-lg p-2 transition-colors ${
+        className={`min-h-125 flex-1 rounded-lg  transition-colors ${
           isOver ? "bg-primary/10 ring-2 ring-primary/30" : "" // Existing hover style
         } ${
           isTaskDragTarget && !isDragging // Show dotted box if task is dragged over and column itself isn't being dragged
