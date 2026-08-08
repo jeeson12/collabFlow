@@ -1,17 +1,121 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createTask } from "./api";
+
+import {
+  createColumn,
+  createTask,
+  deleteColumn,
+  reorderColumn,
+  updateColumn,
+  updateTask,
+} from "./api";
+import { updateTaskType } from "./type";
 
 export function useCreateTask(projectId: string) {
   const queryClient = useQueryClient();
 
-  const cretateTaskMutation = useMutation({
+  const createTaskMutation = useMutation({
     mutationFn: createTask,
+
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
       queryClient.invalidateQueries({
-        queryKey: ["task-overview", projectId],
+        queryKey: ["tasks", projectId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["overview", projectId],
       });
     },
   });
-  return cretateTaskMutation;
+
+  return createTaskMutation;
+}
+
+export function useUpdateTask(projectId: string) {
+  const queryClient = useQueryClient();
+
+  const updateTaskMutation = useMutation({
+    mutationFn: ({ taskId, data }: { taskId: string; data: updateTaskType }) =>
+      updateTask(taskId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["tasks", projectId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["overview", projectId],
+      });
+    },
+  });
+
+  return updateTaskMutation;
+}
+
+export function useCreateColumn(projectId: string) {
+  const queryClient = useQueryClient();
+
+  const createColumnMutation = useMutation({
+    mutationFn: (name: string) => createColumn(projectId, name),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["overview", projectId],
+      });
+    },
+  });
+
+  return createColumnMutation;
+}
+
+export function useUpdateColumn(projectId: string) {
+  const queryClient = useQueryClient();
+
+  const updateColumnMutation = useMutation({
+    mutationFn: ({ columnId, name }: { columnId: string; name: string }) =>
+      updateColumn(columnId, name),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["overview", projectId],
+      });
+    },
+  });
+
+  return updateColumnMutation;
+}
+
+export function useDeleteColumn(projectId: string) {
+  const queryClient = useQueryClient();
+
+  const deleteColumnMutation = useMutation({
+    mutationFn: (columnId: string) => deleteColumn(columnId),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["overview", projectId],
+      });
+    },
+  });
+
+  return deleteColumnMutation;
+}
+
+export function useReorderColumn(projectId: string) {
+  const queryClient = useQueryClient();
+
+  const reorderColumnMutation = useMutation({
+    mutationFn: (
+      columns: {
+        id: string;
+        order: number;
+      }[],
+    ) => reorderColumn(columns),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["overview", projectId],
+      });
+    },
+  });
+
+  return reorderColumnMutation;
 }

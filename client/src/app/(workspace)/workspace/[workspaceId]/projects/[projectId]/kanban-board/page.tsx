@@ -15,14 +15,26 @@ import { getTaskOverview, getTasks } from "@/features/project/kanban_board/api";
 import { getMembers, getProject } from "@/features/project/dashboard/api";
 
 import {
+  Column,
   DueDateFilter,
   PriorityFilter,
   Task,
 } from "@/features/project/kanban_board/type";
+import { ColumnDialog } from "@/features/project/kanban_board/components/create-column-dialog";
+import {
+  useCreateColumn,
+  useDeleteColumn,
+  useUpdateColumn,
+} from "@/features/project/kanban_board/hooks";
+import { ConfirmDeleteDialog } from "@/components/common/delete-confirmation";
 
 export default function BoardPage() {
   const params = useParams();
   const projectId = params.projectId as string;
+
+  const createColumnMutation = useCreateColumn(projectId);
+  const updateColumnMutation = useUpdateColumn(projectId);
+  const deleteColumnMutation = useDeleteColumn(projectId);
 
   const [search, setSearch] = useState("");
 
@@ -40,6 +52,23 @@ export default function BoardPage() {
 
   const [taskDetailsOpen, setTaskDetailsOpen] = useState(false);
 
+  const [deleteColumnDialog, setDeleteColumnDialog] = useState<{
+    open: boolean;
+    column: Column | null;
+  }>({
+    open: false,
+    column: null,
+  });
+
+  const [columnDialog, setColumnDialog] = useState<{
+    open: boolean;
+    mode: "create" | "edit";
+    column: Column | null;
+  }>({
+    open: false,
+    mode: "create",
+    column: null,
+  });
   // -----------------------------
   // Project
   // -----------------------------
@@ -84,9 +113,71 @@ export default function BoardPage() {
 
   const columns = overview?.columns ?? [];
 
-  // -----------------------------
-  // Task details
-  // -----------------------------
+  const openColumnDialog = (column?: Column) => {
+    setColumnDialog({
+      open: true,
+      mode: column ? "edit" : "create",
+      column: column ?? null,
+    });
+  };
+
+  const openDeleteColumnDialog = (column: Column) => {
+    setDeleteColumnDialog({
+      open: true,
+      column,
+    });
+  };
+
+  const handleDeleteColumn = () => {
+    if (!deleteColumnDialog.column) {
+      return;
+    }
+
+    deleteColumnMutation.mutate(deleteColumnDialog.column.id, {
+      onSuccess: () => {
+        setDeleteColumnDialog({
+          open: false,
+          column: null,
+        });
+      },
+    });
+  };
+
+  const handleColumnSubmit = (name: string) => {
+    if (columnDialog.mode === "create") {
+      createColumnMutation.mutate(name, {
+        onSuccess: () => {
+          setColumnDialog({
+            open: false,
+            mode: "create",
+            column: null,
+          });
+        },
+      });
+
+      return;
+    }
+
+    if (!columnDialog.column) {
+      return;
+    }
+
+    updateColumnMutation.mutate(
+      {
+        columnId: columnDialog.column.id,
+        name,
+      },
+      {
+        onSuccess: () => {
+          setColumnDialog({
+            open: false,
+            mode: "create",
+            column: null,
+          });
+        },
+      },
+    );
+  };
 
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task);
@@ -100,10 +191,6 @@ export default function BoardPage() {
       setSelectedTask(null);
     }
   };
-
-  // -----------------------------
-  // Render
-  // -----------------------------
 
   return (
     <div className="flex h-full flex-col">
@@ -128,6 +215,7 @@ export default function BoardPage() {
       </div>
 
       <KanbanBoard
+        projectId={projectId}
         priority={priority}
         dueDateFilter={dueDate}
         columns={columns}
@@ -138,6 +226,9 @@ export default function BoardPage() {
           setCreateTaskModalOpen(true);
         }}
         onTaskClick={handleTaskClick}
+        onCreateColumn={() => openColumnDialog()}
+        onEditColumn={(column) => openColumnDialog(column)}
+        onDeleteColumn={openDeleteColumnDialog}
       />
 
       <TaskDetailsDialog
@@ -163,6 +254,35 @@ export default function BoardPage() {
         projectId={projectId}
         columns={columns}
         defaultColumnId={defaultColumnId}
+      />
+      <ColumnDialog
+        open={columnDialog.open}
+        onOpenChange={(open) =>
+          setColumnDialog((prev) => ({
+            ...prev,
+            open,
+          }))
+        }
+        mode={columnDialog.mode}
+        column={columnDialog.column}
+        onSubmit={handleColumnSubmit}
+        isLoading={
+          createColumnMutation.isPending || updateColumnMutation.isPending
+        }
+      />
+
+      <ConfirmDeleteDialog
+        open={deleteColumnDialog.open}
+        onOpenChange={(open) =>
+          setDeleteColumnDialog((prev) => ({
+            ...prev,
+            open,
+          }))
+        }
+        title={`Delete "${deleteColumnDialog.column?.name}" column?`}
+        description="This action will move all tasks in this column to the "
+        onConfirm={handleDeleteColumn}
+        isLoading={deleteColumnMutation.isPending}
       />
     </div>
   );

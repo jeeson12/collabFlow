@@ -31,6 +31,7 @@ export type Task = {
 
   comments: number;
   attachments: number;
+  updatedAt?: string;
 };
 
 export type Column = {

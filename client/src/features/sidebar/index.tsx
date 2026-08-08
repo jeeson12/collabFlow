@@ -41,7 +41,17 @@ export function Sidebar() {
       {currentProject && (
         <ProjectDetails
           project={currentProject}
-          completionRate={taskstats?.completionRate ?? 0}
+          completionRate={
+            taskstats?.total && taskstats.total > 0
+              ? Math.round(
+                  ((taskstats.columns.find(
+                    (col) => col.name.toLowerCase() === "done"
+                  )?.total ?? 0) /
+                    taskstats.total) *
+                    100
+                )
+              : 0
+          }
           totalTasks={taskstats?.total ?? 0}
         />
       )}
