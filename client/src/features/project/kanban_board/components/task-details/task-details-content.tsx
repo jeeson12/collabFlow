@@ -358,15 +358,6 @@ export function TaskDetailsContent({ task }: TaskDetailsContentProps) {
       </section>
 
       <Separator />
-
-      {/* Delete task */}
-
-      <div className="pb-2">
-        <Button variant="destructive" size="sm">
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete task
-        </Button>
-      </div>
     </>
   );
 }

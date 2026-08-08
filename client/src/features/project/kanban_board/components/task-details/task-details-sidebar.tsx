@@ -1,6 +1,11 @@
 "use client";
 
-import { CalendarDays } from "lucide-react";
+import {
+  CalendarDays,
+  CheckCircle2,
+  CircleUserRound,
+  UserRound,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,91 +17,125 @@ type TaskDetailsSidebarProps = {
   task: Task;
 };
 
+function getInitials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
 export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
   return (
-    <aside className="min-h-0 overflow-y-auto border-l bg-muted/10">
-      <div className="space-y-7 px-5 py-7">
-        {/* Status */}
+    <aside className="min-h-0 overflow-hidden border-l bg-muted/20">
+      <div className="h-full min-h-0 overflow-y-auto p-5">
+        <div className="flex flex-col gap-7">
+          {/* Status */}
+          <section>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Status
+            </p>
 
-        <section>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Status
-          </p>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
 
-          <Badge variant="secondary" className="px-3 py-1">
-            {task.column.name}
-          </Badge>
-        </section>
+              <Badge variant="secondary" className="px-3 py-1">
+                {task.column.name}
+              </Badge>
+            </div>
+          </section>
 
-        {/* Priority */}
+          {/* Priority */}
+          <section>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Priority
+            </p>
 
-        <section>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Priority
-          </p>
+            <Badge variant="outline" className={priorityStyles[task.priority]}>
+              {task.priority}
+            </Badge>
+          </section>
 
-          <Badge variant="outline" className={priorityStyles[task.priority]}>
-            {task.priority}
-          </Badge>
-        </section>
+          {/* Assignee */}
+          <section>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Assignee
+            </p>
 
-        {/* Assignee */}
+            {task.assignee ? (
+              <div className="flex items-center gap-3">
+                <Avatar className="h-9 w-9">
+                  <AvatarFallback className="text-xs font-medium">
+                    {getInitials(task.assignee.name)}
+                  </AvatarFallback>
+                </Avatar>
 
-        <section>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Assignee
-          </p>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">
+                    {task.assignee.name}
+                  </p>
 
-          {task.assignee ? (
+                  <p className="text-xs text-muted-foreground">Assigned</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <UserRound className="h-4 w-4" />
+                <span>Unassigned</span>
+              </div>
+            )}
+          </section>
+
+          {/* Created By */}
+          <section>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Created by
+            </p>
+
             <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="text-xs">
-                  {task.assignee.name.slice(0, 2).toUpperCase()}
+              <Avatar className="h-9 w-9">
+                <AvatarFallback className="text-xs font-medium">
+                  {getInitials(task.creator.name)}
                 </AvatarFallback>
               </Avatar>
 
-              <p className="text-sm font-medium">{task.assignee.name}</p>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">
+                  {task.creator.name}
+                </p>
+
+                <p className="truncate text-xs text-muted-foreground">
+                  {task.creator.email}
+                </p>
+              </div>
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Unassigned</p>
-          )}
-        </section>
+          </section>
 
-        {/* Due Date */}
+          {/* Due Date */}
+          <section>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Due date
+            </p>
 
-        <section>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Due date
-          </p>
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-4 w-4 text-muted-foreground" />
 
-          <div className="flex items-center gap-2 text-sm">
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+              <p className="text-sm font-medium">
+                {task.dueDate
+                  ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })
+                  : "No due date"}
+              </p>
+            </div>
+          </section>
 
-            <span>
-              {task.dueDate
-                ? new Date(task.dueDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })
-                : "No due date"}
-            </span>
-          </div>
-        </section>
-
-        {/* Labels */}
-
-        <section>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Labels
-          </p>
-
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">Frontend</Badge>
-
-            <Badge variant="secondary">UI</Badge>
-          </div>
-        </section>
+          {/* Task Information */}
+        </div>
       </div>
     </aside>
   );

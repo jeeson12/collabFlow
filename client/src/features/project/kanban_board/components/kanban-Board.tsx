@@ -32,7 +32,7 @@ export function KanbanBoard({
 
   return (
     <div className="flex-1 overflow-x-auto p-5">
-      <div className="flex min-w-max gap-4">
+      <div className="flex min-w-max gap-1">
         {columns.map((column) => {
           const columnTasks = tasks.filter((task) => {
             if (task.column.id !== column.id) return false;

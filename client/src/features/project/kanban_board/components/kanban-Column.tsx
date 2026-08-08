@@ -24,7 +24,7 @@ export function KanbanColumn({
   onTaskClick,
 }: KanbanColumnProps) {
   return (
-    <div className="w-75 shrink-0 rounded-lg border bg-muted/30 p-3">
+    <div className="w-75 shrink-0  bg-muted/30">
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">

@@ -144,8 +144,12 @@ export default function BoardPage() {
         open={taskDetailsOpen}
         onOpenChange={handleTaskDetailsOpenChange}
         task={selectedTask}
+        columns={columns}
+        assignee={assignee}
+        onTaskUpdated={(updatedTask) => {
+          setSelectedTask(updatedTask);
+        }}
       />
-
       <CreateTaskDialog
         open={createTaskModalOpen}
         assignee={assignee}

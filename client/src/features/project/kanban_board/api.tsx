@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/axios";
-import { CreateTaskPayload } from "./type";
+import { CreateTaskPayload, updateTaskType } from "./type";
 
 export async function createTask(formData: FormData) {
   const task = await api.post("/task", formData, {
@@ -19,6 +19,18 @@ export async function getTasks(projectId: string) {
 
 export async function getTaskOverview(projectId: string) {
   const response = await api.get(`/task/project/${projectId}/stats`);
+  return response.data;
+}
+
+export async function updateTask(taskId: string, data: updateTaskType) {
+  const response = await api.patch(`/task/${taskId}`, data);
+
+  return response.data;
+}
+
+export async function deleteTask(taskId: string) {
+  const response = await api.delete(`/task/${taskId}`);
+
   return response.data;
 }
 
