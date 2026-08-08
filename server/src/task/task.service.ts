@@ -139,67 +139,11 @@ export class TaskService {
 
   async updateTask(id: string, body: updateTaskDto, userId: string) {
     const hasTask = await this.prisma.task.findUnique({
-      where: { id },
-    });
-    if (!hasTask) throw new NotFoundException('task not found');
-
-    const requesterMembership = await this.prisma.projectMembership.findUnique({
       where: {
-        userId_projectId: {
-          userId,
-          projectId: hasTask.projectId,
-        },
-      },
-    });
-    if (!requesterMembership) {
-      throw new ForbiddenException('you are not a member of this project');
-    }
-
-    if (body.assigneeId) {
-      const member = await this.prisma.projectMembership.findUnique({
-        where: {
-          userId_projectId: {
-            userId: body.assigneeId,
-            projectId: hasTask.projectId,
-          },
-        },
-      });
-      if (!member)
-        throw new ForbiddenException('user is not a member of this project');
-    }
-
-    if (body.columnId) {
-      const column = await this.prisma.boardColumn.findFirst({
-        where: {
-          id: body.columnId,
-          projectId: hasTask.projectId,
-        },
-      });
-
-      if (!column) {
-        throw new NotFoundException('Invalid column');
-      }
-    }
-    const updatedTask = await this.prisma.task.update({
-      where: { id },
-      data: {
-        ...body,
-        dueDate: body.dueDate ? new Date(body.dueDate) : undefined,
+        id,
       },
     });
 
-    await this.activity.createActivity({
-      userId,
-      projectId: hasTask.projectId,
-      message: `updated task "${updatedTask.title}"`,
-    });
-    return updatedTask;
-  }
-
-  async deleteTask(id: string, userId: string) {
-    const hasTask = await this.prisma.task.findUnique({
-      where: { id },
-    });
     if (!hasTask) {
       throw new NotFoundException('task not found');
     }
@@ -212,15 +156,153 @@ export class TaskService {
         },
       },
     });
+
+    if (!requesterMembership) {
+      throw new ForbiddenException('you are not a member of this project');
+    }
+
+    /*
+     * Validate assignee
+     */
+    if (body.assigneeId) {
+      const member = await this.prisma.projectMembership.findUnique({
+        where: {
+          userId_projectId: {
+            userId: body.assigneeId,
+            projectId: hasTask.projectId,
+          },
+        },
+      });
+
+      if (!member) {
+        throw new ForbiddenException('user is not a member of this project');
+      }
+    }
+
+    /*
+     * Validate column
+     */
+    if (body.columnId) {
+      const column = await this.prisma.boardColumn.findFirst({
+        where: {
+          id: body.columnId,
+          projectId: hasTask.projectId,
+        },
+      });
+
+      if (!column) {
+        throw new NotFoundException('Invalid column');
+      }
+    }
+
+    const updatedTask = await this.prisma.task.update({
+      where: {
+        id,
+      },
+
+      data: {
+        title: body.title,
+        description: body.description,
+        priority: body.priority,
+        columnId: body.columnId,
+
+        /*
+         * null = unassign
+         * undefined = don't change
+         */
+        assigneeId:
+          body.assigneeId === null
+            ? null
+            : body.assigneeId
+              ? body.assigneeId
+              : undefined,
+
+        dueDate:
+          body.dueDate === null
+            ? null
+            : body.dueDate
+              ? new Date(body.dueDate)
+              : undefined,
+      },
+
+      include: {
+        column: true,
+
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    await this.activity.createActivity({
+      userId,
+      projectId: hasTask.projectId,
+      message: `updated task "${updatedTask.title}"`,
+    });
+
+    return updatedTask;
+  }
+
+  async deleteTask(id: string, userId: string) {
+    const hasTask = await this.prisma.task.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!hasTask) {
+      throw new NotFoundException('task not found');
+    }
+
+    /*
+     * Check whether requester belongs to the project
+     */
+    const requesterMembership = await this.prisma.projectMembership.findUnique({
+      where: {
+        userId_projectId: {
+          userId,
+          projectId: hasTask.projectId,
+        },
+      },
+    });
+
     if (!requesterMembership) {
       throw new ForbiddenException('You are not a member of this project');
     }
-    const deletedTask = await this.prisma.task.delete({ where: { id } });
+
+    /*
+     * Only the task creator can delete the task
+     */
+    if (hasTask.creatorId !== userId) {
+      throw new ForbiddenException(
+        'Only the task creator can delete this task',
+      );
+    }
+
+    const deletedTask = await this.prisma.task.delete({
+      where: {
+        id,
+      },
+    });
+
     await this.activity.createActivity({
       userId,
       projectId: hasTask.projectId,
       message: `deleted task "${hasTask.title}"`,
     });
+
     return deletedTask;
   }
 

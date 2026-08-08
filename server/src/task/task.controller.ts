@@ -44,7 +44,6 @@ export class TaskController {
   getTasks(@Param('projectId') projectId: string, @Req() req) {
     return this.taskService.gettasks(projectId, req.user.id);
   }
-
   @Patch(':id')
   updateTask(@Param('id') id: string, @Body() body: updateTaskDto, @Req() req) {
     return this.taskService.updateTask(id, body, req.user.id);
