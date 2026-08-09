@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -11,12 +12,17 @@ import { MembershipRole } from '@prisma/client';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 import { ActivityService } from 'src/activity/activity.service';
 import { updateWorkspaceMemberDto } from './dto/update-workspace-member.dto';
+import { EmailService } from 'src/email/email.service';
+import { InviteWorkspaceMemberDto } from './dto/invite-workspace-member.dto';
+import { createHash, hash, randomBytes } from 'crypto';
+import { workspaceInvitationTemplate } from 'src/email/templates/invite-member-template';
 
 @Injectable()
 export class WorkspaceService {
   constructor(
     private prisma: PrismaService,
     private activity: ActivityService,
+    private emailService: EmailService,
   ) {}
   async createWorkspace(body: CreateWorkspaceDto, userId: string) {
     const workspace = await this.prisma.workspace.create({
@@ -374,5 +380,267 @@ export class WorkspaceService {
     });
 
     return updatedMember;
+  }
+
+  async inviteMember(
+    workspaceId: string,
+    requesterId: string,
+    body: InviteWorkspaceMemberDto,
+  ) {
+    // 1. Check workspace
+    const workspace = await this.prisma.workspace.findUnique({
+      where: {
+        id: workspaceId,
+      },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    // 2. Check requester
+    const requesterMembership =
+      await this.prisma.workspaceMembership.findUnique({
+        where: {
+          userId_workspaceId: {
+            userId: requesterId,
+            workspaceId,
+          },
+        },
+      });
+
+    if (!requesterMembership) {
+      throw new ForbiddenException('You are not a member of this workspace');
+    }
+
+    if (requesterMembership.role !== MembershipRole.ADMIN) {
+      throw new ForbiddenException('You are not authorized to invite members');
+    }
+
+    // 3. Find existing user if they already have an account
+    const existingUser = await this.prisma.user.findUnique({
+      where: {
+        email: body.email,
+      },
+    });
+
+    // 4. If existing user is already a member, stop
+    if (existingUser) {
+      const existingMembership =
+        await this.prisma.workspaceMembership.findUnique({
+          where: {
+            userId_workspaceId: {
+              userId: existingUser.id,
+              workspaceId,
+            },
+          },
+        });
+
+      if (existingMembership) {
+        throw new ConflictException(
+          'User is already a member of this workspace',
+        );
+      }
+    }
+
+    // 5. Remove an older pending invitation for this email
+    await this.prisma.invitation.deleteMany({
+      where: {
+        workspaceId,
+        email: body.email,
+        acceptedAt: null,
+      },
+    });
+
+    const rawToken = randomBytes(32).toString('hex');
+    const tokenHash = createHash('sha256').update(rawToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    const invitation = await this.prisma.invitation.create({
+      data: {
+        email: body.email,
+        tokenHash,
+        workspaceId,
+        invitedById: requesterId,
+        role: body.role,
+        expiresAt,
+      },
+    });
+    const inviter = await this.prisma.user.findUnique({
+      where: {
+        id: requesterId,
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    const invitationUrl =
+      `${process.env.FRONTEND_URL}` + `/invitations/${rawToken}`;
+
+    const html = workspaceInvitationTemplate(
+      workspace.name,
+      inviter?.name ?? 'A workspace admin',
+      invitationUrl,
+    );
+    try {
+      await this.emailService.sendEmail(
+        body.email,
+        `You're invited to ${workspace.name} on CollabFlow`,
+        html,
+      );
+    } catch (error) {
+      // Don't leave a dead invitation in the DB
+      await this.prisma.invitation.delete({
+        where: {
+          id: invitation.id,
+        },
+      });
+
+      throw error;
+    }
+
+    // 13. Activity
+    await this.activity.createActivity({
+      userId: requesterId,
+      workspaceId,
+      message: `invited ${body.email} to the workspace`,
+    });
+
+    return {
+      message: 'Workspace invitation sent',
+    };
+  }
+
+  async acceptInvite(rawToken: string, userId: string) {
+    const tokenHash = createHash('sha256').update(rawToken).digest('hex');
+
+    const invitation = await this.prisma.invitation.findUnique({
+      where: {
+        tokenHash,
+      },
+      include: {
+        workspace: true,
+      },
+    });
+    if (!invitation) {
+      throw new BadRequestException('Invalid invitation');
+    }
+
+    if (invitation.acceptedAt) {
+      throw new BadRequestException(
+        'This invitation has already been accepted',
+      );
+    }
+
+    if (invitation.expiresAt < new Date()) {
+      throw new BadRequestException('This invitation has expired');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.email.toLowerCase() !== invitation.email.toLowerCase()) {
+      throw new ForbiddenException(
+        'This invitation was sent to a different email address',
+      );
+    }
+
+    const existingMembership = await this.prisma.workspaceMembership.findUnique(
+      {
+        where: {
+          userId_workspaceId: {
+            userId,
+            workspaceId: invitation.workspaceId,
+          },
+        },
+      },
+    );
+
+    if (existingMembership) {
+      throw new ConflictException('You are already a member of this workspace');
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.workspaceMembership.create({
+        data: {
+          userId,
+          workspaceId: invitation.workspaceId,
+          role: invitation.role,
+        },
+      }),
+
+      this.prisma.invitation.update({
+        where: {
+          id: invitation.id,
+        },
+        data: {
+          acceptedAt: new Date(),
+        },
+      }),
+    ]);
+
+    await this.activity.createActivity({
+      userId,
+      workspaceId: invitation.workspaceId,
+      message: `joined the workspace "${invitation.workspace.name}"`,
+    });
+
+    return {
+      message: 'Workspace invitation accepted',
+      workspace: {
+        id: invitation.workspace.id,
+        name: invitation.workspace.name,
+      },
+    };
+  }
+
+  async getInvitation(token: string) {
+    const tokenHash = createHash('sha256').update(token).digest('hex');
+    const invitation = await this.prisma.invitation.findUnique({
+      where: {
+        tokenHash,
+      },
+      include: {
+        workspace: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        invitedBy: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!invitation) {
+      throw new NotFoundException('Invitation not found');
+    }
+
+    if (invitation.acceptedAt) {
+      throw new BadRequestException('Invitation has already been accepted');
+    }
+
+    if (invitation.expiresAt < new Date()) {
+      throw new BadRequestException('Invitation has expired');
+    }
+
+    return {
+      workspaceId: invitation.workspace.id,
+      workspaceName: invitation.workspace.name,
+      inviterName: invitation.invitedBy.name,
+      role: invitation.role,
+      expiresAt: invitation.expiresAt,
+    };
   }
 }

@@ -25,6 +25,10 @@ model User {
   comments    Comment[]
   attachments Attachment[]
   activities  Activity[]
+
+  passwordResetTokens PasswordResetToken[]
+  notification        Notification[]
+  sendInvitation      Invitation[]         @relation("invitationSender")
 }
 
 model Workspace {
@@ -36,6 +40,7 @@ model Workspace {
 
   memberships WorkspaceMembership[]
   projects    Project[]
+  invitations Invitation[]
 }
 
 model WorkspaceMembership {
@@ -184,6 +189,69 @@ model BoardColumn {
   tasks   Task[]
 
   @@index([projectId, order])
+}
+
+model PasswordResetToken {
+  id        String @id @default(cuid())
+  tokenHash String @unique
+
+  userId String
+
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Notification {
+  id String @id @default(cuid())
+
+  userId String
+
+  title   String
+  message String
+
+  entityId   String?
+  entityType String?
+
+  readAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+}
+
+model Invitation {
+  id String @id @default(cuid())
+
+  email String
+
+  tokenHash String @unique
+
+  role MembershipRole @default(MEMBER)
+
+  workspaceId String
+  invitedById String
+
+  expiresAt  DateTime
+  acceptedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  invitedBy User @relation("invitationSender", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([workspaceId])
+  @@index([invitedById])
 }
 
 enum TaskPriority {

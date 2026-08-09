@@ -9,12 +9,15 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+
 import { WorkspaceService } from './workspace.service';
 import { JwtAuthGuard } from 'src/auth/strategies/auth-guards/jwt-auth.guard';
+
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { updateWorkspaceDto } from './dto/update-workspace.dto';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 import { updateWorkspaceMemberDto } from './dto/update-workspace-member.dto';
+import { InviteWorkspaceMemberDto } from './dto/invite-workspace-member.dto';
 
 @Controller('workspace')
 @UseGuards(JwtAuthGuard)
@@ -83,8 +86,7 @@ export class WorkspaceController {
 
   @Patch(':workspaceId/member/:targetUserId')
   updateMember(
-    @Param('workspaceId')
-    workspaceId: string,
+    @Param('workspaceId') workspaceId: string,
     @Param('targetUserId') targetUserId: string,
     @Req() req,
     @Body() body: updateWorkspaceMemberDto,
@@ -95,5 +97,19 @@ export class WorkspaceController {
       targetUserId,
       body,
     );
+  }
+
+  @Post(':workspaceId/invite')
+  inviteMember(
+    @Param('workspaceId') workspaceId: string,
+    @Req() req,
+    @Body() body: InviteWorkspaceMemberDto,
+  ) {
+    return this.workspaceService.inviteMember(workspaceId, req.user.id, body);
+  }
+
+  @Post('invitations/:token/accept')
+  acceptInvitation(@Param('token') token: string, @Req() req) {
+    return this.workspaceService.acceptInvite(token, req.user.id);
   }
 }

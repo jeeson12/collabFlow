@@ -12,6 +12,7 @@ import { AttachmentModule } from './attachment/attachment.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { ConfigModule } from '@nestjs/config';
 import { BoardColumnModule } from './board-column/board-column.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { BoardColumnModule } from './board-column/board-column.module';
     AttachmentModule,
     SupabaseModule,
     BoardColumnModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
