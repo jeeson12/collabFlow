@@ -45,15 +45,22 @@ export async function getWorkspaceMembers(
   return response.data;
 }
 
-export async function addWorkspaceMember(
+export async function inviteWorkspaceMember(
   workspaceId: string,
   email: string,
   role: "ADMIN" | "MEMBER",
-): Promise<{ message: string }> {
-  const response = await api.post(`/workspace/${workspaceId}/members`, {
+) {
+  const response = await api.post(`/workspace/${workspaceId}/invite`, {
     email,
     role,
   });
+
+  return response.data;
+}
+
+export async function acceptWorkspaceInvitation(token: string) {
+  const response = await api.post(`/workspace/invitations/${token}/accept`);
+
   return response.data;
 }
 
@@ -68,6 +75,11 @@ export async function updateWorkspaceMember(
       role,
     },
   );
+  return response.data;
+}
+export async function getWorkspaceInvitation(token: string) {
+  const response = await api.get(`/workspace/invitations/${token}`);
+
   return response.data;
 }
 

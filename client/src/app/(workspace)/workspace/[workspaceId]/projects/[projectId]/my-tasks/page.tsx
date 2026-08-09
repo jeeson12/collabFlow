@@ -79,11 +79,11 @@ export default function MyTasksPage() {
           ) : (
             filteredTasks.map((task) => (
               <div
-                key={task.title}
+                key={task.id}
                 className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border p-4 transition hover:bg-muted/50"
               >
                 <div className="space-y-1">
-                  <h4 className="font-medium">{task.id}</h4>
+                  <h4 className="font-medium">{task.title}</h4>
                   <p className="text-sm text-muted-foreground">
                     {task.description}
                   </p>
