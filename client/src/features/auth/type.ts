@@ -13,6 +13,13 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  hasPassword: boolean;
+  avatarUrl: string | null;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export type LoginResponse = User;

@@ -69,22 +69,6 @@ export function NavMenu() {
           My Tasks
         </Button>
       </Link>
-
-      {/* Settings */}
-      <Link href={`/workspace/${workspaceId}/projects/${projectId}/settings`}>
-        <Button
-          variant={
-            pathname ===
-            `/workspace/${workspaceId}/projects/${projectId}/settings`
-              ? "default"
-              : "ghost"
-          }
-          className="w-full justify-start"
-        >
-          <Settings className="mr-2 h-4 w-4" />
-          Settings
-        </Button>
-      </Link>
     </nav>
   );
 }

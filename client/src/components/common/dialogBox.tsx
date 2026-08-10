@@ -60,7 +60,7 @@ export function AppDialog({
             {headerAction}
           </div>
         </DialogHeader>
-        <div className="flex-1 overflow-y-auto p-6">{children}</div>
+        <div className="flex-1 overflow-y-auto p-6 pt-0">{children}</div>
       </DialogContent>
     </Dialog>
   );

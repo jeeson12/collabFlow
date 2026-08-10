@@ -1,14 +1,11 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { useAuth } from "../auth/authProvider";
 
 export function Profile() {
   const { user, isLoading } = useAuth();
-  console.log("Profile User:", user);
-  console.log("Loading:", isLoading);
-
   if (isLoading) {
     return (
       <div className="p-2">
@@ -21,6 +18,7 @@ export function Profile() {
     <div className="p-2">
       <div className="flex items-center gap-3 rounded-lg border p-3">
         <Avatar>
+          {user?.avatarUrl && <AvatarImage src={user.avatarUrl} alt="" />}
           <AvatarFallback>
             {user?.name ? getInitials(user.name) : "?"}
           </AvatarFallback>

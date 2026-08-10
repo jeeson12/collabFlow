@@ -1,5 +1,6 @@
 import { api } from "@/lib/api/axios";
 import {
+  ChangePasswordPayload,
   LoginDto,
   LoginResponse,
   RegisterDto,
@@ -30,6 +31,31 @@ export async function register(input: RegisterDto): Promise<RegisterResponse> {
 export async function forgotPassword(email: string) {
   const response = await api.post("/auth/forgot-password", {
     email,
+  });
+
+  return response.data;
+}
+
+export async function changePassword(data: ChangePasswordPayload) {
+  const response = await api.post("/auth/change-password", data);
+
+  return response.data;
+}
+
+export async function updateProfile(name?: string, file?: File) {
+  const formData = new FormData();
+  if (name !== undefined) {
+    formData.append("name", name);
+  }
+
+  if (file) {
+    formData.append("avatar", file);
+  }
+
+  const response = await api.patch("/auth/profile", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 
   return response.data;
