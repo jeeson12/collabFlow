@@ -2,10 +2,13 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Req,
   Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
@@ -19,6 +22,7 @@ import { JwtAuthGuard } from './strategies/auth-guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './strategies/auth-guards/google-auth.guard';
 
 import * as express from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('auth')
 export class AuthController {
@@ -102,5 +106,16 @@ export class AuthController {
       dto.currentPassword,
       dto.newPassword,
     );
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
+  updateProfile(
+    @Req() req,
+    @Body('name') name?: string,
+    @UploadedFile() avatar?: Express.Multer.File,
+  ) {
+    return this.authService.updateProfile(req.user.id, name, avatar);
   }
 }

@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { EmailService } from 'src/email/email.service';
 import { createHash, randomBytes } from 'crypto';
 import { forgotPasswordTemplate } from 'src/email/templates/forgot-password-template';
+import { SupabaseService } from 'src/supabase/supabase.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private emailService: EmailService,
+    private supabaseService: SupabaseService,
   ) {}
 
   async register(data: RegisterDto) {
@@ -284,6 +286,68 @@ export class AuthService {
 
     return {
       message: 'Password changed successfully',
+    };
+  }
+
+  async updateProfile(
+    userId: string,
+    name?: string,
+    file?: Express.Multer.File,
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (name !== undefined && !name.trim()) {
+      throw new BadRequestException('Name cannot be empty');
+    }
+
+    let avatarPath: string | undefined;
+
+    if (file) {
+      if (!file.mimetype.startsWith('image/')) {
+        throw new BadRequestException('Only image files are allowed');
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        throw new BadRequestException('Avatar must be smaller than 5MB');
+      }
+      avatarPath = `avatars/${userId}`;
+
+      await this.supabaseService.uploadFiles(
+        avatarPath,
+        file.buffer,
+        file.mimetype,
+        true,
+      );
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        ...(name !== undefined && { name: name.trim() }),
+        ...(avatarPath && { avatarPath }),
+      },
+    });
+
+    const avatarUrl = updatedUser.avatarPath
+      ? await this.supabaseService.createSignedUrl(updatedUser.avatarPath)
+      : null;
+
+    return {
+      id: updatedUser.id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      hasPassword: Boolean(updatedUser.password),
+      avatarUrl,
     };
   }
 

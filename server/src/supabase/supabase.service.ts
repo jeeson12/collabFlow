@@ -13,12 +13,17 @@ export class SupabaseService {
     );
   }
 
-  async uploadFiles(path: string, file: Buffer, contentType: string) {
+  async uploadFiles(
+    path: string,
+    file: Buffer,
+    contentType: string,
+    upsert = false,
+  ) {
     const { data, error } = await this.client.storage
       .from('attachments')
       .upload(path, file, {
         contentType,
-        upsert: false,
+        upsert,
       });
 
     if (error) {
