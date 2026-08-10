@@ -18,7 +18,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
-    private emailServicce: EmailService,
+    private emailService: EmailService,
   ) {}
 
   async register(data: RegisterDto) {
@@ -38,24 +38,38 @@ export class AuthService {
       name: user.name,
     };
   }
+
   async login(data: { email: string; password: string }) {
     const user = await this.prisma.user.findUnique({
-      where: { email: data.email },
+      where: {
+        email: data.email,
+      },
     });
 
     if (!user) {
       throw new NotFoundException('no user found');
     }
+
+    // Google-only accounts do not have a password.
+    if (!user.password) {
+      throw new UnauthorizedException(
+        'This account uses Google authentication.',
+      );
+    }
+
     const passwordMatch = await bcrypt.compare(data.password, user.password);
 
     if (!passwordMatch) {
       throw new UnauthorizedException('invalid credentials');
     }
 
-    const token = this.jwt.sign({ userId: user.id, userEmail: user.email });
+    const token = this.jwt.sign({
+      userId: user.id,
+      userEmail: user.email,
+    });
 
     return {
-      token: token,
+      token,
       user: {
         id: user.id,
         name: user.name,
@@ -73,8 +87,11 @@ export class AuthService {
     }
 
     let user = await this.prisma.user.findUnique({
-      where: { email },
+      where: {
+        email,
+      },
     });
+
     if (!user) {
       user = await this.prisma.user.create({
         data: {
@@ -84,6 +101,7 @@ export class AuthService {
         },
       });
     }
+
     return this.generateToken(user.id, user.email);
   }
 
@@ -93,13 +111,25 @@ export class AuthService {
         email,
       },
     });
-    if (!user) {
+
+    /*
+     * Google-only accounts do not have a password and therefore
+     * cannot use password reset.
+     *
+     * We return the same generic response for:
+     * - non-existent accounts
+     * - Google-only accounts
+     *
+     * This prevents revealing whether an email belongs to an account.
+     */
+    if (!user || !user.password) {
       return {
         message:
           'If an account exists with this email, a reset link has been sent.',
       };
     }
 
+    // Remove any previous unused reset tokens.
     await this.prisma.passwordResetToken.deleteMany({
       where: {
         userId: user.id,
@@ -107,19 +137,29 @@ export class AuthService {
       },
     });
 
+    // Generate a secure random token.
     const rawToken = randomBytes(32).toString('hex');
+
+    // Store only the hash in the database.
     const tokenHash = createHash('sha256').update(rawToken).digest('hex');
+
+    // Token expires after 30 minutes.
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
     await this.prisma.passwordResetToken.create({
-      data: { tokenHash, userId: user.id, expiresAt },
+      data: {
+        tokenHash,
+        userId: user.id,
+        expiresAt,
+      },
     });
 
-    const resetUrl =
-      `${process.env.FRONTEND_URL}` + `/reset-password?token=${rawToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${rawToken}`;
 
     const html = forgotPasswordTemplate(resetUrl, user.name ?? undefined);
-    await this.emailServicce.sendEmail(user.email, 'Reset your password', html);
+
+    await this.emailService.sendEmail(user.email, 'Reset your password', html);
+
     return {
       message:
         'If an account exists with this email, a reset link has been sent.',
@@ -130,7 +170,9 @@ export class AuthService {
     const tokenHash = createHash('sha256').update(token).digest('hex');
 
     const resetToken = await this.prisma.passwordResetToken.findUnique({
-      where: { tokenHash },
+      where: {
+        tokenHash,
+      },
     });
 
     if (!resetToken) {
@@ -143,6 +185,22 @@ export class AuthService {
 
     if (resetToken.expiresAt < new Date()) {
       throw new BadRequestException('This reset link has expired');
+    }
+
+    // Make sure the account still has a password.
+    // This protects the Google-only rule even if a token somehow exists.
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: resetToken.userId,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+
+    if (!user.password) {
+      throw new BadRequestException('This account uses Google authentication.');
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -166,6 +224,7 @@ export class AuthService {
         },
       }),
 
+      // Invalidate any other unused reset tokens.
       this.prisma.passwordResetToken.deleteMany({
         where: {
           userId: resetToken.userId,
@@ -205,7 +264,8 @@ export class AuthService {
         'This account does not have a password. Use Google authentication.',
       );
     }
-    const passwordMatch = bcrypt.compare(currentPassword, user.password);
+
+    const passwordMatch = await bcrypt.compare(currentPassword, user.password);
 
     if (!passwordMatch) {
       throw new UnauthorizedException('Incorrect current password');
