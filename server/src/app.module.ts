@@ -13,6 +13,7 @@ import { SupabaseModule } from './supabase/supabase.module';
 import { ConfigModule } from '@nestjs/config';
 import { BoardColumnModule } from './board-column/board-column.module';
 import { EmailModule } from './email/email.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { EmailModule } from './email/email.module';
     SupabaseModule,
     BoardColumnModule,
     EmailModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

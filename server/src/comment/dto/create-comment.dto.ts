@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class createCommentDto {
   @IsString()
@@ -8,4 +8,9 @@ export class createCommentDto {
   @IsString()
   @IsNotEmpty()
   taskId: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  mentionedUserIds?: string[];
 }

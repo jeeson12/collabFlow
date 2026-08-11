@@ -16,6 +16,7 @@ import { EmailService } from 'src/email/email.service';
 import { InviteWorkspaceMemberDto } from './dto/invite-workspace-member.dto';
 import { createHash, hash, randomBytes } from 'crypto';
 import { workspaceInvitationTemplate } from 'src/email/templates/invite-member-template';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class WorkspaceService {
@@ -23,6 +24,7 @@ export class WorkspaceService {
     private prisma: PrismaService,
     private activity: ActivityService,
     private emailService: EmailService,
+    private readonly notification: NotificationService,
   ) {}
   async createWorkspace(body: CreateWorkspaceDto, userId: string) {
     const workspace = await this.prisma.workspace.create({
@@ -152,6 +154,16 @@ export class WorkspaceService {
         },
       });
 
+    const workspace = await this.prisma.workspace.findUnique({
+      where: {
+        id: workspaceId,
+      },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
     if (!requesterMembership) {
       throw new NotFoundException('you are not a part of this workspace');
     }
@@ -190,6 +202,14 @@ export class WorkspaceService {
       userId: requesterId,
       workspaceId,
       message: `added ${userExists.name} to the workspace`,
+    });
+    await this.notification.createNotification({
+      userId: userExists.id,
+      title: 'Added to workspace',
+      message: `You were added to workspace "${workspace.name}"`,
+      entityId: workspace.id,
+      entityType: 'WORKSPACE',
+      workspaceId: workspace.id,
     });
     return { message: 'member added' };
   }
@@ -243,6 +263,15 @@ export class WorkspaceService {
     if (requesterMembership.role !== MembershipRole.ADMIN) {
       throw new ForbiddenException('You are not authorized to remove members');
     }
+    const workspace = await this.prisma.workspace.findUnique({
+      where: {
+        id: workspaceId,
+      },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
 
     const targetMembership = await this.prisma.workspaceMembership.findUnique({
       where: {
@@ -288,6 +317,14 @@ export class WorkspaceService {
           workspaceId,
         },
       },
+    });
+    await this.notification.createNotification({
+      userId: targetUserId,
+      title: 'Removed from workspace',
+      message: `You were removed from workspace "${workspace.name}"`,
+      entityId: workspace.id,
+      entityType: 'WORKSPACE',
+      workspaceId: workspace.id,
     });
     await this.activity.createActivity({
       userId: requesterId,
@@ -372,6 +409,14 @@ export class WorkspaceService {
           },
         },
       },
+    });
+    await this.notification.createNotification({
+      userId: targetId,
+      title: 'Workspace role updated',
+      message: `Your role was changed from ${targetMembership.role} to ${body.role}`,
+      entityId: workspaceId,
+      entityType: 'WORKSPACE',
+      workspaceId,
     });
     await this.activity.createActivity({
       userId: requesterId,
@@ -500,6 +545,17 @@ export class WorkspaceService {
       throw error;
     }
 
+    if (existingUser) {
+      await this.notification.createNotification({
+        userId: existingUser.id,
+        title: 'Workspace invitation',
+        message: `You were invited to join "${workspace.name}"`,
+        entityId: workspace.id,
+        entityType: 'WORKSPACE',
+        workspaceId: workspace.id,
+      });
+    }
+
     // 13. Activity
     await this.activity.createActivity({
       userId: requesterId,
@@ -520,6 +576,12 @@ export class WorkspaceService {
         tokenHash,
       },
       include: {
+        invitedBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         workspace: true,
       },
     });
@@ -586,7 +648,14 @@ export class WorkspaceService {
         },
       }),
     ]);
-
+    await this.notification.createNotification({
+      userId: invitation.invitedBy.id,
+      title: 'Invitation accepted',
+      message: `${user.name} joined workspace "${invitation.workspace.name}"`,
+      entityId: invitation.workspace.id,
+      entityType: 'WORKSPACE',
+      workspaceId: invitation.workspace.id,
+    });
     await this.activity.createActivity({
       userId,
       workspaceId: invitation.workspaceId,

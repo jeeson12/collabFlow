@@ -7,12 +7,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { createCommentDto } from './dto/create-comment.dto';
 import { updateCommentDto } from './dto/update-comment.dto';
 import { ActivityService } from 'src/activity/activity.service';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class CommentService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly activity: ActivityService,
+    private readonly notification: NotificationService,
   ) {}
 
   async createComment(body: createCommentDto, userId: string) {
@@ -21,6 +23,7 @@ export class CommentService {
         id: body.taskId,
       },
     });
+
     if (!task) {
       throw new NotFoundException('Task not found');
     }
@@ -28,14 +31,51 @@ export class CommentService {
     const member = await this.prisma.projectMembership.findUnique({
       where: {
         userId_projectId: {
-          userId: userId,
+          userId,
           projectId: task.projectId,
         },
       },
     });
+
     if (!member) {
       throw new ForbiddenException('You are not a member of this project');
     }
+
+    const mentionedUserIds = [...new Set(body.mentionedUserIds ?? [])].filter(
+      (id) => id !== userId,
+    );
+
+    if (mentionedUserIds.length > 0) {
+      const mentionedMembers = await this.prisma.projectMembership.findMany({
+        where: {
+          projectId: task.projectId,
+          userId: {
+            in: mentionedUserIds,
+          },
+        },
+        select: {
+          userId: true,
+        },
+      });
+
+      const validUserIds = new Set(
+        mentionedMembers.map((member) => member.userId),
+      );
+
+      const invalidUserIds = mentionedUserIds.filter(
+        (id) => !validUserIds.has(id),
+      );
+
+      if (invalidUserIds.length > 0) {
+        throw new ForbiddenException(
+          'One or more mentioned users are not members of this project',
+        );
+      }
+    }
+
+    // ---------------------------------------
+    // Create comment
+    // ---------------------------------------
 
     const comment = await this.prisma.comment.create({
       data: {
@@ -44,6 +84,54 @@ export class CommentService {
         authorId: userId,
       },
     });
+
+    // ---------------------------------------
+    // Mention notifications
+    // ---------------------------------------
+
+    if (mentionedUserIds.length > 0) {
+      await this.notification.createMany(
+        mentionedUserIds.map((mentionedUserId) => ({
+          userId: mentionedUserId,
+          title: 'You were mentioned',
+          message: `You were mentioned in "${task.title}"`,
+          entityId: task.id,
+          entityType: 'TASK',
+          projectId: task.projectId,
+        })),
+      );
+    }
+
+    // ---------------------------------------
+    // Comment notifications
+    // ---------------------------------------
+
+    const commentNotificationUserIds = [task.creatorId, task.assigneeId]
+      .filter((id): id is string => Boolean(id))
+      .filter((id) => id !== userId)
+      .filter((id) => !mentionedUserIds.includes(id));
+
+    const uniqueCommentNotificationUserIds = [
+      ...new Set(commentNotificationUserIds),
+    ];
+
+    if (uniqueCommentNotificationUserIds.length > 0) {
+      await this.notification.createMany(
+        uniqueCommentNotificationUserIds.map((notificationUserId) => ({
+          userId: notificationUserId,
+          title: 'New comment',
+          message: `Someone commented on "${task.title}"`,
+          entityId: task.id,
+          entityType: 'TASK',
+          projectId: task.projectId,
+        })),
+      );
+    }
+
+    // ---------------------------------------
+    // Activity
+    // ---------------------------------------
+
     await this.activity.createActivity({
       userId,
       projectId: task.projectId,

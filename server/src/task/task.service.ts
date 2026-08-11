@@ -1,5 +1,4 @@
 import {
-  Body,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -8,13 +7,20 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { createTaskDto } from './dto/create-task.dto';
 import { updateTaskDto } from './dto/upate-task.dto';
 import { ActivityService } from 'src/activity/activity.service';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class TaskService {
   constructor(
     private prisma: PrismaService,
     private activity: ActivityService,
+    private readonly notification: NotificationService,
   ) {}
+
+  // =========================================================
+  // CREATE TASK
+  // =========================================================
+
   async createTask(body: createTaskDto, userId: string) {
     const requesterMembership = await this.prisma.projectMembership.findUnique({
       where: {
@@ -24,10 +30,21 @@ export class TaskService {
         },
       },
     });
+
     if (!requesterMembership) {
       throw new ForbiddenException('you are not a member of this project');
     }
 
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: body.projectId,
+      },
+      select: {
+        workspaceId: true,
+      },
+    });
+
+    // Validate assignee
     if (body.assigneeId) {
       const member = await this.prisma.projectMembership.findUnique({
         where: {
@@ -37,8 +54,10 @@ export class TaskService {
           },
         },
       });
-      if (!member)
+
+      if (!member) {
         throw new ForbiddenException('user is not a member of this project');
+      }
     }
 
     const task = await this.prisma.$transaction(async (tx) => {
@@ -62,7 +81,10 @@ export class TaskService {
           projectId: body.projectId,
         },
       });
-      if (!column) throw new NotFoundException('column not found');
+
+      if (!column) {
+        throw new NotFoundException('column not found');
+      }
 
       const createdTask = await tx.task.create({
         data: {
@@ -92,6 +114,19 @@ export class TaskService {
       return createdTask;
     });
 
+    // Notify assignee
+    if (task.assigneeId && task.assigneeId !== userId) {
+      await this.notification.createNotification({
+        userId: task.assigneeId,
+        title: 'Task assigned to you',
+        message: `You were assigned "${task.title}"`,
+        entityId: task.id,
+        entityType: 'TASK',
+        projectId: task.projectId,
+        workspaceId: project?.workspaceId,
+      });
+    }
+
     await this.activity.createActivity({
       userId,
       message: `created task "${body.title}"`,
@@ -100,6 +135,11 @@ export class TaskService {
 
     return task;
   }
+
+  // =========================================================
+  // GET TASKS
+  // =========================================================
+
   async gettasks(projectId: string, userId: string) {
     const membership = await this.prisma.projectMembership.findUnique({
       where: {
@@ -113,6 +153,7 @@ export class TaskService {
     if (!membership) {
       throw new ForbiddenException('You are not a member of this project');
     }
+
     return this.prisma.task.findMany({
       where: {
         projectId,
@@ -122,6 +163,7 @@ export class TaskService {
       },
       include: {
         column: true,
+
         creator: {
           select: {
             id: true,
@@ -129,6 +171,7 @@ export class TaskService {
             email: true,
           },
         },
+
         assignee: {
           select: {
             id: true,
@@ -139,6 +182,10 @@ export class TaskService {
       },
     });
   }
+
+  // =========================================================
+  // UPDATE TASK
+  // =========================================================
 
   async updateTask(id: string, body: updateTaskDto, userId: string) {
     const hasTask = await this.prisma.task.findUnique({
@@ -164,9 +211,20 @@ export class TaskService {
       throw new ForbiddenException('you are not a member of this project');
     }
 
-    /*
-     * Validate assignee
-     */
+    const taskProject = await this.prisma.project.findUnique({
+      where: { id: hasTask.projectId },
+      select: { workspaceId: true },
+    });
+
+    // Store old values before updating
+    const oldAssigneeId = hasTask.assigneeId;
+    const oldColumnId = hasTask.columnId;
+    const oldDueDate = hasTask.dueDate;
+
+    // ---------------------------------------------------------
+    // Validate assignee
+    // ---------------------------------------------------------
+
     if (body.assigneeId) {
       const member = await this.prisma.projectMembership.findUnique({
         where: {
@@ -182,9 +240,10 @@ export class TaskService {
       }
     }
 
-    /*
-     * Validate column
-     */
+    // ---------------------------------------------------------
+    // Validate column
+    // ---------------------------------------------------------
+
     if (body.columnId) {
       const column = await this.prisma.boardColumn.findFirst({
         where: {
@@ -197,6 +256,10 @@ export class TaskService {
         throw new NotFoundException('Invalid column');
       }
     }
+
+    // ---------------------------------------------------------
+    // Update task
+    // ---------------------------------------------------------
 
     const updatedTask = await this.prisma.task.update({
       where: {
@@ -249,6 +312,76 @@ export class TaskService {
       },
     });
 
+    // =========================================================
+    // NOTIFICATION: NEW ASSIGNEE
+    // =========================================================
+
+    if (
+      updatedTask.assigneeId &&
+      updatedTask.assigneeId !== oldAssigneeId &&
+      updatedTask.assigneeId !== userId
+    ) {
+      await this.notification.createNotification({
+        userId: updatedTask.assigneeId,
+        title: 'Task assigned to you',
+        message: `You were assigned "${updatedTask.title}"`,
+        entityId: updatedTask.id,
+        entityType: 'TASK',
+        projectId: updatedTask.projectId,
+        workspaceId: taskProject?.workspaceId,
+      });
+    }
+
+    // =========================================================
+    // NOTIFICATION: STATUS / COLUMN CHANGED
+    // =========================================================
+
+    if (
+      updatedTask.columnId &&
+      updatedTask.columnId !== oldColumnId &&
+      updatedTask.assigneeId &&
+      updatedTask.assigneeId !== userId
+    ) {
+      await this.notification.createNotification({
+        userId: updatedTask.assigneeId,
+        title: 'Task status changed',
+        message: `The task "${updatedTask.title}" was moved to "${updatedTask.column.name}"`,
+        entityId: updatedTask.id,
+        entityType: 'TASK',
+        projectId: updatedTask.projectId,
+        workspaceId: taskProject?.workspaceId,
+      });
+    }
+
+    // =========================================================
+    // NOTIFICATION: DUE DATE CHANGED
+    // =========================================================
+
+    const dueDateChanged =
+      updatedTask.dueDate?.getTime() !== oldDueDate?.getTime();
+
+    if (
+      dueDateChanged &&
+      updatedTask.assigneeId &&
+      updatedTask.assigneeId !== userId
+    ) {
+      await this.notification.createNotification({
+        userId: updatedTask.assigneeId,
+        title: 'Task due date changed',
+        message: updatedTask.dueDate
+          ? `The due date for "${updatedTask.title}" was changed`
+          : `The due date for "${updatedTask.title}" was removed`,
+        entityId: updatedTask.id,
+        entityType: 'TASK',
+        projectId: updatedTask.projectId,
+        workspaceId: taskProject?.workspaceId,
+      });
+    }
+
+    // =========================================================
+    // ACTIVITY
+    // =========================================================
+
     await this.activity.createActivity({
       userId,
       projectId: hasTask.projectId,
@@ -257,6 +390,10 @@ export class TaskService {
 
     return updatedTask;
   }
+
+  // =========================================================
+  // DELETE TASK
+  // =========================================================
 
   async deleteTask(id: string, userId: string) {
     const hasTask = await this.prisma.task.findUnique({
@@ -269,9 +406,6 @@ export class TaskService {
       throw new NotFoundException('task not found');
     }
 
-    /*
-     * Check whether requester belongs to the project
-     */
     const requesterMembership = await this.prisma.projectMembership.findUnique({
       where: {
         userId_projectId: {
@@ -285,20 +419,36 @@ export class TaskService {
       throw new ForbiddenException('You are not a member of this project');
     }
 
-    /*
-     * Only the task creator can delete the task
-     */
+    // Only task creator can delete
     if (hasTask.creatorId !== userId) {
       throw new ForbiddenException(
         'Only the task creator can delete this task',
       );
     }
 
+    const deleteProject = await this.prisma.project.findUnique({
+      where: { id: hasTask.projectId },
+      select: { workspaceId: true },
+    });
+
     const deletedTask = await this.prisma.task.delete({
       where: {
         id,
       },
     });
+
+    // Notify assignee before losing the task context
+    if (hasTask.assigneeId && hasTask.assigneeId !== userId) {
+      await this.notification.createNotification({
+        userId: hasTask.assigneeId,
+        title: 'Task deleted',
+        message: `The task "${hasTask.title}" was deleted`,
+        entityId: hasTask.id,
+        entityType: 'TASK',
+        projectId: hasTask.projectId,
+        workspaceId: deleteProject?.workspaceId,
+      });
+    }
 
     await this.activity.createActivity({
       userId,
@@ -309,13 +459,21 @@ export class TaskService {
     return deletedTask;
   }
 
+  // =========================================================
+  // TASK OVERVIEW
+  // =========================================================
+
   async getTaskOverview(projectId: string, userId: string) {
     const project = await this.prisma.project.findUnique({
       where: {
         id: projectId,
       },
     });
-    if (!project) throw new NotFoundException('project not found');
+
+    if (!project) {
+      throw new NotFoundException('project not found');
+    }
+
     const membership = await this.prisma.projectMembership.findUnique({
       where: {
         userId_projectId: {
@@ -361,8 +519,8 @@ export class TaskService {
     });
 
     return {
-      total: total,
-      overdue: overdue,
+      total,
+      overdue,
       columns: columns.map((column) => ({
         id: column.id,
         order: column.order,
@@ -372,25 +530,33 @@ export class TaskService {
     };
   }
 
+  // =========================================================
+  // MY TASKS
+  // =========================================================
+
   async getMyTasks(userId: string) {
     const myTasks = await this.prisma.task.findMany({
       where: {
         assigneeId: userId,
       },
+
       select: {
         id: true,
         description: true,
         title: true,
+
         column: {
           select: {
             id: true,
             name: true,
           },
         },
+
         priority: true,
         dueDate: true,
         ticketId: true,
         createdAt: true,
+
         project: {
           select: {
             id: true,
@@ -398,6 +564,7 @@ export class TaskService {
             projectKey: true,
           },
         },
+
         creator: {
           select: {
             id: true,
@@ -405,8 +572,12 @@ export class TaskService {
           },
         },
       },
-      orderBy: { dueDate: 'asc' },
+
+      orderBy: {
+        dueDate: 'asc',
+      },
     });
+
     return myTasks;
   }
 }

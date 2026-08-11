@@ -11,12 +11,14 @@ import { MembershipRole } from '@prisma/client';
 import { AddProjectMemberDto } from './dto/add-project-member.dto';
 import { ActivityService } from 'src/activity/activity.service';
 import { UpdateProjectMemberDto } from './dto/update-project-member.dto';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class ProjectService {
   constructor(
     private prisma: PrismaService,
     private activity: ActivityService,
+    private notification: NotificationService,
   ) {}
   async createProject(body: createProjectDto, userId: string) {
     const membership = await this.prisma.workspaceMembership.findFirst({
@@ -353,6 +355,16 @@ export class ProjectService {
         id: true,
       },
     });
+
+    await this.notification.createNotification({
+      userId: body.userId,
+      title: 'Added to project',
+      message: `You were added to project "${project.name}"`,
+      entityId: project.id,
+      entityType: 'PROJECT',
+      projectId: project.id,
+      workspaceId: project.workspaceId,
+    });
     await this.activity.createActivity({
       userId: requesterId,
       workspaceId: project.workspaceId,
@@ -460,6 +472,15 @@ export class ProjectService {
         },
       },
     });
+    await this.notification.createNotification({
+      userId: targetId,
+      title: 'Removed from project',
+      message: `You were removed from project "${project.name}"`,
+      entityId: project.id,
+      entityType: 'PROJECT',
+      projectId: project.id,
+      workspaceId: project.workspaceId,
+    });
     return {
       message: 'Member deleted successfully',
     };
@@ -502,14 +523,8 @@ export class ProjectService {
     }
     if (requesterId === targetId) {
       throw new ForbiddenException(
-        'You cannot remove yourself from the project',
+        'You cannot change your own role or remove yourself from the project',
       );
-    }
-    // Check requester membership
-
-    // Prevent changing your own role
-    if (requesterId === targetId) {
-      throw new ForbiddenException('You cannot change your own role');
     }
 
     // Check target member
@@ -567,7 +582,15 @@ export class ProjectService {
         },
       },
     });
-
+    await this.notification.createNotification({
+      userId: targetId,
+      title: 'Project role updated',
+      message: `Your role in "${project.name}" was changed to ${body.role}`,
+      entityId: project.id,
+      entityType: 'PROJECT',
+      projectId: project.id,
+      workspaceId: project.workspaceId,
+    });
     await this.activity.createActivity({
       userId: requesterId,
       workspaceId: project.workspaceId,

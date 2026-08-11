@@ -219,6 +219,9 @@ model Notification {
   entityId   String?
   entityType String?
 
+  projectId   String?
+  workspaceId String?
+
   readAt DateTime?
 
   createdAt DateTime @default(now())
