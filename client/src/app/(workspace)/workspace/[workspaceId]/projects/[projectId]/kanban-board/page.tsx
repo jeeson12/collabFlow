@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 import { BoardHeader } from "@/features/project/kanban_board/components/board-header";
@@ -30,6 +35,12 @@ import { ConfirmDeleteDialog } from "@/components/common/delete-confirmation";
 
 export default function BoardPage() {
   const params = useParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const taskIdFromUrl = searchParams.get("task");
+
   const projectId = params.projectId as string;
 
   const createColumnMutation = useCreateColumn(projectId);
@@ -113,6 +124,21 @@ export default function BoardPage() {
 
   const columns = overview?.columns ?? [];
 
+  useEffect(() => {
+    if (!taskIdFromUrl || tasks.length === 0) {
+      return;
+    }
+
+    const task = tasks.find((task: Task) => task.id === taskIdFromUrl);
+
+    if (!task) {
+      return;
+    }
+
+    setSelectedTask(task);
+    setTaskDetailsOpen(true);
+  }, [taskIdFromUrl, tasks]);
+
   const openColumnDialog = (column?: Column) => {
     setColumnDialog({
       open: true,
@@ -182,6 +208,12 @@ export default function BoardPage() {
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task);
     setTaskDetailsOpen(true);
+
+    const params = new URLSearchParams(searchParams.toString());
+
+    params.set("task", task.id);
+
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleTaskDetailsOpenChange = (open: boolean) => {
@@ -189,6 +221,14 @@ export default function BoardPage() {
 
     if (!open) {
       setSelectedTask(null);
+
+      const params = new URLSearchParams(searchParams.toString());
+
+      params.delete("task");
+
+      const query = params.toString();
+
+      router.replace(query ? `${pathname}?${query}` : pathname);
     }
   };
 

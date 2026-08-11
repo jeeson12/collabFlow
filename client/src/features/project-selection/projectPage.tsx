@@ -39,6 +39,7 @@ export default function ProjectSelectionPage({
   } = useQuery({
     queryKey: ["projects", workspaceId],
     queryFn: () => getWorkspaceProject(workspaceId),
+    enabled: !!workspaceId,
   });
 
   const { data } = useQuery({

@@ -18,6 +18,7 @@ export function Sidebar() {
   const { data: projects = [] } = useQuery({
     queryKey: ["projects", workspaceId],
     queryFn: () => getWorkspaceProject(workspaceId),
+    enabled: !!workspaceId,
   });
 
   const { data: taskstats } = useQuery({
@@ -45,10 +46,10 @@ export function Sidebar() {
             taskstats?.total && taskstats.total > 0
               ? Math.round(
                   ((taskstats.columns.find(
-                    (col) => col.name.toLowerCase() === "done"
+                    (col) => col.name.toLowerCase() === "done",
                   )?.total ?? 0) /
                     taskstats.total) *
-                    100
+                    100,
                 )
               : 0
           }

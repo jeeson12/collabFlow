@@ -31,7 +31,10 @@ import {
   getComments,
   updateComment,
 } from "../../api";
+
 import { useAuth } from "@/features/auth/authProvider";
+import { getMembers } from "@/features/project/dashboard/api";
+import { ProjectMember } from "@/features/project/dashboard/type";
 
 type TaskDetailsCommentsProps = {
   task: Task;
@@ -39,9 +42,19 @@ type TaskDetailsCommentsProps = {
 
 export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
   const [content, setContent] = useState("");
+
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+
   const [editingContent, setEditingContent] = useState("");
 
+  // ---------------------------------------
+  // Mention state
+  // ---------------------------------------
+
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [showMentionSuggestions, setShowMentionSuggestions] = useState(false);
+  const [mentionStart, setMentionStart] = useState<number | null>(null);
+  const [mentionedUserIds, setMentionedUserIds] = useState<string[]>([]);
   const queryClient = useQueryClient();
 
   const { user } = useAuth();
@@ -58,18 +71,58 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
   const comments: Comment[] = data?.comment ?? [];
 
   // ---------------------------------------
+  // Get project members
+  // ---------------------------------------
+
+  const { data: membersData } = useQuery({
+    queryKey: ["project-members", task.projectId],
+    queryFn: () => getMembers(task.projectId),
+  });
+
+  const projectMembers = membersData?.members ?? [];
+
+  // ---------------------------------------
+  // Filter members for mention
+  // ---------------------------------------
+
+  const filteredMembers = projectMembers.filter((member) => {
+    if (!member.user?.name) return false;
+
+    return member.user.name
+      .toLowerCase()
+      .includes(mentionQuery.toLowerCase().trim());
+  });
+
+  // ---------------------------------------
   // Create comment
   // ---------------------------------------
 
   const createMutation = useMutation({
-    mutationFn: () =>
-      addComment({
+    mutationFn: () => {
+      const validMentionedUserIds = mentionedUserIds.filter((userId) => {
+        const member = projectMembers.find(
+          (member) => member.user.id === userId,
+        );
+
+        if (!member?.user.name) return false;
+
+        return content.includes(`@${member.user.name}`);
+      });
+
+      return addComment({
         taskId: task.id,
         content: content.trim(),
-      }),
+        mentionedUserIds: validMentionedUserIds,
+      });
+    },
 
     onSuccess: () => {
       setContent("");
+      setMentionedUserIds([]);
+
+      setMentionQuery("");
+      setMentionStart(null);
+      setShowMentionSuggestions(false);
 
       queryClient.invalidateQueries({
         queryKey: ["comments", task.id],
@@ -134,11 +187,95 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     const textarea = event.target;
+    const value = textarea.value;
+    const cursorPosition = textarea.selectionStart;
 
     textarea.style.height = "auto";
     textarea.style.height = `${textarea.scrollHeight}px`;
 
-    setContent(textarea.value);
+    setContent(value);
+
+    const textBeforeCursor = value.slice(0, cursorPosition);
+
+    const match = textBeforeCursor.match(/@([a-zA-Z0-9._-]*)$/);
+
+    if (match) {
+      const query = match[1];
+
+      // Only show suggestions after typing
+      // at least one character after @
+      if (query.length === 0) {
+        setMentionQuery("");
+        setMentionStart(null);
+        setShowMentionSuggestions(false);
+        return;
+      }
+
+      setMentionQuery(query);
+      setMentionStart(cursorPosition - query.length - 1);
+      setShowMentionSuggestions(true);
+    } else {
+      setMentionQuery("");
+      setMentionStart(null);
+      setShowMentionSuggestions(false);
+    }
+  };
+
+  // ---------------------------------------
+  // Select mention
+  // ---------------------------------------
+
+  const handleMentionSelect = (member: ProjectMember) => {
+    if (mentionStart === null) return;
+
+    const textarea = document.querySelector(
+      "#comment-input",
+    ) as HTMLTextAreaElement | null;
+
+    if (!textarea) return;
+
+    const cursorPosition = textarea.selectionStart;
+
+    const beforeMention = content.slice(0, mentionStart);
+
+    const afterMention = content.slice(cursorPosition);
+
+    const memberName = member.user?.name;
+
+    if (!memberName) return;
+
+    const mentionText = `@${memberName} `;
+
+    const newContent = beforeMention + mentionText + afterMention;
+
+    setContent(newContent);
+
+    setMentionQuery("");
+    setMentionStart(null);
+    setShowMentionSuggestions(false);
+    setMentionedUserIds((prev) => {
+      if (prev.includes(member.user.id)) {
+        return prev;
+      }
+
+      return [...prev, member.user.id];
+    });
+
+    requestAnimationFrame(() => {
+      textarea.focus();
+
+      const newCursorPosition = beforeMention.length + mentionText.length;
+
+      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+    });
+
+    setMentionedUserIds((prev) => {
+      if (prev.includes(member.user.id)) {
+        return prev;
+      }
+
+      return [...prev, member.user.id];
+    });
   };
 
   // ---------------------------------------
@@ -202,29 +339,101 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
 
       {/* Composer */}
 
-      <div className="overflow-hidden rounded-lg border bg-background">
-        <textarea
-          rows={2}
-          value={content}
-          placeholder="Add a comment..."
-          disabled={createMutation.isPending}
-          onChange={handleCommentInput}
-          className="
-            block
-            min-h-16
-            max-h-64
-            w-full
-            resize-none
-            overflow-y-auto
-            bg-transparent
-            px-4
-            py-3
-            text-sm
-            leading-6
-            outline-none
-            placeholder:text-muted-foreground
-          "
-        />
+      <div className="overflow-visible rounded-lg border bg-background">
+        <div className="relative">
+          <textarea
+            id="comment-input"
+            rows={2}
+            value={content}
+            placeholder="Add a comment..."
+            disabled={createMutation.isPending}
+            onChange={handleCommentInput}
+            className="
+              block
+              min-h-16
+              max-h-64
+              w-full
+              resize-none
+              overflow-y-auto
+              bg-transparent
+              px-4
+              py-3
+              text-sm
+              leading-6
+              outline-none
+              placeholder:text-muted-foreground
+            "
+          />
+
+          {/* Mention suggestions */}
+
+          {showMentionSuggestions && filteredMembers.length > 0 && (
+            <div
+              className="
+                  absolute
+                  bottom-full
+                  left-0
+                  z-50
+                  mb-2
+                  w-72
+                  overflow-hidden
+                  rounded-lg
+                  border
+                  bg-popover
+                  p-1
+                  shadow-lg
+                "
+            >
+              {filteredMembers.map((member) => {
+                const memberName = member.user?.name;
+
+                if (!memberName) {
+                  return null;
+                }
+
+                return (
+                  <button
+                    key={member.user.id}
+                    type="button"
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+
+                      handleMentionSelect(member);
+                    }}
+                    className="
+                          flex
+                          w-full
+                          items-center
+                          gap-3
+                          rounded-md
+                          px-3
+                          py-2
+                          text-left
+                          transition-colors
+                          hover:bg-accent
+                        "
+                  >
+                    <Avatar className="h-8 w-8 shrink-0">
+                      <AvatarFallback className="text-xs">
+                        {memberName.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">
+                        {memberName}
+                      </p>
+
+                      <p className="truncate text-xs text-muted-foreground">
+                        {member.user.email}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         <div className="flex justify-end border-t bg-muted/20 px-4 py-2">
           <Button
@@ -283,13 +492,13 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
                             variant="ghost"
                             size="icon"
                             className="
-                              ml-auto
-                              h-7
-                              w-7
-                              opacity-0
-                              transition-opacity
-                              group-hover:opacity-100
-                            "
+                                ml-auto
+                                h-7
+                                w-7
+                                opacity-0
+                                transition-opacity
+                                group-hover:opacity-100
+                              "
                           >
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
@@ -366,7 +575,22 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
                     </div>
                   ) : (
                     <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
-                      {cmt.content}
+                      {cmt.content
+                        .split(/(@[a-zA-Z0-9._-]+)/g)
+                        .map((part, index) => {
+                          if (part.startsWith("@")) {
+                            return (
+                              <strong
+                                key={index}
+                                className="font-semibold text-foreground"
+                              >
+                                {part}
+                              </strong>
+                            );
+                          }
+
+                          return <span key={index}>{part}</span>;
+                        })}
                     </p>
                   )}
                 </div>

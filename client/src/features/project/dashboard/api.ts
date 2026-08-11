@@ -79,3 +79,21 @@ export async function getAttachmentUrl(attachmentId: string): Promise<string> {
 
   return response.data.url;
 }
+
+export async function getNotifications() {
+  const response = await api.get("/notifications");
+
+  return response.data;
+}
+
+export async function markNotificationAsRead(notificationId: string) {
+  const response = await api.patch(`/notifications/${notificationId}/read`);
+
+  return response.data;
+}
+
+export async function markAllNotificationsAsRead() {
+  const response = await api.patch("/notifications/read-all");
+
+  return response.data;
+}

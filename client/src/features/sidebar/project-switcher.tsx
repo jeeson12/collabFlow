@@ -25,6 +25,7 @@ export function ProjectSwitcher() {
   const { data: projects = [] } = useQuery({
     queryKey: ["projects", workspaceId],
     queryFn: () => getWorkspaceProject(workspaceId),
+    enabled: !!workspaceId,
   });
 
   const currentProject = projects.find((project) => project.id === projectId);

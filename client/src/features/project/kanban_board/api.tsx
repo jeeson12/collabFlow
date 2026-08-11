@@ -34,7 +34,11 @@ export async function deleteTask(taskId: string) {
   return response.data;
 }
 
-export async function addComment(data: { taskId: string; content: string }) {
+export async function addComment(data: {
+  taskId: string;
+  content: string;
+  mentionedUserIds?: string[];
+}) {
   const response = await api.post("/comments", data);
 
   return response.data;
