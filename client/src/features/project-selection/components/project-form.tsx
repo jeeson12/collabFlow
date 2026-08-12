@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import z from "zod";
 import { createProject, updateProject } from "../api";
 import { useForm } from "react-hook-form";
@@ -55,6 +56,8 @@ export function ProjectForm({
     }
   }, [mode, project, form]);
 
+  const router = useRouter();
+
   const projectMutation = useMutation({
     mutationFn: (values: FormValues) => {
       if (mode === "create") {
@@ -64,11 +67,21 @@ export function ProjectForm({
       return updateProject(project?.id, values);
     },
 
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success(mode === "create" ? "Project created" : "Project updated");
       queryClient.invalidateQueries({ queryKey: ["projects", workspaceId] });
+      
+      if (mode === "edit" && project?.id) {
+        queryClient.invalidateQueries({ queryKey: ["project", project.id] });
+      }
+      
       form.reset();
       onSuccess();
+
+      // Redirect immediately to the newly created project
+      if (mode === "create" && data?.id) {
+        router.push(`/workspace/${workspaceId}/projects/${data.id}/dashboard`);
+      }
     },
     onError: (error) => {
       handleApiError(error);

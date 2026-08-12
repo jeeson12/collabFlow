@@ -47,7 +47,10 @@ export class NotificationGateway
 
       console.log('🔑 JWT received');
 
-      const payload = jwt.verify(token, 'secretKey') as {
+      const payload = jwt.verify(
+        token,
+        process.env.JWT_SECRET || 'secretKey',
+      ) as {
         userId: string;
         userEmail: string;
       };

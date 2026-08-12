@@ -54,11 +54,7 @@ export default function ResetPasswordPage() {
       router.replace("/login");
     },
 
-    onError: (error) => {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to reset password";
-      toast.error(errorMessage);
-    },
+
   });
 
   const onSubmit = (data: ResetPasswordFormData) => {

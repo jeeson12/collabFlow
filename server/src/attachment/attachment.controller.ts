@@ -23,7 +23,11 @@ export class AttachmentController {
   constructor(private readonly attachmentService: AttachmentService) {}
 
   @Post()
-  @UseInterceptors(FilesInterceptor('files', 10))
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
+    }),
+  )
   uploadAttachment(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() body: UploadAttachmentDto,

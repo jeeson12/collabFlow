@@ -16,7 +16,7 @@ export function getInitials(name: string) {
 }
 
 export function handleApiError(error: any) {
-  toast.error(error.response?.data?.message ?? "Something went wrong");
+  console.error("API Error caught globally:", error.response?.data?.message ?? error.message);
 }
 
 export async function openFiles(attachmentId: string) {

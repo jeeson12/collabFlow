@@ -66,9 +66,7 @@ export function WorkspaceMembersDialog({
         queryKey: ["workspace-members", workspaceId],
       });
     },
-    onError: () => {
-      toast.error("Failed to update member role");
-    },
+
   });
 
   const deleteMutation = useMutation({
@@ -94,9 +92,7 @@ export function WorkspaceMembersDialog({
         predicate: (query) => query.queryKey[0] === "available-members",
       });
     },
-    onError: () => {
-      toast.error("Failed to delete member");
-    },
+
   });
 
   return (

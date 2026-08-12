@@ -28,13 +28,18 @@ export function AppHeader() {
                 <MobileSidebar />
               </div>
               {!isSidebarOpen && (
-                <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="hidden md:flex">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSidebarOpen(true)}
+                  className="hidden md:flex"
+                >
                   <Menu className="h-5 w-5" />
                 </Button>
               )}
             </>
           )}
-          
+
           {/* Logo */}
           <Link
             href="/workspace"
