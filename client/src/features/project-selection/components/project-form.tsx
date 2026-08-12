@@ -70,11 +70,11 @@ export function ProjectForm({
     onSuccess: (data) => {
       toast.success(mode === "create" ? "Project created" : "Project updated");
       queryClient.invalidateQueries({ queryKey: ["projects", workspaceId] });
-      
+
       if (mode === "edit" && project?.id) {
         queryClient.invalidateQueries({ queryKey: ["project", project.id] });
       }
-      
+
       form.reset();
       onSuccess();
 

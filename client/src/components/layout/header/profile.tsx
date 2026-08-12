@@ -30,12 +30,15 @@ export function ProfileDropdown() {
     mutationFn: logout,
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.clear();
       router.push("/");
     },
 
     onError: (error) => {
       handleApiError(error);
+      // Fallback in case of server error: still clear cache and redirect
+      queryClient.clear();
+      router.push("/");
     },
   });
 

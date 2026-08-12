@@ -24,12 +24,15 @@ type DeleteProjectDialogProps = {
   project: Project;
 };
 
+import { useRouter } from "next/navigation";
+
 export function DeleteProject({
   open,
   onOpenChange,
   project,
 }: DeleteProjectDialogProps) {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: () => deleteProject(project.id),
@@ -41,6 +44,11 @@ export function DeleteProject({
 
       toast.success("Project deleted successfully");
       onOpenChange(false);
+      
+      const currentPath = window.location.pathname;
+      if (currentPath.includes(`/projects/${project.id}`)) {
+        router.push(`/workspace/${project.workspaceId}`);
+      }
     },
 
     onError: (error) => {

@@ -14,7 +14,10 @@ api.interceptors.response.use(
   },
   (error) => {
     const status = error.response?.status;
-    const message = error.response?.data?.message || error.message || "An unexpected error occurred";
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "An unexpected error occurred";
 
     // Handle network errors and 4xx/5xx responses
     if (!status || [400, 401, 403, 404, 409, 500].includes(status)) {
@@ -24,11 +27,14 @@ api.interceptors.response.use(
     // Handle authentication errors (redirect to login if not already there)
     if (status === 401 && typeof window !== "undefined") {
       const currentPath = window.location.pathname;
-      if (!currentPath.includes("/login") && !currentPath.includes("/register")) {
+      if (
+        !currentPath.includes("/login") &&
+        !currentPath.includes("/register")
+      ) {
         window.location.href = "/login";
       }
     }
 
     return Promise.reject(error);
-  }
+  },
 );
