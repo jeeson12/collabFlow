@@ -1,15 +1,15 @@
 import {
   WebSocketGateway,
-  SubscribeMessage,
   OnGatewayConnection,
   OnGatewayDisconnect,
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
+
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true,
   },
 })
@@ -21,10 +21,9 @@ export class NotificationGateway
 
   handleConnection(client: Socket) {
     try {
-      const cookie = client.handshake.headers.cookie;
-
       console.log('🔌 Socket connection:', client.id);
-      console.log('🍪 Cookie:', cookie);
+
+      const cookie = client.handshake.headers.cookie;
 
       if (!cookie) {
         console.error('❌ No cookie received');
@@ -33,6 +32,7 @@ export class NotificationGateway
       }
 
       const PREFIX = 'access_token=';
+
       const token = cookie
         .split(';')
         .map((c) => c.trim())
@@ -45,8 +45,6 @@ export class NotificationGateway
         return;
       }
 
-      console.log('🔑 JWT received');
-
       const payload = jwt.verify(
         token,
         process.env.JWT_SECRET || 'secretKey',
@@ -55,12 +53,10 @@ export class NotificationGateway
         userEmail: string;
       };
 
-      console.log('✅ JWT verified:', payload);
-
       const userId = payload.userId;
 
       if (!userId) {
-        console.error('❌ JWT does not contain sub');
+        console.error('❌ JWT does not contain userId');
         client.disconnect();
         return;
       }
@@ -75,9 +71,13 @@ export class NotificationGateway
   }
 
   handleDisconnect(client: Socket) {
-    console.log('Socket disconnected:', client.id);
+    console.log('🔴 Socket disconnected:', client.id);
   }
-  sendNotification(userId: string, notification: import('@prisma/client').Notification) {
+
+  sendNotification(
+    userId: string,
+    notification: import('@prisma/client').Notification,
+  ) {
     this.server.to(`user:${userId}`).emit('notification:new', notification);
   }
 }

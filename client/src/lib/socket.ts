@@ -4,12 +4,19 @@ let socket: Socket | null = null;
 
 export function getSocket(): Socket {
   if (!socket) {
-    socket = io("http://localhost:3001", {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+    socket = io(apiUrl, {
       withCredentials: true,
       transports: ["websocket"],
-      // Reconnect automatically but stop after auth failures
+
+      reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+    });
+
+    socket.on("connect", () => {
+      console.log("[socket] Connected:", socket?.id);
     });
 
     socket.on("connect_error", (err) => {
@@ -24,7 +31,10 @@ export function getSocket(): Socket {
   return socket;
 }
 
-/** Tear down the shared socket (call on logout). */
+/**
+ * Tear down the shared socket.
+ * Call this when the user logs out.
+ */
 export function disconnectSocket(): void {
   if (socket) {
     socket.disconnect();

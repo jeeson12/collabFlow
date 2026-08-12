@@ -6,26 +6,37 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(cookieParser());
-  
-  // Security headers
-  app.use(helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" }
-  }));
 
-  // Global Validation
+  app.use(cookieParser());
+
+  // Security headers
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: {
+        policy: 'cross-origin',
+      },
+    }),
+  );
+
+  // Global validation
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transform: true,
+      forbidNonWhitelisted: true,
     }),
   );
 
+  // CORS
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   });
 
-  await app.listen(process.env.PORT ?? 3001);
+  // Render/Railway provides PORT
+  const port = process.env.PORT || 3001;
+
+  await app.listen(port, '0.0.0.0');
 }
+
 bootstrap();
