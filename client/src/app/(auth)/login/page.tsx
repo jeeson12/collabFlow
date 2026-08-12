@@ -2,8 +2,10 @@ import { LoginForm } from "@/features/auth/components/login-form";
 
 export default function loginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <LoginForm />
-    </main>
+    <div className="flex w-full justify-center p-4 sm:p-8">
+      <div className="w-full max-w-sm">
+        <LoginForm />
+      </div>
+    </div>
   );
 }

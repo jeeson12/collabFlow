@@ -121,7 +121,7 @@ export class ProjectService {
       throw new ForbiddenException('You are not a member of this workspace');
     }
 
-    return this.prisma.project.findMany({
+    const projects = await this.prisma.project.findMany({
       where: {
         workspaceId,
       },
@@ -132,10 +132,28 @@ export class ProjectService {
             tasks: true,
           },
         },
+        tasks: {
+          where: {
+            column: {
+              isCompletionColumn: true,
+            },
+          },
+          select: {
+            id: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
       },
+    });
+
+    return projects.map((project) => {
+      const { tasks, ...rest } = project;
+      return {
+        ...rest,
+        completedTasks: tasks.length,
+      };
     });
   }
 
@@ -161,13 +179,27 @@ export class ProjectService {
             tasks: true,
           },
         },
+        tasks: {
+          where: {
+            column: {
+              isCompletionColumn: true,
+            },
+          },
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
     if (!project) {
       throw new NotFoundException('Project not found');
     }
-    return project;
+    const { tasks, ...rest } = project;
+    return {
+      ...rest,
+      completedTasks: tasks.length,
+    };
   }
 
   async updateProject(

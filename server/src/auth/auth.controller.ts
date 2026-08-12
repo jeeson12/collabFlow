@@ -53,8 +53,16 @@ export class AuthController {
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
-  getProfile(@Req() req) {
-    return req.user;
+  async getProfile(@Req() req) {
+    let avatarUrl: string | null = null;
+    if (req.user.avatarPath) {
+      avatarUrl = await this.authService.getUserAvatarUrl(req.user.id);
+    }
+    
+    return {
+      ...req.user,
+      avatarUrl,
+    };
   }
 
   @Get('google')

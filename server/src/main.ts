@@ -9,7 +9,9 @@ async function bootstrap() {
   app.use(cookieParser());
   
   // Security headers
-  app.use(helmet());
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+  }));
 
   // Global Validation
   app.useGlobalPipes(

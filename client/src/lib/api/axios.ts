@@ -19,8 +19,10 @@ api.interceptors.response.use(
       error.message ||
       "An unexpected error occurred";
 
+    const isProfileCheck = error.config?.url?.includes("/auth/profile");
+
     // Handle network errors and 4xx/5xx responses
-    if (!status || [400, 401, 403, 404, 409, 500].includes(status)) {
+    if (!status || ([400, 401, 403, 404, 409, 500].includes(status) && !(status === 401 && isProfileCheck))) {
       toast.error(message);
     }
 
@@ -29,7 +31,8 @@ api.interceptors.response.use(
       const currentPath = window.location.pathname;
       if (
         !currentPath.includes("/login") &&
-        !currentPath.includes("/register")
+        !currentPath.includes("/register") &&
+        currentPath !== "/"
       ) {
         window.location.href = "/login";
       }
