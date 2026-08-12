@@ -45,11 +45,10 @@ export function NotificationDropdown() {
   const { data, isLoading } = useQuery<NotificationsResponse>({
     queryKey: ["notifications"],
     queryFn: getNotifications,
-
-    // Check for new notifications automatically.
-    // No more manually refreshing the page like it's 2007.
-    refetchInterval: 5000,
-    refetchIntervalInBackground: true,
+    initialData: {
+      notifications: [],
+      unreadCount: 0,
+    },
   });
 
   const markReadMutation = useMutation({
@@ -112,10 +111,7 @@ export function NotificationDropdown() {
     }
 
     // Project notification
-    if (
-      notification.entityType === "PROJECT" &&
-      notification.workspaceId
-    ) {
+    if (notification.entityType === "PROJECT" && notification.workspaceId) {
       router.push(`/workspace/${notification.workspaceId}/projects`);
       return;
     }

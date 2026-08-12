@@ -1,8 +1,9 @@
 "use client";
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useEffect } from "react";
 import { User } from "./type";
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "./api";
+import { getSocket } from "@/lib/socket";
 
 type authContextType = {
   user: User | null;
@@ -22,6 +23,19 @@ export function AuthProvider({ children }: authProviderProps) {
     queryFn: getProfile,
     retry: false,
   });
+
+  useEffect(() => {
+    if (!user) {
+      getSocket().disconnect();
+      return;
+    }
+
+    getSocket().connect();
+
+    return () => {
+      getSocket().disconnect();
+    };
+  }, [user]);
 
   return (
     <AuthContext.Provider
