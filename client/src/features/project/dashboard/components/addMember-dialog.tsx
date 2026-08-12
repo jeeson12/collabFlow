@@ -55,7 +55,7 @@ export function AddMemberDialog({
       onOpenChange={onOpenChange}
       title="Add Members"
       description="Invite workspace members to this project."
-      width="lg"
+      width="md"
     >
       <div className="space-y-4">
         <div className="relative">

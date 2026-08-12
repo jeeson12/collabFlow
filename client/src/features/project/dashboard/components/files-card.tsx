@@ -43,7 +43,7 @@ export function FilesCard({
               <div
                 key={file.id}
                 onClick={() => onOpenFile(file.id)}
-                className="flex cursor-pointer items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                className="flex cursor-pointer items-center justify-between px-3 py-1 transition-colors hover:bg-muted/50"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <FileText className="h-5 w-5 shrink-0 text-blue-500" />

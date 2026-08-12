@@ -60,16 +60,19 @@ export class ProjectService {
             name: 'TODO',
             order: 1,
             projectId: project.id,
+            isCompletionColumn: false,
           },
           {
             name: 'IN_PROGRESS',
             order: 2,
             projectId: project.id,
+            isCompletionColumn: false,
           },
           {
             name: 'DONE',
             order: 3,
             projectId: project.id,
+            isCompletionColumn: true,
           },
         ],
       });

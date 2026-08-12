@@ -18,6 +18,7 @@ export interface TaskStats {
     name: string;
     order: number;
     total: number;
+    isCompletionColumn: boolean;
   }[];
 }
 

@@ -10,6 +10,7 @@ type TaskOverviewProps = {
     name: string;
     order: number;
     total: number;
+    isCompletionColumn: boolean;
   }[];
 };
 
@@ -25,7 +26,7 @@ export function TaskOverview({
       </CardHeader>
 
       <CardContent>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-y-2 justify-between">
           <div>
             <p className="text-sm text-muted-foreground">Total Tasks</p>
             <p className="text-2xl font-bold">{totalTasks}</p>
@@ -33,7 +34,9 @@ export function TaskOverview({
 
           {columns.map((column) => (
             <div key={column.id}>
-              <p className="text-sm text-muted-foreground">{column.name}</p>
+              <p className="text-sm text-muted-foreground align-middle">
+                {column.name}
+              </p>
               <p className="text-2xl font-bold">{column.total}</p>
             </div>
           ))}

@@ -515,6 +515,9 @@ export class TaskService {
         dueDate: {
           lt: new Date(),
         },
+        column: {
+          isCompletionColumn: false,
+        },
       },
     });
 
@@ -526,6 +529,7 @@ export class TaskService {
         order: column.order,
         name: column.name,
         total: column._count.tasks,
+        isCompletionColumn: column.isCompletionColumn,
       })),
     };
   }

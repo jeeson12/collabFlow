@@ -66,6 +66,7 @@ export class BoardColumnService {
         name: body.name,
         projectId: body.projectId,
         order,
+        isCompletionColumn: false,
       },
     });
 
@@ -224,6 +225,9 @@ export class BoardColumnService {
 
     if (!membership) {
       throw new ForbiddenException('You are not a member of this project');
+    }
+    if (column.isCompletionColumn) {
+      throw new BadRequestException('The completion column cannot be deleted.');
     }
 
     const taskCount = await this.prisma.task.count({

@@ -21,6 +21,7 @@ import { AddMemberDialog } from "@/features/project/dashboard/components/addMemb
 import { ActivityDialog } from "@/features/project/dashboard/components/activity-dialog";
 import { downloadFiles, openFiles } from "@/lib/utils";
 import { FilesDialog } from "@/features/project/dashboard/components/file-dialog";
+import { CreateTaskDialog } from "@/features/project/kanban_board/components/create-task-dialog";
 
 export default function DashboardPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -29,6 +30,8 @@ export default function DashboardPage() {
   const [addMembersDialogOpen, setAddMembersDialogOpen] = useState(false);
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
   const [filesDialogOpen, setFilesDialogOpen] = useState(false);
+  const [createTaskOpen, setCreateTaskOpen] = useState(false);
+  const [inviteMemberOpen, setInviteMemberOpen] = useState(false);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ["project", projectId],
@@ -57,6 +60,19 @@ export default function DashboardPage() {
     enabled: !!projectId,
   });
 
+  const totalTasks = taskData?.total ?? 0;
+  const overdueTasks = taskData?.overdue ?? 0;
+  const columns = taskData?.columns ?? [];
+
+  const completionColumn = columns.find((column) => column.isCompletionColumn);
+
+  const completedTasks = completionColumn?.total ?? 0;
+
+  const remainingTasks = Math.max(totalTasks - completedTasks, 0);
+
+  const completionRate =
+    totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
   if (isLoading || !project) {
     return <div>Loading...</div>;
   }
@@ -68,6 +84,8 @@ export default function DashboardPage() {
         project={project}
         members={membersData?.members ?? []}
         memberCount={membersData?.count ?? 0}
+        onCreateTask={() => setCreateTaskOpen(true)}
+        onInviteMember={() => setInviteMemberOpen(true)}
       />
       {/* ========================= */}
       {/* Main Content */}
@@ -76,13 +94,11 @@ export default function DashboardPage() {
         {/* Top Section */}
         <section className="grid gap-6 lg:grid-cols-3 items-start">
           {/* Task Overview Widget */}
-          {/* <TaskOverview
-            totalTasks={taskData?.total ?? 0}
-            completedTasks={taskData?.completed ?? 0}
-            todoTasks={taskData?.todo ?? 0}
-            inProgressTasks={taskData?.inprogress ?? 0}
-            overdueTasks={taskData?.overdue ?? 0}
-          /> */}
+          <TaskOverview
+            totalTasks={totalTasks}
+            overdueTasks={overdueTasks}
+            columns={columns}
+          />
 
           {/* Project Members */}
           <MembersCard
@@ -101,12 +117,12 @@ export default function DashboardPage() {
         {/* Bottom Section */}
         <section className="grid gap-6 lg:grid-cols-2 items-start">
           {/* Analytics */}
-          {/* <AnalyticsCard
-            completionRate={taskData?.completionRate ?? 0}
-            totalTasks={taskData?.total ?? 0}
-            completedTasks={taskData?.completed ?? 0}
-            remainingTasks={taskData?.remaining ?? 0}
-          /> */}
+          <AnalyticsCard
+            completionRate={completionRate}
+            totalTasks={totalTasks}
+            completedTasks={completedTasks}
+            remainingTasks={remainingTasks}
+          />
           {/* Files */}
           <FilesCard
             onViewAll={() => setFilesDialogOpen(true)}
@@ -142,6 +158,17 @@ export default function DashboardPage() {
         files={files}
         onOpenFile={openFiles}
         onDownloadFile={downloadFiles}
+      />
+      <CreateTaskDialog
+        projectId={project.id}
+        open={createTaskOpen}
+        onOpenChange={setCreateTaskOpen}
+      />
+
+      <AddMemberDialog
+        projectId={project.id}
+        open={inviteMemberOpen}
+        onOpenChange={setInviteMemberOpen}
       />
     </div>
   );

@@ -13,12 +13,16 @@ type projectHeaderProp = {
   project: Project;
   members: ProjectMember[];
   memberCount: number;
+  onCreateTask: () => void;
+  onInviteMember: () => void;
 };
 
 export function ProjectHeader({
   project,
   members,
   memberCount,
+  onCreateTask,
+  onInviteMember,
 }: projectHeaderProp) {
   return (
     <section className="flex flex-col gap-6 rounded-2xl border bg-card p-8 lg:flex-row lg:items-center lg:justify-between">
@@ -53,12 +57,12 @@ export function ProjectHeader({
       </div>
 
       <div className="flex gap-3">
-        <Button>
+        <Button onClick={onCreateTask}>
           <Plus className="mr-2 h-4 w-4" />
           Create Task
         </Button>
 
-        <Button variant="outline">
+        <Button variant="outline" onClick={onInviteMember}>
           <UserPlus className="mr-2 h-4 w-4" />
           Invite Member
         </Button>
