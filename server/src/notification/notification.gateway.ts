@@ -77,7 +77,7 @@ export class NotificationGateway
   handleDisconnect(client: Socket) {
     console.log('Socket disconnected:', client.id);
   }
-  sendNotification(userId: string, notification: any) {
+  sendNotification(userId: string, notification: import('@prisma/client').Notification) {
     this.server.to(`user:${userId}`).emit('notification:new', notification);
   }
 }

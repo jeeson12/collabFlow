@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -14,6 +15,7 @@ import {
 
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -36,7 +38,7 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body() body: any,
+    @Body() body: LoginDto,
     @Res({ passthrough: true }) res: express.Response,
   ) {
     const result = await this.authService.login(body);
@@ -118,17 +120,32 @@ export class AuthController {
   }
 
   @Get('avatar/:userId')
+  @UseGuards(JwtAuthGuard)
   async getAvatar(
     @Param('userId') userId: string,
     @Res() res: express.Response,
   ) {
     const url = await this.authService.getUserAvatarUrl(userId);
+    if (!url) {
+      return res.status(404).json({ message: 'Avatar not found' });
+    }
     res.redirect(url);
   }
 
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(new BadRequestException(`Invalid file type: ${file.mimetype}`), false);
+        }
+      },
+    }),
+  )
   updateProfile(
     @Req() req,
     @Body('name') name?: string,

@@ -135,7 +135,7 @@ export class CommentService {
     await this.activity.createActivity({
       userId,
       projectId: task.projectId,
-      message: `commented on task "${task.title}"`,
+      message: `commented on task "${task.ticketId}"`,
     });
 
     return comment;
@@ -161,7 +161,9 @@ export class CommentService {
     const comment = await this.prisma.comment.findMany({
       where: { taskId },
       include: {
-        author: { select: { id: true, name: true, email: true, avatarPath: true } },
+        author: {
+          select: { id: true, name: true, email: true, avatarPath: true },
+        },
       },
       orderBy: { createdAt: 'asc' },
     });
@@ -197,7 +199,7 @@ export class CommentService {
       userId,
       projectId: task?.project.id,
       workspaceId: task?.project.workspaceId,
-      message: `updated a comment on task "${task?.title}"`,
+      message: `updated a comment on task "${task?.ticketId}"`,
     });
 
     return updatecomment;
@@ -223,7 +225,7 @@ export class CommentService {
       userId,
       projectId: task?.project.id,
       workspaceId: task?.project.workspaceId,
-      message: `deleted a comment on task "${task?.title}"`,
+      message: `deleted a comment on task "${task?.ticketId}"`,
     });
     await this.prisma.comment.delete({
       where: {

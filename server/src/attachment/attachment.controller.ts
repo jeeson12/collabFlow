@@ -26,6 +26,23 @@ export class AttachmentController {
   @UseInterceptors(
     FilesInterceptor('files', 10, {
       limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
+      fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = [
+          'image/jpeg',
+          'image/png',
+          'image/webp',
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'text/plain',
+          'text/csv',
+        ];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+          cb(null, true);
+        } else {
+          cb(new BadRequestException(`Invalid file type: ${file.mimetype}`), false);
+        }
+      },
     }),
   )
   uploadAttachment(

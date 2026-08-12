@@ -80,8 +80,8 @@ export class AuthService {
     };
   }
 
-  async googleLogin(profile: any) {
-    const email = profile?.emails[0]?.value;
+  async googleLogin(profile: { emails?: { value: string }[]; displayName: string }) {
+    const email = profile?.emails?.[0]?.value;
     const name = profile.displayName;
 
     if (!email) {

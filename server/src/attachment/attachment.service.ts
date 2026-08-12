@@ -64,18 +64,33 @@ export class AttachmentService {
         file.mimetype,
       );
 
-      const attachment = await this.prisma.attachment.create({
-        data: {
-          originalFileName: file.originalname,
-          storagePath: uploadedFile.path,
-          mimeType: file.mimetype,
-          size: file.size,
-          taskId: task.id,
-          uploadedBy: userId,
-        },
-      });
+      try {
+        const attachment = await this.prisma.attachment.create({
+          data: {
+            originalFileName: file.originalname,
+            storagePath: uploadedFile.path,
+            mimeType: file.mimetype,
+            size: file.size,
+            taskId: task.id,
+            uploadedBy: userId,
+          },
+        });
 
-      attachments.push(attachment);
+        attachments.push(attachment);
+      } catch (error) {
+        // Prisma failed after the file was uploaded.
+        // Remove the orphaned file from Supabase.
+        try {
+          await this.supabase.deleteFile(uploadedFile.path);
+        } catch (cleanupError) {
+          console.error(
+            `Failed to cleanup Supabase file: ${uploadedFile.path}`,
+            cleanupError,
+          );
+        }
+
+        throw error;
+      }
     }
 
     await this.activity.createActivity({
@@ -245,15 +260,31 @@ export class AttachmentService {
       );
     }
 
-    // Delete from Supabase first.
-    await this.supabase.deleteFile(attachment.storagePath);
+    const isUploader = attachment.uploadedBy === userId;
+    const isAdmin = permission.role === 'ADMIN';
 
-    // Then delete the database record.
+    if (!isUploader && !isAdmin) {
+      throw new ForbiddenException(
+        'Only the original uploader or a project Admin can delete this attachment',
+      );
+    }
+
+    // Delete database record first.
     await this.prisma.attachment.delete({
       where: {
         id: attachmentId,
       },
     });
+
+    // Then delete the actual file from Supabase.
+    try {
+      await this.supabase.deleteFile(attachment.storagePath);
+    } catch (error) {
+      console.error(
+        `Failed to delete Supabase file: ${attachment.storagePath}`,
+        error,
+      );
+    }
 
     await this.activity.createActivity({
       userId,
@@ -265,7 +296,6 @@ export class AttachmentService {
       message: 'Attachment deleted successfully',
     };
   }
-
   // ---------------------------------------
   // Get recent project files
   // ---------------------------------------
