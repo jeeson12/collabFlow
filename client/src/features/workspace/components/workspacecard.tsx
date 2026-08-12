@@ -37,15 +37,15 @@ export function WorkspaceCard({ workspace, onEdit }: WorkspaceCardProps) {
 
   return (
     <>
-      <div className="rounded-2xl border bg-card p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+      <div className="rounded-xl border border-border/50 bg-white p-6 shadow-none transition-all duration-200 hover:-translate-y-1 hover:border-[#063325]/30">
         {/* Header */}
         <div className="flex items-start justify-between">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-            <FolderKanban className="h-6 w-6 text-primary" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/80">
+            <FolderKanban className="h-6 w-6 text-foreground" />
           </div>
 
           <div className="flex items-center gap-2">
-            <Badge>Admin</Badge>
+            <Badge className="bg-[#063325] text-white hover:bg-[#052b1f] border-none px-3 font-medium">Admin</Badge>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -74,7 +74,7 @@ export function WorkspaceCard({ workspace, onEdit }: WorkspaceCardProps) {
 
         {/* Body */}
         <div className="mt-6 space-y-2">
-          <h3 className="text-lg font-semibold">{workspace.name}</h3>
+          <h3 className="text-xl font-bold font-serif text-foreground">{workspace.name}</h3>
 
           <p className="text-sm text-muted-foreground">
             Team collaboration workspace
@@ -99,7 +99,7 @@ export function WorkspaceCard({ workspace, onEdit }: WorkspaceCardProps) {
 
         {/* Action */}
         <Button
-          className="mt-8 h-9 w-full justify-between"
+          className="mt-8 h-9 w-full justify-between bg-[#063325] text-white hover:bg-[#052b1f]"
           onClick={() => router.push(`/workspace/${workspace.id}/projects`)}
         >
           Open Workspace

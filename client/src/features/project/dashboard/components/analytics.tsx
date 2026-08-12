@@ -19,10 +19,10 @@ export function AnalyticsCard({
   remainingTasks,
 }: AnalyticsCardProps) {
   return (
-    <Card>
+    <Card className="shadow-none rounded-xl border-border/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <BarChart3 className="h-4 w-4" />
+        <CardTitle className="flex items-center gap-2 text-xl font-bold">
+          <BarChart3 className="h-5 w-5" />
           Analytics
         </CardTitle>
       </CardHeader>
@@ -31,7 +31,7 @@ export function AnalyticsCard({
         <div>
           <p className="text-sm text-muted-foreground">Completion Rate</p>
 
-          <h2 className="mt-1 text-3xl font-bold">{completionRate}%</h2>
+          <h2 className="mt-1 text-5xl font-bold">{completionRate}%</h2>
         </div>
 
         <Progress value={completionRate} />

@@ -25,9 +25,9 @@ export function ProjectHeader({
   onInviteMember,
 }: projectHeaderProp) {
   return (
-    <section className="flex flex-col gap-6 rounded-2xl border bg-card p-8 lg:flex-row lg:items-center lg:justify-between">
+    <section className="flex flex-col gap-6 rounded-xl bg-white p-8 ring-1 ring-border lg:flex-row lg:items-center lg:justify-between">
       <div className="space-y-5">
-        <Badge className="w-fit"> {project.projectKey}</Badge>
+        <Badge className="w-fit" variant="secondary"> {project.projectKey}</Badge>
 
         <div>
           <h1 className="text-4xl font-bold"> {project.name}</h1>
@@ -50,19 +50,19 @@ export function ProjectHeader({
             </Avatar>
           )}
 
-          <span className="ml-2 text-sm text-muted-foreground">
+          <span className="ml-2 text-sm text-muted-foreground font-medium">
             {memberCount} Member{memberCount !== 1 ? "s" : ""}
           </span>
         </div>
       </div>
 
       <div className="flex gap-3">
-        <Button onClick={onCreateTask}>
+        <Button className="bg-[#063325] text-white hover:bg-[#052b1f]" onClick={onCreateTask}>
           <Plus className="mr-2 h-4 w-4" />
           Create Task
         </Button>
 
-        <Button variant="outline" onClick={onInviteMember}>
+        <Button variant="outline" className="bg-white border-border text-foreground hover:bg-slate-50" onClick={onInviteMember}>
           <UserPlus className="mr-2 h-4 w-4" />
           Invite Member
         </Button>

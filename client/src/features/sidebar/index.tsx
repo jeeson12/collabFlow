@@ -8,6 +8,9 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getWorkspaceProject } from "../project-selection/api";
 import { getTaskStats } from "../project/dashboard/api";
+import { PanelLeftClose } from "lucide-react";
+import { useSidebarStore } from "@/store/use-sidebar-store";
+import { Button } from "@/components/ui/button";
 
 export function Sidebar() {
   const { workspaceId, projectId } = useParams<{
@@ -27,12 +30,24 @@ export function Sidebar() {
     enabled: !!projectId,
   });
 
+  const { toggleSidebar } = useSidebarStore();
   const currentProject = projects.find((project) => project.id === projectId);
   return (
-    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-72 border-r-0 bg-[#063325] text-slate-200 flex flex-col">
-      {/* Project Switcher */}
-      <div className="border-b border-white/10 p-2">
-        <ProjectSwitcher />
+    <aside className="hidden md:flex fixed left-0 top-16 h-[calc(100vh-4rem)] w-72 border-r-0 bg-[#063325] text-slate-200 flex-col">
+      {/* Project Switcher & Collapse */}
+      <div className="flex items-center justify-between border-b border-white/10 p-2 gap-2">
+        <div className="flex-1 overflow-hidden">
+          <ProjectSwitcher />
+        </div>
+        <Button 
+          variant="ghost" 
+          size="icon-sm" 
+          onClick={toggleSidebar} 
+          className="text-white hover:bg-white/10 shrink-0 h-8 w-8"
+          title="Collapse Sidebar"
+        >
+          <PanelLeftClose className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Navigation */}

@@ -20,13 +20,13 @@ export function TaskOverview({
   columns,
 }: TaskOverviewProps) {
   return (
-    <Card>
+    <Card className="shadow-none rounded-xl border-border/50">
       <CardHeader className="pb-3">
-        <CardTitle>Task Overview</CardTitle>
+        <CardTitle className="text-xl font-bold">Task Overview</CardTitle>
       </CardHeader>
 
       <CardContent>
-        <div className="grid grid-cols-2 gap-y-2 justify-between">
+        <div className="grid grid-cols-2 gap-y-8 justify-between">
           <div>
             <p className="text-sm text-muted-foreground">Total Tasks</p>
             <p className="text-2xl font-bold">{totalTasks}</p>

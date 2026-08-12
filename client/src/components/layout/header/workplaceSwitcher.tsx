@@ -36,11 +36,11 @@ export function WorkspaceSwitcher() {
         >
           <Building2 className="h-4 w-4 shrink-0" />
 
-          <span className="max-w-45 truncate font-medium">
+          <span className="max-w-45 truncate font-medium hidden sm:block">
             <p className="text-sm">Switch Workspace</p>
           </span>
 
-          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <ChevronDown className="hidden sm:block h-4 w-4 shrink-0 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
 

@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, PanelRightClose, PanelRightOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type TaskDetailsHeaderProps = {
@@ -20,6 +20,8 @@ type TaskDetailsHeaderProps = {
   onDelete: () => void;
   onEdit: () => void;
   isDeleting: boolean;
+  isSidebarOpen?: boolean;
+  onToggleSidebar?: () => void;
 };
 
 export function TaskDetailsHeader({
@@ -27,6 +29,8 @@ export function TaskDetailsHeader({
   onDelete,
   onEdit,
   isDeleting,
+  isSidebarOpen,
+  onToggleSidebar,
 }: TaskDetailsHeaderProps) {
   return (
     <DialogHeader className="shrink-0 border-b px-6 pt-3 pb-4">
@@ -37,7 +41,7 @@ export function TaskDetailsHeader({
           {task.ticketId}
         </span>
 
-        <Badge variant="outline" className={priorityStyles[task.priority]}>
+        <Badge variant="outline" className={`${priorityStyles[task.priority]} rounded-full border px-3`}>
           {task.priority}
         </Badge>
       </div>
@@ -45,17 +49,35 @@ export function TaskDetailsHeader({
       {/* Title + Column */}
 
       <div className="mt-1 flex items-center justify-between gap-6">
-        <h1 className="min-w-0 text-2xl font-semibold tracking-tight">
+        <h1 className="min-w-0 text-3xl font-bold font-serif text-[#063325] tracking-tight">
           {task.title}
         </h1>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-              <MoreVertical className="h-4 w-4" />
-              <span className="sr-only">Task actions</span>
+        <div className="flex items-center gap-2">
+          {onToggleSidebar && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onToggleSidebar}
+              className="flex h-8 w-8 shrink-0"
+              title={isSidebarOpen ? "Hide Details" : "Show Details"}
+            >
+              {isSidebarOpen ? (
+                <PanelRightClose className="h-4 w-4" />
+              ) : (
+                <PanelRightOpen className="h-4 w-4" />
+              )}
+              <span className="sr-only">Toggle Sidebar</span>
             </Button>
-          </DropdownMenuTrigger>
+          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                <MoreVertical className="h-4 w-4" />
+                <span className="sr-only">Task actions</span>
+              </Button>
+            </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={onEdit}>
@@ -75,6 +97,7 @@ export function TaskDetailsHeader({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </div>
     </DialogHeader>
   );

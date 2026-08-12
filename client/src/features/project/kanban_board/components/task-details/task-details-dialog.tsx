@@ -44,6 +44,7 @@ export function TaskDetailsDialog({
   const queryClient = useQueryClient();
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const deleteMutation = useMutation({
     mutationFn: () => {
@@ -92,11 +93,13 @@ export function TaskDetailsDialog({
             onEdit={() => setIsEditing(true)}
             onDelete={() => deleteMutation.mutate()}
             isDeleting={deleteMutation.isPending}
+            isSidebarOpen={isSidebarOpen}
+            onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           />
           {/* Body */}
-          <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_260px]">
+          <div className="flex flex-col md:flex-row min-h-0 flex-1 overflow-hidden">
             {/* Main */}
-            <main className="min-h-0 min-w-0 overflow-y-auto">
+            <main className="min-h-0 flex-1 min-w-0 overflow-y-auto">
               <div className="space-y-4 px-7 pb-7">
                 <TaskDetailsContent task={task} />
 
@@ -105,7 +108,11 @@ export function TaskDetailsDialog({
             </main>
 
             {/* Sidebar */}
-            <TaskDetailsSidebar task={task} />
+            {isSidebarOpen && (
+              <aside className="w-full md:w-65 shrink-0 border-l border-border/50 overflow-y-auto bg-muted/20">
+                <TaskDetailsSidebar task={task} />
+              </aside>
+            )}
           </div>
         </DialogContent>
       </Dialog>

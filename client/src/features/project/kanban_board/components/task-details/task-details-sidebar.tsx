@@ -29,19 +29,19 @@ function getInitials(name: string) {
 
 export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
   return (
-    <aside className="min-h-0 overflow-hidden border-l bg-muted/20">
+    <aside className="min-h-0 overflow-hidden border-l bg-white">
       <div className="h-full min-h-0 overflow-y-auto p-5">
         <div className="flex flex-col gap-7">
           {/* Status */}
           <section>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Status
             </p>
 
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
 
-              <Badge variant="secondary" className="px-3 py-1">
+              <Badge variant="secondary" className="rounded-full px-3 py-1">
                 {task.column.name}
               </Badge>
             </div>
@@ -49,18 +49,18 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
 
           {/* Priority */}
           <section>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Priority
             </p>
 
-            <Badge variant="outline" className={priorityStyles[task.priority]}>
+            <Badge variant="outline" className={`${priorityStyles[task.priority]} rounded-full border px-3`}>
               {task.priority}
             </Badge>
           </section>
 
           {/* Assignee */}
           <section>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Assignee
             </p>
 
@@ -73,7 +73,7 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
                       alt=""
                     />
                   )}
-                  <AvatarFallback className="text-xs font-medium">
+                  <AvatarFallback className="bg-[#063325] text-xs font-medium text-white">
                     {getInitials(task.assignee.name)}
                   </AvatarFallback>
                 </Avatar>
@@ -96,19 +96,19 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
 
           {/* Created By */}
           <section>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Created by
             </p>
 
             <div className="flex items-center gap-3">
-              <Avatar className="h-7 w-7">
+              <Avatar className="h-9 w-9">
                 {task.creator.avatarPath && (
                   <AvatarImage
                     src={`${process.env.NEXT_PUBLIC_API_URL}/auth/avatar/${task.creator.id}`}
                     alt=""
                   />
                 )}
-                <AvatarFallback className="text-xs font-medium">
+                <AvatarFallback className="bg-[#063325] text-xs font-medium text-white">
                   {getInitials(task.creator.name)}
                 </AvatarFallback>
               </Avatar>
@@ -127,7 +127,7 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
 
           {/* Due Date */}
           <section>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Due date
             </p>
 

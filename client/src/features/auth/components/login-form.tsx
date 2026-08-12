@@ -108,7 +108,7 @@ export function LoginForm() {
   if (showForgotPassword) {
     return (
       <div className="mx-auto w-full max-w-md">
-        <div className="rounded-2xl border bg-background p-6 shadow-sm">
+        <div className="rounded-xl border border-border/50 bg-white p-6 shadow-none">
           {!emailSent ? (
             <>
               <button
@@ -125,7 +125,7 @@ export function LoginForm() {
                   <ShieldCheck className="h-6 w-6 text-primary" />
                 </div>
 
-                <h1 className="text-2xl font-semibold tracking-tight">
+                <h1 className="text-2xl font-bold font-serif text-[#063325]">
                   Forgot your password?
                 </h1>
 
@@ -180,7 +180,7 @@ export function LoginForm() {
                 <CheckCircle2 className="h-8 w-8 text-green-600" />
               </div>
 
-              <h1 className="text-2xl font-semibold tracking-tight">
+              <h1 className="text-2xl font-bold font-serif text-[#063325]">
                 Check your email
               </h1>
 
@@ -222,9 +222,9 @@ export function LoginForm() {
 
   return (
     <div className="mx-auto w-full max-w-md">
-      <div className="rounded-2xl border bg-background p-6 shadow-sm">
+      <div className="rounded-xl border border-border/50 bg-white p-6 shadow-none">
         <div className="mb-7">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-2xl font-bold font-serif text-[#063325]">
             Welcome back
           </h1>
 

@@ -21,17 +21,14 @@ export function ActiveMembersCard({
   onOpenInvite,
 }: ActiveMembersCardProps) {
   return (
-    <section className="rounded-2xl border bg-card p-6">
+    <section className="rounded-xl border border-border/50 bg-white p-6 shadow-none">
       <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold">Workspace Members</h2>
-
-          <p className="text-sm text-muted-foreground">
-            Members of this workspace.
-          </p>
+        <div className="flex items-center gap-2">
+          <h2 className="text-xl font-bold">Workspace Members</h2>
+          <Badge variant="secondary" className="h-6 rounded-md bg-muted px-2 font-medium">{members.length}</Badge>
         </div>
 
-        <Button onClick={onOpenInvite}>
+        <Button variant="ghost" size="icon" onClick={onOpenInvite} className="h-8 w-8 text-muted-foreground hover:bg-muted/50">
           <UserPlus className="h-4 w-4" />
         </Button>
       </div>
@@ -74,12 +71,11 @@ export function ActiveMembersCard({
                 </div>
 
                 {member.role === "ADMIN" ? (
-                  <Badge>
-                    <Crown className="mr-1 h-3 w-3" />
+                  <Badge variant="secondary" className="bg-red-100 text-red-700 hover:bg-red-200 uppercase text-[10px]">
                     Admin
                   </Badge>
                 ) : (
-                  <Badge variant="secondary">Member</Badge>
+                  <Badge variant="secondary" className="uppercase text-[10px]">Member</Badge>
                 )}
               </div>
             ))}
@@ -87,8 +83,8 @@ export function ActiveMembersCard({
 
           <div className="mt-6">
             <Button
-              variant="outline"
-              className="w-full"
+              variant="ghost"
+              className="w-full text-foreground hover:bg-slate-50"
               onClick={onOpenMembers}
             >
               View All Members

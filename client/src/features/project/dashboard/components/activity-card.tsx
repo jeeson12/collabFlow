@@ -39,9 +39,9 @@ export function RecentActivity({ activities, onViewAll }: RecentActivityProps) {
   };
 
   return (
-    <Card>
+    <Card className="shadow-none rounded-xl border-border/50">
       <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
+        <CardTitle className="text-xl font-bold">Recent Activity</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -70,7 +70,7 @@ export function RecentActivity({ activities, onViewAll }: RecentActivityProps) {
 
         {activities.length > 5 && (
           <div className="mt-4 border-t pt-4">
-            <Button variant="outline" className="w-full" onClick={onViewAll}>
+            <Button variant="outline" className="w-full bg-white border-border text-foreground hover:bg-slate-50" onClick={onViewAll}>
               View all activity
             </Button>
           </div>

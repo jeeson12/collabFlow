@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <main className="flex min-h-screen items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center p-4">
         <div className="w-full max-w-md space-y-4 px-6 text-center">
           <h1 className="text-2xl font-semibold">Invalid Reset Link</h1>
 
@@ -89,7 +89,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center">
+    <main className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6 px-6">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold">Reset Password</h1>

@@ -212,7 +212,7 @@ export function TaskDetailsContent({ task }: TaskDetailsContentProps) {
 
           <h2 className="text-sm font-semibold">Attachments</h2>
 
-          <Badge variant="secondary">{attachments.length}</Badge>
+          <Badge variant="secondary" className="rounded-full px-2">{attachments.length}</Badge>
         </div>
 
         {isLoading ? (
@@ -229,7 +229,7 @@ export function TaskDetailsContent({ task }: TaskDetailsContentProps) {
           <>
             {/* Large Preview */}
 
-            <div className="relative overflow-hidden rounded-xl border bg-muted/20">
+            <div className="relative overflow-hidden rounded-xl border bg-[#f9faf8]">
               <div className="h-105">
                 {selectedAttachment && renderPreview(selectedAttachment)}
               </div>
@@ -237,29 +237,29 @@ export function TaskDetailsContent({ task }: TaskDetailsContentProps) {
               {attachments.length > 1 && (
                 <>
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="icon"
-                    className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full shadow"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white shadow-md hover:bg-gray-50"
                     onClick={() =>
                       setSelectedIndex((current) =>
                         current === 0 ? attachments.length - 1 : current - 1,
                       )
                     }
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-5 w-5" />
                   </Button>
 
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="icon"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full shadow"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white shadow-md hover:bg-gray-50"
                     onClick={() =>
                       setSelectedIndex((current) =>
                         current === attachments.length - 1 ? 0 : current + 1,
                       )
                     }
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-5 w-5" />
                   </Button>
                 </>
               )}

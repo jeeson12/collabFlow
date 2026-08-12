@@ -24,10 +24,10 @@ export function FilesCard({
   const visibleFiles = files.slice(0, 5);
 
   return (
-    <Card>
+    <Card className="shadow-none rounded-xl border-border/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <FileText className="h-4 w-4" />
+        <CardTitle className="flex items-center gap-2 text-xl font-bold">
+          <FileText className="h-5 w-5" />
           Files
         </CardTitle>
       </CardHeader>
@@ -78,7 +78,7 @@ export function FilesCard({
 
         {files.length > 0 && (
           <div className="mt-4 border-t pt-4">
-            <Button variant="outline" className="w-full" onClick={onViewAll}>
+            <Button variant="outline" className="w-full bg-white border-border text-foreground hover:bg-slate-50" onClick={onViewAll}>
               View Files
             </Button>
           </div>

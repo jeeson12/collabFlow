@@ -100,7 +100,7 @@ const features = [
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white text-[#174D38]">
+    <main className="min-h-screen bg-white text-[#063325]">
       {/* =========================================================
           NAVIGATION
       ========================================================= */}
@@ -109,7 +109,7 @@ export default function HomePage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
           <Link
             href="/"
-            className="text-lg font-semibold tracking-[-0.035em] text-[#174D38]"
+            className="text-lg font-semibold tracking-[-0.035em] text-[#063325]"
           >
             CollabFlow
           </Link>
@@ -117,28 +117,28 @@ export default function HomePage() {
           <nav className="hidden items-center gap-8 md:flex">
             <a
               href="#product"
-              className="text-sm text-[#4D1717] transition-opacity hover:opacity-60"
+              className="text-sm text-[#111827] transition-opacity hover:opacity-60"
             >
               Product
             </a>
 
             <a
               href="#features"
-              className="text-sm text-[#4D1717] transition-opacity hover:opacity-60"
+              className="text-sm text-[#111827] transition-opacity hover:opacity-60"
             >
               Features
             </a>
 
             <a
               href="#workflow"
-              className="text-sm text-[#4D1717] transition-opacity hover:opacity-60"
+              className="text-sm text-[#111827] transition-opacity hover:opacity-60"
             >
               How it works
             </a>
 
             <a
               href="#pricing"
-              className="text-sm text-[#4D1717] transition-opacity hover:opacity-60"
+              className="text-sm text-[#111827] transition-opacity hover:opacity-60"
             >
               Pricing
             </a>
@@ -147,14 +147,14 @@ export default function HomePage() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="hidden text-sm font-medium text-[#4D1717] transition-opacity hover:opacity-60 sm:block"
+              className="hidden text-sm font-medium text-[#111827] transition-opacity hover:opacity-60 sm:block"
             >
               Log in
             </Link>
 
             <Link
               href="/register"
-              className="inline-flex h-10 items-center justify-center rounded-lg bg-[#174D38] px-4 text-sm font-medium text-white transition-opacity hover:opacity-90"
+              className="inline-flex h-10 items-center justify-center rounded-lg bg-[#063325] px-4 text-sm font-medium text-white transition-opacity hover:opacity-90"
             >
               Get started
             </Link>
@@ -170,15 +170,15 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-5 pb-20 pt-12 sm:px-8 lg:px-10 lg:pb-24 lg:pt-12">
           <div className="grid items-center gap-14 lg:grid-cols-[0.82fr_1.18fr] lg:gap-16">
             <div className="max-w-xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4D1717]">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#111827]">
                 Team collaboration
               </p>
 
-              <h1 className="mt-5 text-4xl font-semibold leading-[1.08] tracking-[-0.045em] sm:text-5xl">
+              <h1 className="mt-5 text-4xl font-bold font-serif tracking-tight leading-[1.08] tracking-[-0.045em] sm:text-5xl">
                 Everything your team needs to move projects forward.
               </h1>
 
-              <p className="mt-6 max-w-lg text-base leading-7 text-[#4D1717]/75 sm:text-lg">
+              <p className="mt-6 max-w-lg text-base leading-7 text-[#111827]/75 sm:text-lg">
                 CollabFlow brings projects, tasks, conversations, files, and
                 team activity together in one focused workspace.
               </p>
@@ -186,7 +186,7 @@ export default function HomePage() {
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/register"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#174D38] px-5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#063325] px-5 text-sm font-medium text-white transition-opacity hover:opacity-90"
                 >
                   Get started
                   <ArrowRight className="size-4" />
@@ -194,7 +194,7 @@ export default function HomePage() {
 
                 <a
                   href="#product"
-                  className="inline-flex h-11 items-center justify-center rounded-lg border border-[#CBCBCB] px-5 text-sm font-medium text-[#174D38] transition-colors hover:bg-[#F2F2F2]"
+                  className="inline-flex h-11 items-center justify-center rounded-lg border border-[#CBCBCB] px-5 text-sm font-medium text-[#063325] transition-colors hover:bg-[#F2F2F2]"
                 >
                   See how it works
                 </a>
@@ -220,12 +220,12 @@ export default function HomePage() {
                 Keep the work together.
               </h2>
 
-              <p className="mt-5 text-base leading-7 text-[#4D1717]/75">
+              <p className="mt-5 text-base leading-7 text-[#111827]/75">
                 Projects become difficult to manage when tasks, conversations,
                 files, updates, and people are scattered across different tools.
               </p>
 
-              <p className="mt-4 text-base leading-7 text-[#4D1717]/75">
+              <p className="mt-4 text-base leading-7 text-[#111827]/75">
                 CollabFlow gives that work one focused place, so the context
                 stays close to the project.
               </p>
@@ -250,7 +250,7 @@ export default function HomePage() {
                 Know where a project stands.
               </h2>
 
-              <p className="mt-5 text-base leading-7 text-[#4D1717]/75">
+              <p className="mt-5 text-base leading-7 text-[#111827]/75">
                 Keep progress, tasks, team members, files, and recent activity
                 visible without building a report just to answer a simple
                 question.
@@ -278,7 +278,7 @@ export default function HomePage() {
                 See the work. Move it forward.
               </h2>
 
-              <p className="mt-5 text-base leading-7 text-[#4D1717]/75">
+              <p className="mt-5 text-base leading-7 text-[#111827]/75">
                 Organize work through clear stages and keep every task tied to
                 the people, dates, priorities, comments, and files that matter.
               </p>
@@ -300,7 +300,7 @@ export default function HomePage() {
               Conversations stay connected to the work.
             </h2>
 
-            <p className="mt-5 text-base leading-7 text-[#4D1717]/75">
+            <p className="mt-5 text-base leading-7 text-[#111827]/75">
               Discuss tasks, mention teammates, share files, and keep a clear
               history of what happened.
             </p>
@@ -327,7 +327,7 @@ export default function HomePage() {
                 Keep the files where the work happens.
               </h2>
 
-              <p className="mt-5 text-base leading-7 text-[#4D1717]/75">
+              <p className="mt-5 text-base leading-7 text-[#111827]/75">
                 Attach designs, documents, and other project files directly to
                 the work they belong to. No archaeology expedition required.
               </p>
@@ -354,7 +354,7 @@ export default function HomePage() {
                 Know what changed without chasing updates.
               </h2>
 
-              <p className="mt-5 text-base leading-7 text-[#4D1717]/75">
+              <p className="mt-5 text-base leading-7 text-[#111827]/75">
                 Stay aware of assignments, mentions, task updates, new files,
                 and project activity that actually matters.
               </p>
@@ -404,7 +404,7 @@ export default function HomePage() {
                 key={number}
                 className="grid gap-4 border-t border-[#CBCBCB] py-7 md:grid-cols-[90px_1fr_1fr] md:items-center"
               >
-                <span className="text-sm font-semibold text-[#4D1717]/45">
+                <span className="text-sm font-semibold text-[#111827]/45">
                   {number}
                 </span>
 
@@ -412,7 +412,7 @@ export default function HomePage() {
                   {title}
                 </h3>
 
-                <p className="max-w-md text-sm leading-6 text-[#4D1717]/70">
+                <p className="max-w-md text-sm leading-6 text-[#111827]/70">
                   {description}
                 </p>
               </div>
@@ -438,7 +438,7 @@ export default function HomePage() {
                 Everything your team needs, without the clutter.
               </h2>
 
-              <p className="mt-5 text-base leading-7 text-[#4D1717]/75">
+              <p className="mt-5 text-base leading-7 text-[#111827]/75">
                 The important parts of project collaboration live together,
                 instead of being scattered across separate tools.
               </p>
@@ -450,13 +450,13 @@ export default function HomePage() {
                   key={feature.number}
                   className="grid gap-3 border-t border-[#CBCBCB] py-6 sm:grid-cols-[60px_0.8fr_1.2fr] sm:items-start sm:gap-6"
                 >
-                  <span className="text-xs font-semibold text-[#4D1717]/45">
+                  <span className="text-xs font-semibold text-[#111827]/45">
                     {feature.number}
                   </span>
 
                   <h3 className="text-sm font-semibold">{feature.title}</h3>
 
-                  <p className="text-sm leading-6 text-[#4D1717]/70">
+                  <p className="text-sm leading-6 text-[#111827]/70">
                     {feature.description}
                   </p>
                 </div>
@@ -470,7 +470,7 @@ export default function HomePage() {
           FINAL CTA
       ========================================================= */}
 
-      <section id="pricing" className="scroll-mt-16 bg-[#174D38] text-white">
+      <section id="pricing" className="scroll-mt-16 bg-[#063325] text-white">
         <div className="mx-auto max-w-7xl px-5 py-24 text-center sm:px-8 lg:px-10 lg:py-28">
           <SectionLabel dark>Get started</SectionLabel>
 
@@ -485,7 +485,7 @@ export default function HomePage() {
 
           <Link
             href="/register"
-            className="mt-8 inline-flex h-11 items-center gap-2 rounded-lg bg-white px-5 text-sm font-semibold text-[#174D38] transition-opacity hover:opacity-90"
+            className="mt-8 inline-flex h-11 items-center gap-2 rounded-lg bg-white px-5 text-sm font-semibold text-[#063325] transition-opacity hover:opacity-90"
           >
             Get started
             <ArrowRight className="size-4" />
@@ -508,13 +508,13 @@ export default function HomePage() {
                 CollabFlow
               </Link>
 
-              <p className="mt-2 max-w-xs text-sm leading-6 text-[#4D1717]/60">
+              <p className="mt-2 max-w-xs text-sm leading-6 text-[#111827]/60">
                 Project collaboration, task management, and team activity in one
                 focused workspace.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-x-8 gap-y-3 text-sm text-[#4D1717]">
+            <div className="flex flex-wrap gap-x-8 gap-y-3 text-sm text-[#111827]">
               <a href="#product" className="hover:opacity-60">
                 Product
               </a>
@@ -545,7 +545,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-10 border-t border-[#CBCBCB] pt-6 text-xs text-[#4D1717]/50">
+          <div className="mt-10 border-t border-[#CBCBCB] pt-6 text-xs text-[#111827]/50">
             © {new Date().getFullYear()} CollabFlow. All rights reserved.
           </div>
         </div>
@@ -568,7 +568,7 @@ function SectionLabel({
   return (
     <p
       className={`text-xs font-semibold uppercase tracking-[0.18em] ${
-        dark ? "text-white/60" : "text-[#4D1717]"
+        dark ? "text-white/60" : "text-[#111827]"
       }`}
     >
       {children}
@@ -601,7 +601,7 @@ function HeroProductPreview() {
           </div>
 
           <div className="mt-10 border-t border-[#CBCBCB] pt-5">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#4D1717]/50">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#111827]/50">
               Workspace
             </p>
 
@@ -613,7 +613,7 @@ function HeroProductPreview() {
         <div className="p-4 sm:p-6">
           <div className="flex items-start justify-between gap-4 border-b border-[#CBCBCB] pb-5">
             <div>
-              <p className="text-xs text-[#4D1717]/55">Project</p>
+              <p className="text-xs text-[#111827]/55">Project</p>
 
               <h3 className="mt-1 text-lg font-semibold tracking-tight">
                 Product redesign
@@ -624,7 +624,7 @@ function HeroProductPreview() {
               {["JV", "AM", "RK", "NS"].map((initials) => (
                 <div
                   key={initials}
-                  className="flex size-8 items-center justify-center rounded-full border-2 border-[#F2F2F2] bg-white text-[9px] font-semibold text-[#174D38]"
+                  className="flex size-8 items-center justify-center rounded-full border-2 border-[#F2F2F2] bg-white text-[9px] font-semibold text-[#063325]"
                 >
                   {initials}
                 </div>
@@ -655,7 +655,7 @@ function HeroProductPreview() {
                         {task.title}
                       </p>
 
-                      <div className="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-[#4D1717]/55">
+                      <div className="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-[#111827]/55">
                         <span>{task.assignee}</span>
                         <span>{task.due}</span>
                         <span>{task.comments} comments</span>
@@ -692,23 +692,23 @@ function ProjectOverview() {
         <div className="border-b border-[#CBCBCB] p-6 sm:border-b-0 sm:border-r">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-[#4D1717]/55">Workspace</p>
+              <p className="text-xs text-[#111827]/55">Workspace</p>
 
               <p className="mt-1 text-sm font-semibold">Acme Studio</p>
             </div>
 
-            <Users className="size-4 text-[#4D1717]/45" />
+            <Users className="size-4 text-[#111827]/45" />
           </div>
 
           <div className="mt-8">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-[#4D1717]/60">Project progress</span>
+              <span className="text-[#111827]/60">Project progress</span>
 
               <span className="font-semibold">68%</span>
             </div>
 
             <div className="mt-3 h-1.5 bg-[#F2F2F2]">
-              <div className="h-full w-[68%] bg-[#174D38]" />
+              <div className="h-full w-[68%] bg-[#063325]" />
             </div>
           </div>
 
@@ -727,7 +727,7 @@ function ProjectOverview() {
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold">Recent activity</p>
 
-            <Activity className="size-4 text-[#4D1717]/40" />
+            <Activity className="size-4 text-[#111827]/40" />
           </div>
 
           <div className="mt-6 space-y-5">
@@ -755,12 +755,12 @@ function ProjectDashboard() {
       <div className="border border-[#CBCBCB] bg-white">
         <div className="flex items-center justify-between border-b border-[#CBCBCB] px-4 py-4">
           <div>
-            <p className="text-[10px] text-[#4D1717]/55">Project overview</p>
+            <p className="text-[10px] text-[#111827]/55">Project overview</p>
 
             <p className="mt-1 text-sm font-semibold">Product redesign</p>
           </div>
 
-          <span className="text-xs text-[#4D1717]/55">Updated 4m ago</span>
+          <span className="text-xs text-[#111827]/55">Updated 4m ago</span>
         </div>
 
         <div className="grid divide-y divide-[#CBCBCB] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
@@ -775,7 +775,7 @@ function ProjectDashboard() {
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold">Team</p>
 
-            <span className="text-[10px] text-[#4D1717]/50">8 members</span>
+            <span className="text-[10px] text-[#111827]/50">8 members</span>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -822,7 +822,7 @@ function KanbanBoard() {
             <div className="flex items-center justify-between border-b border-[#CBCBCB] pb-3">
               <p className="text-xs font-semibold">{column.title}</p>
 
-              <span className="text-[10px] text-[#4D1717]/50">
+              <span className="text-[10px] text-[#111827]/50">
                 {column.tasks.length}
               </span>
             </div>
@@ -836,17 +836,17 @@ function KanbanBoard() {
                   <p className="text-xs font-medium leading-5">{task}</p>
 
                   <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-[10px] text-[#4D1717]/55">
+                    <div className="flex items-center gap-2 text-[10px] text-[#111827]/55">
                       <CalendarDays className="size-3" />
                       Today
                     </div>
 
-                    <span className="flex size-6 items-center justify-center rounded-full bg-[#174D38] text-[8px] font-semibold text-white">
+                    <span className="flex size-6 items-center justify-center rounded-full bg-[#063325] text-[8px] font-semibold text-white">
                       JV
                     </span>
                   </div>
 
-                  <div className="mt-3 flex items-center gap-3 text-[10px] text-[#4D1717]/50">
+                  <div className="mt-3 flex items-center gap-3 text-[10px] text-[#111827]/50">
                     <span className="flex items-center gap-1">
                       <MessageSquare className="size-3" />2
                     </span>
@@ -873,12 +873,12 @@ function CommentsPanel() {
   return (
     <div className="border border-[#CBCBCB] bg-white">
       <div className="border-b border-[#CBCBCB] px-5 py-4">
-        <p className="text-xs text-[#4D1717]/55">Task</p>
+        <p className="text-xs text-[#111827]/55">Task</p>
 
         <div className="mt-1 flex items-center justify-between gap-4">
           <h3 className="text-sm font-semibold">Redesign project dashboard</h3>
 
-          <span className="hidden text-[10px] font-medium text-[#174D38] sm:block">
+          <span className="hidden text-[10px] font-medium text-[#063325] sm:block">
             In Progress
           </span>
         </div>
@@ -917,7 +917,7 @@ function ActivityPanel() {
       <div className="flex items-center justify-between border-b border-[#CBCBCB] pb-4">
         <p className="text-xs font-semibold">Recent activity</p>
 
-        <Activity className="size-4 text-[#4D1717]/45" />
+        <Activity className="size-4 text-[#111827]/45" />
       </div>
 
       <div className="mt-5 space-y-5">
@@ -951,7 +951,7 @@ function FilesPanel() {
         <div className="flex items-center justify-between">
           <p className="text-xs font-semibold">Project files</p>
 
-          <FileText className="size-4 text-[#4D1717]/45" />
+          <FileText className="size-4 text-[#111827]/45" />
         </div>
       </div>
 
@@ -963,23 +963,23 @@ function FilesPanel() {
           >
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex size-8 shrink-0 items-center justify-center bg-[#F2F2F2]">
-                <FileText className="size-4 text-[#174D38]" />
+                <FileText className="size-4 text-[#063325]" />
               </div>
 
               <div className="min-w-0">
                 <p className="truncate text-xs font-medium">{name}</p>
 
-                <p className="mt-1 text-[10px] text-[#4D1717]/50">
+                <p className="mt-1 text-[10px] text-[#111827]/50">
                   Added to project
                 </p>
               </div>
             </div>
 
-            <span className="hidden text-xs text-[#4D1717]/55 sm:block">
+            <span className="hidden text-xs text-[#111827]/55 sm:block">
               {type}
             </span>
 
-            <span className="text-right text-xs text-[#4D1717]/55">{size}</span>
+            <span className="text-right text-xs text-[#111827]/55">{size}</span>
           </div>
         ))}
       </div>
@@ -998,7 +998,7 @@ function NotificationPanel() {
         <div className="flex items-center justify-between">
           <p className="text-xs font-semibold">Notifications</p>
 
-          <Bell className="size-4 text-[#4D1717]/45" />
+          <Bell className="size-4 text-[#111827]/45" />
         </div>
       </div>
 
@@ -1047,7 +1047,7 @@ function PreviewNav({
   return (
     <div
       className={`flex items-center gap-2 px-3 py-2 text-xs ${
-        active ? "bg-[#F2F2F2] font-medium text-[#174D38]" : "text-[#4D1717]/65"
+        active ? "bg-[#F2F2F2] font-medium text-[#063325]" : "text-[#111827]/65"
       }`}
     >
       <span className="[&_svg]:size-3.5">{icon}</span>
@@ -1060,7 +1060,7 @@ function PreviewNav({
 function PreviewStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="border border-[#CBCBCB] bg-white p-4">
-      <p className="text-[10px] text-[#4D1717]/55">{label}</p>
+      <p className="text-[10px] text-[#111827]/55">{label}</p>
 
       <p className="mt-2 text-lg font-semibold">{value}</p>
     </div>
@@ -1070,7 +1070,7 @@ function PreviewStat({ label, value }: { label: string; value: string }) {
 function SmallMetric({ label, value }: { label: string; value: string }) {
   return (
     <div className="border border-[#CBCBCB] p-3">
-      <p className="text-[10px] text-[#4D1717]/55">{label}</p>
+      <p className="text-[10px] text-[#111827]/55">{label}</p>
 
       <p className="mt-1 text-sm font-semibold">{value}</p>
     </div>
@@ -1080,7 +1080,7 @@ function SmallMetric({ label, value }: { label: string; value: string }) {
 function DashboardMetric({ label, value }: { label: string; value: string }) {
   return (
     <div className="p-5">
-      <p className="text-[10px] text-[#4D1717]/55">{label}</p>
+      <p className="text-[10px] text-[#111827]/55">{label}</p>
 
       <p className="mt-2 text-xl font-semibold">{value}</p>
     </div>
@@ -1092,10 +1092,10 @@ function PriorityLabel({ priority }: { priority: string }) {
     <span
       className={`text-[10px] font-medium ${
         priority === "High"
-          ? "text-[#4D1717]"
+          ? "text-[#111827]"
           : priority === "Medium"
-            ? "text-[#174D38]"
-            : "text-[#4D1717]/55"
+            ? "text-[#063325]"
+            : "text-[#111827]/55"
       }`}
     >
       {priority}
@@ -1114,14 +1114,14 @@ function Comment({
 }) {
   return (
     <div className="flex gap-3">
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#174D38] text-[9px] font-semibold text-white">
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#063325] text-[9px] font-semibold text-white">
         {initials}
       </div>
 
       <div>
         <p className="text-xs font-semibold">{name}</p>
 
-        <p className="mt-1 text-sm leading-6 text-[#4D1717]/70">{text}</p>
+        <p className="mt-1 text-sm leading-6 text-[#111827]/70">{text}</p>
       </div>
     </div>
   );
@@ -1130,9 +1130,9 @@ function Comment({
 function ActivityItem({ text, time }: { text: string; time: string }) {
   return (
     <div className="flex items-start justify-between gap-4 border-b border-[#CBCBCB] pb-4 last:border-b-0">
-      <p className="text-xs leading-5 text-[#4D1717]">{text}</p>
+      <p className="text-xs leading-5 text-[#111827]">{text}</p>
 
-      <span className="shrink-0 text-[10px] text-[#4D1717]/50">{time}</span>
+      <span className="shrink-0 text-[10px] text-[#111827]/50">{time}</span>
     </div>
   );
 }
@@ -1151,12 +1151,12 @@ function Notification({
       <div>
         <p className="text-xs font-semibold">{title}</p>
 
-        <p className="mt-1 text-xs leading-5 text-[#4D1717]/65">
+        <p className="mt-1 text-xs leading-5 text-[#111827]/65">
           {description}
         </p>
       </div>
 
-      <span className="text-[10px] text-[#4D1717]/50">{time}</span>
+      <span className="text-[10px] text-[#111827]/50">{time}</span>
     </div>
   );
 }

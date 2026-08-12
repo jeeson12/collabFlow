@@ -39,22 +39,27 @@ export function ProjectCard({ project, onEdit }: ProjectCardProps) {
           `/workspace/${workspaceId}/projects/${project.id}/dashboard`,
         )
       }
-      className="cursor-pointer overflow-hidden rounded-xl border bg-card transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+      className="cursor-pointer overflow-hidden rounded-xl border border-border/50 bg-white transition-all duration-200 hover:-translate-y-1 hover:border-[#063325]/30 shadow-none"
     >
       {" "}
       <div className="space-y-4 p-4">
         {/* Header */}
         <div className="flex items-start justify-between">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-            <FolderKanban className="h-5 w-5 text-primary" />
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground font-bold">
+              {project.projectKey || "PR"}
+            </div>
+            <div>
+              <h3 className="line-clamp-1 text-lg font-bold text-foreground">{project.name}</h3>
+              <p className="line-clamp-1 text-xs text-muted-foreground">{project.description || "No description provided."}</p>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <Badge className="text-xs">{project.projectKey ?? "PROJECT"}</Badge>
             <div onClick={(e) => e.stopPropagation()}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-muted/50">
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -76,14 +81,6 @@ export function ProjectCard({ project, onEdit }: ProjectCardProps) {
               </DropdownMenu>
             </div>
           </div>
-        </div>
-        {/* Title */}
-        <div className="space-y-1">
-          <h3 className="line-clamp-1 text-lg font-semibold">{project.name}</h3>
-
-          <p className="line-clamp-2 text-xs text-muted-foreground">
-            {project.description || "No description provided."}
-          </p>
         </div>
 
         {/* Progress */}

@@ -7,7 +7,7 @@ export function HeroSection() {
 
   return (
     <section className="space-y-2">
-      <h1 className="text-4xl font-bold tracking-tight">
+      <h1 className="text-4xl font-bold font-serif text-[#063325] tracking-tight">
         Welcome back, {user?.name}! 👋
       </h1>
 

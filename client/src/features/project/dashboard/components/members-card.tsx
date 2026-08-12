@@ -21,9 +21,9 @@ export function MembersCard({
   onOpenAddMembers,
 }: MembersCardProps) {
   return (
-    <Card>
+    <Card className="shadow-none rounded-xl border-border/50">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
-        <CardTitle>Members</CardTitle>
+        <CardTitle className="text-xl font-bold">Members</CardTitle>
 
         <Button
           variant="outline"
@@ -82,7 +82,7 @@ export function MembersCard({
             <div className="mt-4">
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full bg-white border-border text-foreground hover:bg-slate-50"
                 onClick={onOpenMembers}
               >
                 View All Members
