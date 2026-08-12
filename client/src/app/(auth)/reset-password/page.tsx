@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,8 +70,18 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="flex w-full justify-center p-4 sm:p-8">
-        <div className="w-full max-w-md space-y-4 px-6 text-center">
+      <div className="flex w-full flex-col p-4 sm:p-8">
+        <div className="w-full max-w-md mx-auto mb-6 px-6">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-2 text-sm font-medium text-[#111827]/60 transition-colors hover:text-[#063325]"
+          >
+            <ArrowLeft className="size-4" />
+            Back to login
+          </Link>
+        </div>
+        <div className="flex w-full justify-center">
+          <div className="w-full max-w-md space-y-4 px-6 text-center">
           <h1 className="text-2xl font-semibold">Invalid Reset Link</h1>
 
           <p className="text-sm text-muted-foreground">
@@ -79,14 +91,25 @@ export default function ResetPasswordPage() {
           <Button onClick={() => router.replace("/login")}>
             Back to Login
           </Button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex w-full justify-center p-4 sm:p-8">
-      <div className="w-full max-w-md space-y-6 px-6">
+    <div className="flex w-full flex-col p-4 sm:p-8">
+      <div className="w-full max-w-md mx-auto mb-6 px-6">
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-2 text-sm font-medium text-[#111827]/60 transition-colors hover:text-[#063325]"
+        >
+          <ArrowLeft className="size-4" />
+          Back to login
+        </Link>
+      </div>
+      <div className="flex w-full justify-center">
+        <div className="w-full max-w-md space-y-6 px-6">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold">Reset Password</h1>
 
@@ -140,6 +163,7 @@ export default function ResetPasswordPage() {
               : "Reset Password"}
           </Button>
         </form>
+        </div>
       </div>
     </div>
   );

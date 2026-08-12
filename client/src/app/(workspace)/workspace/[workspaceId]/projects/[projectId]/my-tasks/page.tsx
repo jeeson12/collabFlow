@@ -9,8 +9,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getMyTasks } from "@/features/project/tasks/api";
 import { formatDistanceToNow } from "date-fns";
 import { priorityStyles } from "@/lib/utils";
+import { useParams, useRouter } from "next/navigation";
 
 export default function MyTasksPage() {
+  const router = useRouter();
+  const params = useParams();
+  const workspaceId = params.workspaceId as string;
   const [taskFilter, setTaskFilter] = useState<"all" | "priority" | "deadline">(
     "all",
   );
@@ -80,9 +84,14 @@ export default function MyTasksPage() {
             filteredTasks.map((task) => (
               <div
                 key={task.id}
-                className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between  py-3 px-1.5 transition border-t hover:bg-muted/50"
+                onClick={() =>
+                  router.push(
+                    `/workspace/${workspaceId}/projects/${task.project.id}/kanban-board?task=${task.id}`,
+                  )
+                }
+                className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between py-3 px-1.5 transition border-t hover:bg-muted/50 cursor-pointer"
               >
-                <div className="space-y-1">
+                <div className="space-y-1 sm:max-w-[50%] flex-1">
                   <h4 className="font-medium">{task.title}</h4>
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {task.description}

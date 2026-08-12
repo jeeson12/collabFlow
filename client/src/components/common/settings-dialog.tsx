@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Camera, Check, KeyRound } from "lucide-react";
+import { Camera, Check, KeyRound, Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -224,7 +224,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                         hover:bg-muted
                       "
                     >
-                      <Camera className="h-4 w-4" />
+                      <Pencil className="h-4 w-4" />
                     </button>
                   </div>
 

@@ -384,7 +384,7 @@ export function KanbanBoard({
         <button
           type="button"
           onClick={onCreateColumn}
-          className="flex h-40 w-50 shrink-0 items-center justify-center rounded-lg border border-dashed bg-background transition-colors hover:bg-muted/50"
+          className="flex h-20 w-50 shrink-0 items-center justify-center rounded-lg border border-dashed bg-background transition-colors hover:bg-muted/50"
         >
           <span className="text-sm font-medium text-muted-foreground">
             + Create new column

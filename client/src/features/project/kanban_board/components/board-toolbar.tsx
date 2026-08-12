@@ -54,7 +54,7 @@ export function BoardToolbar({
           </SelectTrigger>
 
           <SelectContent>
-            <SelectItem value="ALL">Priorities</SelectItem>
+            <SelectItem value="ALL">ALL Priorities</SelectItem>
             <SelectItem value="HIGH">High</SelectItem>
             <SelectItem value="MEDIUM">Medium</SelectItem>
             <SelectItem value="LOW">Low</SelectItem>

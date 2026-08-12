@@ -15,7 +15,7 @@ export function EmptyWorkspaceState({ onCreate }: EmptyWorkspaceProps) {
 
         {/* Heading */}
         <h1 className="mt-8 text-3xl font-bold tracking-tight">
-          Welcome to CollabFlow 👋
+          Welcome to CollabFlow
         </h1>
 
         {/* Description */}

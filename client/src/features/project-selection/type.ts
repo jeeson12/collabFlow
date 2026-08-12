@@ -11,6 +11,7 @@ export interface Project {
     memberships: number;
     tasks: number;
   };
+  completedTasks?: number;
 }
 
 export interface CreateProjectDto {

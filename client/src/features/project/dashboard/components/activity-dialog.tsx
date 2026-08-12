@@ -46,7 +46,7 @@ export function ActivityDialog({
       onOpenChange={onOpenChange}
       title="Project Activity"
       description={`${activities.length} activities`}
-      width="lg"
+      width="md"
     >
       {activities.length === 0 ? (
         <div className="py-10 text-center text-sm text-muted-foreground">

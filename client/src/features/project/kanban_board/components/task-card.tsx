@@ -67,7 +67,7 @@ export function TaskCard({
         </div>
 
         {/* Title */}
-        <h3 className="mt-2 line-clamp-2 text-sm font-semibold leading-5">
+        <h3 className="mt-1.5 line-clamp-2 text-sm font-semibold leading-tight">
           {task.title}
         </h3>
 
@@ -79,7 +79,7 @@ export function TaskCard({
         )}
 
         {/* Footer */}
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-2.5 flex items-center justify-between">
           <Avatar className="h-6 w-6">
             {task.assignee?.avatarPath && (
               <AvatarImage
@@ -129,7 +129,7 @@ export function TaskCard({
     border
     bg-background
     px-3
-    py-2.5
+    py-2
     hover:-translate-y-0.5
     hover:border-black
     hover:shadow-md ${isDragging ? "opacity-30" : ""}`}
@@ -150,7 +150,7 @@ export function TaskCard({
         </div>
 
         {/* Title */}
-        <h3 className="mt-2 line-clamp-2 text-sm font-semibold leading-5">
+        <h3 className="mt-1.5 line-clamp-2 text-sm font-semibold leading-tight">
           {task.title}
         </h3>
 
@@ -162,7 +162,7 @@ export function TaskCard({
         )}
 
         {/* Footer */}
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-2.5 flex items-center justify-between">
           <Avatar className="h-6 w-6">
             {task.assignee?.avatarPath && (
               <AvatarImage

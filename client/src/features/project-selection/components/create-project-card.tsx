@@ -5,7 +5,7 @@ export function CreateProjectCard({ onClick }: { onClick: () => void }) {
     <button
       onClick={onClick}
       className="
-        flex h-full min-h-80 flex-col items-center justify-center
+        flex h-full min-h-64 flex-col items-center justify-center
         rounded-xl border border-dashed border-border
         bg-white/50
         transition-all duration-200

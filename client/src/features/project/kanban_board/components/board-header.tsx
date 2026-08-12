@@ -31,11 +31,12 @@ export function BoardHeader({
             {taskCount} {taskCount === 1 ? "task" : "tasks"}
           </p>
         </div>
-
-        <Button onClick={onCreateTask} className="shrink-0">
-          <Plus className="mr-2 h-4 w-4" />
-          Create Task
-        </Button>
+        <div className="pt-2">
+          <Button onClick={onCreateTask} className="shrink-0">
+            <Plus className="mr-2 h-4 w-4" />
+            Create Task
+          </Button>
+        </div>
       </div>
     </header>
   );

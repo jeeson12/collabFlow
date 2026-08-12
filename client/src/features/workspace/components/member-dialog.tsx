@@ -66,7 +66,6 @@ export function WorkspaceMembersDialog({
         queryKey: ["workspace-members", workspaceId],
       });
     },
-
   });
 
   const deleteMutation = useMutation({
@@ -92,7 +91,6 @@ export function WorkspaceMembersDialog({
         predicate: (query) => query.queryKey[0] === "available-members",
       });
     },
-
   });
 
   return (
@@ -100,9 +98,9 @@ export function WorkspaceMembersDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="Workspace Members"
-      width="xl"
+      width="lg"
       headerAction={
-        <Button onClick={onOpenInvite}>
+        <Button onClick={onOpenInvite} className="pr-3">
           <UserPlus className="mr-2 h-4 w-4" />
           Invite Member
         </Button>

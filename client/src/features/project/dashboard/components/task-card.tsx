@@ -26,7 +26,7 @@ export function TaskOverview({
       </CardHeader>
 
       <CardContent>
-        <div className="grid grid-cols-2 gap-y-8 justify-between">
+        <div className="grid grid-cols-2 gap-y-6 justify-between">
           <div>
             <p className="text-sm text-muted-foreground">Total Tasks</p>
             <p className="text-2xl font-bold">{totalTasks}</p>

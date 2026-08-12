@@ -70,7 +70,11 @@ export function RecentActivity({ activities, onViewAll }: RecentActivityProps) {
 
         {activities.length > 5 && (
           <div className="mt-4 border-t pt-4">
-            <Button variant="outline" className="w-full bg-white border-border text-foreground hover:bg-slate-50" onClick={onViewAll}>
+            <Button
+              variant="outline"
+              className="w-full bg-white border-border text-foreground hover:bg-slate-50"
+              onClick={onViewAll}
+            >
               View all activity
             </Button>
           </div>

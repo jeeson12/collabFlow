@@ -46,7 +46,7 @@ export function FilesCard({
                 className="flex cursor-pointer items-center justify-between px-3 py-1 transition-colors hover:bg-muted/50"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <FileText className="h-5 w-5 shrink-0 text-blue-500" />
+                  <FileText className="h-5 w-5 shrink-0 text-[#0b9426] " />
 
                   <div className="min-w-0 max-w-30">
                     <p className="truncate text-sm font-medium">
@@ -78,7 +78,11 @@ export function FilesCard({
 
         {files.length > 0 && (
           <div className="mt-4 border-t pt-4">
-            <Button variant="outline" className="w-full bg-white border-border text-foreground hover:bg-slate-50" onClick={onViewAll}>
+            <Button
+              variant="outline"
+              className="w-full bg-white border-border text-foreground hover:bg-slate-50"
+              onClick={onViewAll}
+            >
               View Files
             </Button>
           </div>

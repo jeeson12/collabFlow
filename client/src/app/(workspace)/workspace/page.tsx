@@ -53,6 +53,14 @@ export default function WorkspacePage() {
             <h2 className="mb-5 text-2xl font-bold font-serif text-[#063325]">Your Workspaces</h2>
 
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              <CreateWorkspaceCard
+                onClick={() => {
+                  setMode("create");
+                  setSelectedWorkspace(undefined);
+                  setOpen(true);
+                }}
+              />
+
               {workspaces.map((workspace) => (
                 <WorkspaceCard
                   key={workspace.id}
@@ -65,14 +73,6 @@ export default function WorkspacePage() {
                   }}
                 />
               ))}
-
-              <CreateWorkspaceCard
-                onClick={() => {
-                  setMode("create");
-                  setSelectedWorkspace(undefined);
-                  setOpen(true);
-                }}
-              />
             </div>
           </section>
         </div>

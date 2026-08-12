@@ -69,7 +69,7 @@ export function AddMemberDialog({
           />
         </div>
 
-        <ScrollArea className="h-100 pr-3">
+        <ScrollArea className="h-50 pr-3">
           {isLoading ? (
             <div className="py-12 text-center text-sm text-muted-foreground">
               Loading members...

@@ -76,7 +76,7 @@ export function ProjectMembersDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="Project Members"
-      width="xl"
+      width="lg"
     >
       {members.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">

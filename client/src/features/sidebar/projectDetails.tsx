@@ -30,11 +30,6 @@ export function ProjectDetails({
           <p className="text-sm text-slate-400">{project.projectKey}</p>
         </div>
 
-        <Badge variant="secondary" className="w-fit gap-1">
-          <CircleDot className="size-3 fill-green-500 text-green-500" />
-          Active
-        </Badge>
-
         <div>
           <div className="mb-2 flex items-center justify-between text-sm">
             <span>Progress</span>
@@ -42,7 +37,11 @@ export function ProjectDetails({
             <span className="font-medium">{completionRate}%</span>
           </div>
 
-          <Progress value={completionRate} />
+          <Progress
+            value={completionRate}
+            className="h-2 bg-transparent border-1 border-white"
+            indicatorClassName="bg-white rounded"
+          />
         </div>
 
         <div className="space-y-2 text-sm text-white">

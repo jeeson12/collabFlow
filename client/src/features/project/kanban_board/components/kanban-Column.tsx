@@ -72,7 +72,7 @@ export function KanbanColumn({
   if (isOverlay) {
     return (
       <div className="flex w-75 shrink-0 flex-col rounded-lg bg-background p-3 shadow-2xl  border border-primary/40 cursor-grabbing">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4  ">
           <div className="flex items-center gap-2">
             <span className="font-semibold">{column.name}</span>
             <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold shadow-sm">
@@ -158,6 +158,8 @@ export function KanbanColumn({
           {isTaskDragTarget && (
             <div className="h-24 w-full rounded-md border-2 border-dashed border-primary/50 bg-primary/5 opacity-70 transition-all duration-100" />
           )}
+          <CreateTaskButton onClick={() => onCreateTask(column.id)} />
+
           {tasks.map((task) => (
             <TaskCard
               key={task.id}
@@ -166,8 +168,6 @@ export function KanbanColumn({
               disableAnimation={isColumnDragging}
             />
           ))}
-
-          <CreateTaskButton onClick={() => onCreateTask(column.id)} />
 
           {tasks.length === 0 && <EmptyColumn />}
         </div>

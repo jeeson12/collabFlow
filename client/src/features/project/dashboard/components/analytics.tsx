@@ -29,7 +29,7 @@ export function AnalyticsCard({
 
       <CardContent className="space-y-5">
         <div>
-          <p className="text-sm text-muted-foreground">Completion Rate</p>
+          <p className="text-sm text-muted-foreground pb-3">Completion Rate</p>
 
           <h2 className="mt-1 text-5xl font-bold">{completionRate}%</h2>
         </div>

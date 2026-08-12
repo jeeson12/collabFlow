@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FolderKanban } from "lucide-react";
+import { AuthBranding } from "./auth-branding";
 
 export default function AuthLayout({
   children,
@@ -17,14 +18,7 @@ export default function AuthLayout({
           </Link>
         </div>
 
-        <div>
-          <h1 className="text-4xl xl:text-5xl font-serif font-bold leading-tight tracking-tight mb-6">
-            Focus on the work,<br />not the workflow.
-          </h1>
-          <p className="text-lg xl:text-xl text-white/80 max-w-xl leading-relaxed">
-            Stop switching between scattered tools. CollabFlow provides a single, secure workspace where your team can manage tasks, share context, and hit every deadline without breaking a sweat.
-          </p>
-        </div>
+        <AuthBranding />
 
         <div className="text-sm text-white/60">
           © {new Date().getFullYear()} CollabFlow. All rights reserved.

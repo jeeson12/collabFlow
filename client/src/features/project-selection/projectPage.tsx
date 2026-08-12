@@ -88,6 +88,13 @@ export default function ProjectSelectionPage({
             <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
               <div>
                 <section className="grid gap-6 md:grid-cols-2">
+                  <CreateProjectCard
+                    onClick={() => {
+                      setMode("create");
+                      setSelectedProject(undefined);
+                      setOpen(true);
+                    }}
+                  />
                   {projects.map((project) => (
                     <ProjectCard
                       key={project.id}
@@ -99,14 +106,6 @@ export default function ProjectSelectionPage({
                       }}
                     />
                   ))}
-
-                  <CreateProjectCard
-                    onClick={() => {
-                      setMode("create");
-                      setSelectedProject(undefined);
-                      setOpen(true);
-                    }}
-                  />
                 </section>
               </div>
 

@@ -90,7 +90,7 @@ export default function DashboardPage() {
       {/* ========================= */}
       {/* Main Content – masonry layout, no gaps */}
       {/* ========================= */}
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-4 gap-x-4">
+      <div className="columns-1 md:columns-2 lg:columns-3 gap-3 gap-x-4">
         <div className="mb-6 break-inside-avoid">
           <TaskOverview
             totalTasks={totalTasks}
