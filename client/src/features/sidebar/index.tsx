@@ -29,9 +29,9 @@ export function Sidebar() {
 
   const currentProject = projects.find((project) => project.id === projectId);
   return (
-    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-72 border-r bg-background flex flex-col">
+    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-72 border-r-0 bg-[#063325] text-slate-200 flex flex-col">
       {/* Project Switcher */}
-      <div className="border-b p-2">
+      <div className="border-b border-white/10 p-2">
         <ProjectSwitcher />
       </div>
 

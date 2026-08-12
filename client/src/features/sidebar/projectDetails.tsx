@@ -18,16 +18,16 @@ export function ProjectDetails({
   totalTasks,
 }: ProjectDetailsProps) {
   return (
-    <div className="mx-4 mt-2 rounded-xl border bg-muted/40 p-4">
-      <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="mx-4 mt-2 rounded-xl border border-white/10 bg-white/5 p-4 text-white">
+      <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
         Current Project
       </p>
 
       <div className="space-y-4">
         <div>
-          <h3 className="font-semibold">{project.name}</h3>
+          <h3 className="font-semibold text-white">{project.name}</h3>
 
-          <p className="text-sm text-muted-foreground">{project.projectKey}</p>
+          <p className="text-sm text-slate-400">{project.projectKey}</p>
         </div>
 
         <Badge variant="secondary" className="w-fit gap-1">
@@ -45,15 +45,15 @@ export function ProjectDetails({
           <Progress value={completionRate} />
         </div>
 
-        <div className="space-y-2 text-sm">
+        <div className="space-y-2 text-sm text-white">
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Members</span>
+            <span className="text-slate-400">Members</span>
 
             <span className="font-medium">{project._count.memberships}</span>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Tasks</span>
+            <span className="text-slate-400">Tasks</span>
 
             <span className="font-medium">{totalTasks}</span>
           </div>

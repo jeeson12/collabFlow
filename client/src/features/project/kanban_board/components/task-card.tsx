@@ -4,9 +4,9 @@ import { Calendar, MessageCircle, Paperclip } from "lucide-react";
 import { format } from "date-fns";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { priorityStyles } from "@/lib/utils";
+import { getInitials, priorityStyles } from "@/lib/utils";
 
 import { Task } from "@/features/project/kanban_board/type";
 
@@ -81,8 +81,14 @@ export function TaskCard({
         {/* Footer */}
         <div className="mt-4 flex items-center justify-between">
           <Avatar className="h-6 w-6">
+            {task.assignee?.avatarPath && (
+              <AvatarImage
+                src={`${process.env.NEXT_PUBLIC_API_URL}/auth/avatar/${task.assignee.id}`}
+                alt=""
+              />
+            )}
             <AvatarFallback className="text-[10px]">
-              {task.assignee?.name}
+              {task.assignee?.name ? getInitials(task.assignee.name) : "?"}
             </AvatarFallback>
           </Avatar>
 
@@ -158,8 +164,14 @@ export function TaskCard({
         {/* Footer */}
         <div className="mt-4 flex items-center justify-between">
           <Avatar className="h-6 w-6">
+            {task.assignee?.avatarPath && (
+              <AvatarImage
+                src={`${process.env.NEXT_PUBLIC_API_URL}/auth/avatar/${task.assignee.id}`}
+                alt=""
+              />
+            )}
             <AvatarFallback className="text-[10px]">
-              {task.assignee?.name}
+              {task.assignee?.name ? getInitials(task.assignee.name) : "?"}
             </AvatarFallback>
           </Avatar>
 

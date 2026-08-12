@@ -19,12 +19,14 @@ export type Task = {
     id: string;
     name: string;
     initials?: string;
+    avatarPath?: string | null;
   } | null;
 
   creator: {
     id: string;
     name: string;
     email: string;
+    avatarPath?: string | null;
   };
 
   dueDate?: string | null;
@@ -77,6 +79,7 @@ export type Comment = {
     id: string;
     name: string;
     email: string;
+    avatarPath?: string | null;
   };
 };
 

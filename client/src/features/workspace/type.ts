@@ -5,6 +5,7 @@ export interface Workspace {
   updatedAt: string;
   _count: {
     projects: number;
+    memberships: number;
   };
 }
 

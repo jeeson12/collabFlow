@@ -169,6 +169,7 @@ export class TaskService {
             id: true,
             name: true,
             email: true,
+            avatarPath: true,
           },
         },
 
@@ -177,6 +178,7 @@ export class TaskService {
             id: true,
             email: true,
             name: true,
+            avatarPath: true,
           },
         },
       },

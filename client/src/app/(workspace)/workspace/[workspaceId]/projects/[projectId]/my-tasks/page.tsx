@@ -80,11 +80,11 @@ export default function MyTasksPage() {
             filteredTasks.map((task) => (
               <div
                 key={task.id}
-                className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border p-4 transition hover:bg-muted/50"
+                className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between  py-3 px-1.5 transition border-t hover:bg-muted/50"
               >
                 <div className="space-y-1">
                   <h4 className="font-medium">{task.title}</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground line-clamp-2">
                     {task.description}
                   </p>
                   <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground pt-1">

@@ -85,7 +85,7 @@ export function WorkspaceCard({ workspace, onEdit }: WorkspaceCardProps) {
         <div className="mt-6 flex gap-6 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            <span>12 Members</span>
+            <span>{workspace._count.memberships} Members</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export function WorkspaceCard({ workspace, onEdit }: WorkspaceCardProps) {
 
         {/* Action */}
         <Button
-          className="mt-8 w-full justify-between"
+          className="mt-8 h-9 w-full justify-between"
           onClick={() => router.push(`/workspace/${workspace.id}/projects`)}
         >
           Open Workspace

@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { priorityStyles } from "@/lib/utils";
 import { Task } from "@/features/project/kanban_board/type";
@@ -67,6 +67,12 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
             {task.assignee ? (
               <div className="flex items-center gap-3">
                 <Avatar className="h-9 w-9">
+                  {task.assignee.avatarPath && (
+                    <AvatarImage
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/auth/avatar/${task.assignee.id}`}
+                      alt=""
+                    />
+                  )}
                   <AvatarFallback className="text-xs font-medium">
                     {getInitials(task.assignee.name)}
                   </AvatarFallback>
@@ -95,7 +101,13 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
             </p>
 
             <div className="flex items-center gap-3">
-              <Avatar className="h-9 w-9">
+              <Avatar className="h-7 w-7">
+                {task.creator.avatarPath && (
+                  <AvatarImage
+                    src={`${process.env.NEXT_PUBLIC_API_URL}/auth/avatar/${task.creator.id}`}
+                    alt=""
+                  />
+                )}
                 <AvatarFallback className="text-xs font-medium">
                   {getInitials(task.creator.name)}
                 </AvatarFallback>

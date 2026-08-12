@@ -23,13 +23,13 @@ export function NavMenu() {
       {/* Dashboard */}
       <Link href={`/workspace/${workspaceId}/projects/${projectId}/dashboard`}>
         <Button
-          variant={
+          variant="ghost"
+          className={`w-full justify-start ${
             pathname ===
             `/workspace/${workspaceId}/projects/${projectId}/dashboard`
-              ? "default"
-              : "ghost"
-          }
-          className="w-full justify-start"
+              ? "bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              : "text-slate-300 hover:bg-white/5 hover:text-white"
+          }`}
         >
           <LayoutDashboard className="mr-2 h-4 w-4" />
           Dashboard
@@ -41,13 +41,13 @@ export function NavMenu() {
         href={`/workspace/${workspaceId}/projects/${projectId}/kanban-board`}
       >
         <Button
-          variant={
+          variant="ghost"
+          className={`w-full justify-start ${
             pathname ===
             `/workspace/${workspaceId}/projects/${projectId}/kanban-board`
-              ? "default"
-              : "ghost"
-          }
-          className="w-full justify-start"
+              ? "bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              : "text-slate-300 hover:bg-white/5 hover:text-white"
+          }`}
         >
           <KanbanSquare className="mr-2 h-4 w-4" />
           Board
@@ -57,13 +57,13 @@ export function NavMenu() {
       {/* My Tasks */}
       <Link href={`/workspace/${workspaceId}/projects/${projectId}/my-tasks`}>
         <Button
-          variant={
+          variant="ghost"
+          className={`w-full justify-start ${
             pathname ===
             `/workspace/${workspaceId}/projects/${projectId}/my-tasks`
-              ? "default"
-              : "ghost"
-          }
-          className="w-full justify-start"
+              ? "bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              : "text-slate-300 hover:bg-white/5 hover:text-white"
+          }`}
         >
           <ListTodo className="mr-2 h-4 w-4" />
           My Tasks

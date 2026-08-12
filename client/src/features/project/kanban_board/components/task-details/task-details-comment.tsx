@@ -14,7 +14,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
   DropdownMenu,
@@ -414,6 +414,10 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
                         "
                   >
                     <Avatar className="h-8 w-8 shrink-0">
+                      <AvatarImage
+                        src={`${process.env.NEXT_PUBLIC_API_URL}/auth/avatar/${member.user.id}`}
+                        alt=""
+                      />
                       <AvatarFallback className="text-xs">
                         {memberName.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
@@ -465,7 +469,13 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
               <div key={cmt.id} className="group flex gap-3">
                 {/* Avatar */}
 
-                <Avatar className="h-9 w-9 shrink-0">
+                <Avatar className="h-7 w-7 shrink-0">
+                  {cmt.author.avatarPath && (
+                    <AvatarImage
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/auth/avatar/${cmt.author.id}`}
+                      alt=""
+                    />
+                  )}
                   <AvatarFallback className="text-xs">
                     {cmt.author.name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
@@ -473,7 +483,7 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
 
                 {/* Content */}
 
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 ">
                   {/* Header */}
 
                   <div className="flex items-center gap-2">

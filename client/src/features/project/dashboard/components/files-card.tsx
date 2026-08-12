@@ -48,7 +48,7 @@ export function FilesCard({
                 <div className="flex min-w-0 items-center gap-3">
                   <FileText className="h-5 w-5 shrink-0 text-blue-500" />
 
-                  <div className="min-w-0">
+                  <div className="min-w-0 max-w-30">
                     <p className="truncate text-sm font-medium">
                       {file.originalFileName}
                     </p>

@@ -4,6 +4,7 @@ import {
   Get,
   Patch,
   Post,
+  Param,
   Req,
   Res,
   UploadedFile,
@@ -106,6 +107,15 @@ export class AuthController {
       dto.currentPassword,
       dto.newPassword,
     );
+  }
+
+  @Get('avatar/:userId')
+  async getAvatar(
+    @Param('userId') userId: string,
+    @Res() res: express.Response,
+  ) {
+    const url = await this.authService.getUserAvatarUrl(userId);
+    res.redirect(url);
   }
 
   @Patch('profile')

@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import { HeroSection } from "@/features/workspace/components/hero";
-import { ResumeCard } from "@/features/workspace/components/resumeCard";
 import { WorkspaceCard } from "@/features/workspace/components/workspacecard";
 import { CreateWorkspaceCard } from "@/features/workspace/components/createWorkspace-card";
 import { EmptyWorkspaceState } from "@/features/workspace/components/empyWorkspace";

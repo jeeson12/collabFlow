@@ -88,49 +88,49 @@ export default function DashboardPage() {
         onInviteMember={() => setInviteMemberOpen(true)}
       />
       {/* ========================= */}
-      {/* Main Content */}
+      {/* Main Content – masonry layout, no gaps */}
       {/* ========================= */}
-      <div className="space-y-6">
-        {/* Top Section */}
-        <section className="grid gap-6 lg:grid-cols-3 items-start">
-          {/* Task Overview Widget */}
+      <div className="gap-4 gap-x-4" style={{ columns: 3 }}>
+        <div className="mb-6 break-inside-avoid">
           <TaskOverview
             totalTasks={totalTasks}
             overdueTasks={overdueTasks}
             columns={columns}
           />
+        </div>
 
-          {/* Project Members */}
+        <div className="mb-6 break-inside-avoid">
           <MembersCard
             members={membersData?.members ?? []}
             onOpenMembers={() => setMembersDialogOpen(true)}
             onOpenAddMembers={() => setAddMembersDialogOpen(true)}
           />
+        </div>
 
-          {/* Recent Activity */}
+        <div className="mb-6 break-inside-avoid">
           <RecentActivity
             activities={Activity}
             onViewAll={() => setActivityDialogOpen(true)}
           />
-        </section>
+        </div>
 
-        {/* Bottom Section */}
-        <section className="grid gap-6 lg:grid-cols-2 items-start">
-          {/* Analytics */}
+        <div className="mb-6 break-inside-avoid">
           <AnalyticsCard
             completionRate={completionRate}
             totalTasks={totalTasks}
             completedTasks={completedTasks}
             remainingTasks={remainingTasks}
           />
-          {/* Files */}
+        </div>
+
+        <div className="mb-6 break-inside-avoid">
           <FilesCard
             onViewAll={() => setFilesDialogOpen(true)}
             files={files}
             onOpenFile={openFiles}
             onDownloadFile={downloadFiles}
           />
-        </section>
+        </div>
       </div>
       {/* ========================= */}
       {/* Dialogs */}

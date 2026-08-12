@@ -34,15 +34,15 @@ export function ProjectSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="h-11 w-full justify-between rounded-lg border px-3"
+          className="h-11 w-full justify-between rounded-lg border border-white/10 text-white hover:bg-white/5 hover:text-white px-3"
         >
           <div className="flex items-center gap-2 overflow-hidden">
-            <FolderKanban className="h-4 w-4 shrink-0" />
+            <FolderKanban className="h-4 w-4 shrink-0 text-slate-300" />
 
             <span className="truncate font-medium">{currentProject?.name}</span>
           </div>
 
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          <ChevronDown className="h-4 w-4 text-slate-400" />
         </Button>
       </DropdownMenuTrigger>
 

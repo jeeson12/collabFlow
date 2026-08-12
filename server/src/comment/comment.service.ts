@@ -161,7 +161,7 @@ export class CommentService {
     const comment = await this.prisma.comment.findMany({
       where: { taskId },
       include: {
-        author: { select: { id: true, name: true, email: true } },
+        author: { select: { id: true, name: true, email: true, avatarPath: true } },
       },
       orderBy: { createdAt: 'asc' },
     });

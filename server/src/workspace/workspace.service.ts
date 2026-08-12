@@ -56,6 +56,7 @@ export class WorkspaceService {
         _count: {
           select: {
             projects: true,
+            memberships: true,
           },
         },
       },

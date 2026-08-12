@@ -357,4 +357,16 @@ export class AuthService {
       userEmail: email,
     });
   }
+
+  async getUserAvatarUrl(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    
+    if (!user || !user.avatarPath) {
+      throw new NotFoundException('avatar not found');
+    }
+    
+    return this.supabaseService.createSignedUrl(user.avatarPath);
+  }
 }

@@ -16,10 +16,10 @@ export function Profile() {
 
   return (
     <div className="p-2">
-      <div className="flex items-center gap-3 rounded-lg border p-3">
+      <div className="flex items-center gap-3 rounded-lg border border-white/10 p-3 text-white">
         <Avatar>
           {user?.avatarUrl && <AvatarImage src={user.avatarUrl} alt="" />}
-          <AvatarFallback>
+          <AvatarFallback className="text-black">
             {user?.name ? getInitials(user.name) : "?"}
           </AvatarFallback>
         </Avatar>
@@ -27,7 +27,7 @@ export function Profile() {
         <div className="flex-1 overflow-hidden">
           <p className="truncate text-sm font-medium">{user?.name}</p>
 
-          <p className="truncate text-xs text-muted-foreground">
+          <p className="truncate text-xs text-slate-400">
             {user?.email}
           </p>
         </div>
