@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getSocket } from "@/lib/socket";
+import { Notification, NotificationsResponse } from "./type";
 
 export function useNotificationSocket() {
   const queryClient = useQueryClient();
@@ -10,10 +11,10 @@ export function useNotificationSocket() {
   useEffect(() => {
     const socket = getSocket();
 
-    const handleNotification = (notification: any) => {
+    const handleNotification = (notification: Notification) => {
       console.log("🔔 New notification:", notification);
 
-      queryClient.setQueryData(["notifications"], (old: any) => {
+      queryClient.setQueryData(["notifications"], (old: NotificationsResponse | undefined) => {
         if (!old) return old;
 
         return {

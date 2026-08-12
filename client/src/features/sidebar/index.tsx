@@ -33,7 +33,7 @@ export function Sidebar() {
   const { toggleSidebar } = useSidebarStore();
   const currentProject = projects.find((project) => project.id === projectId);
   return (
-    <aside className="hidden md:flex fixed left-0 top-16 h-[calc(100vh-4rem)] w-72 border-r-0 bg-[#063325] text-slate-200 flex-col">
+    <aside className="hidden md:flex sticky top-0 z-40 h-[calc(100vh-4rem)] w-72 shrink-0 border-r-0 bg-[#063325] text-slate-200 flex-col">
       {/* Project Switcher & Collapse */}
       <div className="flex items-center justify-between border-b border-white/10 p-2 gap-2">
         <div className="flex-1 overflow-hidden">

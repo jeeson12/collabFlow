@@ -53,7 +53,10 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
               Priority
             </p>
 
-            <Badge variant="outline" className={`${priorityStyles[task.priority]} rounded-full border px-3`}>
+            <Badge
+              variant="outline"
+              className={`${priorityStyles[task.priority]} rounded-full border px-3`}
+            >
               {task.priority}
             </Badge>
           </section>
@@ -66,7 +69,7 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
 
             {task.assignee ? (
               <div className="flex items-center gap-3">
-                <Avatar className="h-9 w-9">
+                <Avatar className="h-8 w-8">
                   {task.assignee.avatarPath && (
                     <AvatarImage
                       src={`${process.env.NEXT_PUBLIC_API_URL}/auth/avatar/${task.assignee.id}`}
@@ -101,7 +104,7 @@ export function TaskDetailsSidebar({ task }: TaskDetailsSidebarProps) {
             </p>
 
             <div className="flex items-center gap-3">
-              <Avatar className="h-9 w-9">
+              <Avatar className="h-8 w-8">
                 {task.creator.avatarPath && (
                   <AvatarImage
                     src={`${process.env.NEXT_PUBLIC_API_URL}/auth/avatar/${task.creator.id}`}

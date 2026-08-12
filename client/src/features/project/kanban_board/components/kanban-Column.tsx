@@ -115,7 +115,7 @@ export function KanbanColumn({
         <div className="flex items-center gap-2">
           <span className="font-semibold">{column.name}</span>
 
-          <span className="rounded-full bg-background px-2 py-0.5 text-[10px] font-semibold shadow-sm">
+          <span className="rounded-full bg-background px-2 py-0.5 text-[10px] font-semibold border">
             {tasks.length}
           </span>
         </div>

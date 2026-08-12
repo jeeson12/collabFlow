@@ -26,15 +26,15 @@ export default function AuthLayout({
       </div>
 
       {/* 40% Side - Forms */}
-      <div className="flex w-full lg:w-[40%] flex-col justify-center bg-[#F2F2F2] lg:bg-white">
+      <div className="flex w-full lg:w-[40%] flex-col bg-[#F2F2F2] lg:bg-white min-h-screen">
         {/* Mobile Header (Only visible on small screens) */}
-        <div className="flex items-center gap-2 p-6 lg:hidden">
+        <div className="flex items-center gap-2 p-6 lg:hidden shrink-0">
           <FolderKanban className="size-6 text-[#063325]" />
           <span className="text-xl font-serif font-bold tracking-tight text-[#063325]">CollabFlow</span>
         </div>
 
         {/* Form Container */}
-        <div className="flex-1 flex flex-col justify-center">
+        <div className="flex-1 py-4 lg:py-8 lg:flex lg:flex-col lg:justify-center">
           {children}
         </div>
       </div>

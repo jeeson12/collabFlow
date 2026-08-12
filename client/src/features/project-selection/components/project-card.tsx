@@ -112,8 +112,8 @@ export function ProjectCard({ project, onEdit }: ProjectCardProps) {
 
           <Progress
             value={completionRate}
-            className="h-2"
-            indicatorClassName="bg-emerald-500"
+            className="h-1 border-black "
+            indicatorClassName="bg-green-900 rounded"
           />
         </div>
 

@@ -12,17 +12,16 @@ export default function ProjectLayout({
   const { isSidebarOpen } = useSidebarStore();
 
   return (
-    <div className="bg-[#f9faf8]">
+    <div className="flex min-h-full bg-[#f9faf8]">
       {isSidebarOpen && <Sidebar />}
 
-      <main 
+      <div 
         className={cn(
-          "transition-all duration-300 min-h-[calc(100vh-4rem)]", 
-          isSidebarOpen ? "md:ml-72" : "ml-0"
+          "flex-1 transition-all duration-300 min-w-0"
         )}
       >
         {children}
-      </main>
+      </div>
     </div>
   );
 }

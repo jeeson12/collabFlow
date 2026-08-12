@@ -15,8 +15,17 @@ export function getInitials(name: string) {
     .toUpperCase();
 }
 
-export function handleApiError(error: any) {
-  console.error("API Error caught globally:", error.response?.data?.message ?? error.message);
+interface ApiError extends Error {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
+export function handleApiError(error: unknown) {
+  const apiError = error as ApiError;
+  console.error("API Error caught globally:", apiError.response?.data?.message ?? apiError.message ?? String(error));
 }
 
 export async function openFiles(attachmentId: string) {

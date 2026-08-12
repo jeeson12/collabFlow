@@ -9,7 +9,7 @@ export function HeroSection() {
     <section className="space-y-3">
       <h1 className="text-4xl font-bold font-serif text-[#063325] tracking-tight">
         Welcome back,{" "}
-        <span className="italic font-medium pl-3">{user?.name}</span>
+        <span className="font-playwrite italic font-medium pl-3">{user?.name}</span>
       </h1>
 
       <p className="max-w-2xl text-muted-foreground">

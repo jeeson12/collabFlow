@@ -14,8 +14,11 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getWorkspaces } from "@/features/workspace/api";
 import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { WorkspaceDialog } from "@/features/workspace/components/workspaceDialog";
 
 export function WorkspaceSwitcher() {
+  const [open, setOpen] = useState(false);
   const router = useRouter();
 
   const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -78,16 +81,20 @@ export function WorkspaceSwitcher() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="cursor-pointer rounded-md">
+        <DropdownMenuItem 
+          className="cursor-pointer rounded-md"
+          onClick={() => setOpen(true)}
+        >
           <Plus className="mr-2 h-4 w-4" />
           Create Workspace
         </DropdownMenuItem>
-
-        <DropdownMenuItem className="cursor-pointer rounded-md">
-          <Users className="mr-2 h-4 w-4" />
-          Join Workspace
-        </DropdownMenuItem>
       </DropdownMenuContent>
+
+      <WorkspaceDialog
+        open={open}
+        onOpenChange={setOpen}
+        mode="create"
+      />
     </DropdownMenu>
   );
 }

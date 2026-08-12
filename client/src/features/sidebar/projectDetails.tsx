@@ -39,7 +39,7 @@ export function ProjectDetails({
 
           <Progress
             value={completionRate}
-            className="h-2 bg-transparent border-1 border-white"
+            className="h-2 bg-transparent border border-white"
             indicatorClassName="bg-white rounded"
           />
         </div>

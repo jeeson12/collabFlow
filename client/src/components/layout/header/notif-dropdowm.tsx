@@ -21,22 +21,7 @@ import {
   markAllNotificationsAsRead,
 } from "@/features/project/dashboard/api";
 
-type Notification = {
-  id: string;
-  title: string;
-  message: string;
-  entityId?: string | null;
-  entityType?: string | null;
-  projectId?: string | null;
-  workspaceId?: string | null;
-  readAt?: string | null;
-  createdAt: string;
-};
-
-type NotificationsResponse = {
-  notifications: Notification[];
-  unreadCount: number;
-};
+import { Notification, NotificationsResponse } from "@/features/project/dashboard/type";
 
 export function NotificationDropdown() {
   const router = useRouter();
@@ -45,10 +30,6 @@ export function NotificationDropdown() {
   const { data, isLoading } = useQuery<NotificationsResponse>({
     queryKey: ["notifications"],
     queryFn: getNotifications,
-    initialData: {
-      notifications: [],
-      unreadCount: 0,
-    },
   });
 
   const markReadMutation = useMutation({

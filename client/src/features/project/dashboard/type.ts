@@ -50,3 +50,20 @@ export interface Attachment {
   };
   createdAt: string;
 }
+
+export type Notification = {
+  id: string;
+  title: string;
+  message: string;
+  entityId?: string | null;
+  entityType?: string | null;
+  projectId?: string | null;
+  workspaceId?: string | null;
+  readAt?: string | null;
+  createdAt: string;
+};
+
+export type NotificationsResponse = {
+  notifications: Notification[];
+  unreadCount: number;
+};

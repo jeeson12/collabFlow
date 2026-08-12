@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { register } from "../api";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function RegisterForm() {
   const form = useForm<RegisterFormData>({
@@ -106,6 +107,13 @@ export function RegisterForm() {
           <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
             {registerMutation.isPending ? "Creating account..." : "Register"}
           </Button>
+
+          <div className="mt-4 text-center text-sm">
+            Already have an account?{" "}
+            <Link href="/login" className="text-[#063325] hover:underline font-medium">
+              Log in
+            </Link>
+          </div>
         </form>
       </div>
     </div>

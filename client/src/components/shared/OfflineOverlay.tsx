@@ -29,7 +29,7 @@ export function OfflineOverlay() {
   if (!isOffline) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white px-4 text-center">
+    <div className="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-white px-4 text-center">
       <div className="flex max-w-md flex-col items-center space-y-6 animate-in fade-in zoom-in duration-500">
         <div className="flex h-24 w-24 items-center justify-center rounded-full bg-red-100">
           <WifiOff className="h-12 w-12 text-red-600" />

@@ -32,11 +32,6 @@ export function EmptyWorkspaceState({ onCreate }: EmptyWorkspaceProps) {
             <Plus className="mr-2 h-4 w-4" />
             Create Workspace
           </Button>
-
-          <Button variant="outline" size="lg">
-            <Users className="mr-2 h-4 w-4" />
-            Join Workspace
-          </Button>
         </div>
 
         {/* Footer Text */}

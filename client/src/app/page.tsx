@@ -135,19 +135,12 @@ export default function HomePage() {
             >
               How it works
             </a>
-
-            <a
-              href="#pricing"
-              className="text-sm text-[#063325] transition-opacity hover:opacity-60"
-            >
-              Pricing
-            </a>
           </nav>
 
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="hidden text-sm font-medium text-[#063325] transition-opacity hover:opacity-60 sm:block"
+              className="text-sm font-medium text-[#063325] transition-opacity hover:opacity-60 block"
             >
               Log in
             </Link>
@@ -174,7 +167,7 @@ export default function HomePage() {
                 Team collaboration
               </p>
 
-              <h1 className="mt-5 text-4xl font-bold font-serif tracking-tight leading-[1.08] tracking-[-0.045em] sm:text-5xl text-white">
+              <h1 className="mt-5 text-4xl font-bold font-serif tracking-tight leading-[1.08] sm:text-5xl text-white">
                 Everything your team needs to move projects forward.
               </h1>
 
@@ -515,33 +508,21 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-wrap gap-x-8 gap-y-3 text-sm text-[#063325]">
-              <a href="#product" className="hover:opacity-60">
-                Product
-              </a>
-
-              <a href="#features" className="hover:opacity-60">
-                Features
-              </a>
-
-              <a href="#pricing" className="hover:opacity-60">
-                Pricing
-              </a>
-
-              <a href="#" className="hover:opacity-60">
+              <Link href="/about" className="hover:opacity-60">
                 About
-              </a>
+              </Link>
+
+              <Link href="/terms" className="hover:opacity-60">
+                Terms of Service
+              </Link>
+
+              <Link href="/privacy" className="hover:opacity-60">
+                Privacy Policy
+              </Link>
 
               <a href="#" className="hover:opacity-60">
                 Contact
               </a>
-
-              <Link href="/login" className="hover:opacity-60">
-                Log in
-              </Link>
-
-              <Link href="/register" className="hover:opacity-60">
-                Get started
-              </Link>
             </div>
           </div>
 

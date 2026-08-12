@@ -15,7 +15,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getWorkspaceProject } from "../project-selection/api";
 
+import { ProjectDialog } from "../project-selection/components/project-dialog";
+import { useState } from "react";
+
 export function ProjectSwitcher() {
+  const [open, setOpen] = useState(false);
   const { workspaceId, projectId } = useParams<{
     workspaceId: string;
     projectId: string;
@@ -83,11 +87,21 @@ export function ProjectSwitcher() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="cursor-pointer rounded-md">
+        <DropdownMenuItem 
+          className="cursor-pointer rounded-md"
+          onClick={() => setOpen(true)}
+        >
           <Plus className="mr-2 h-4 w-4" />
           Create Project
         </DropdownMenuItem>
       </DropdownMenuContent>
+
+      <ProjectDialog
+        open={open}
+        onOpenChange={setOpen}
+        workspaceId={workspaceId}
+        mode="create"
+      />
     </DropdownMenu>
   );
 }

@@ -45,11 +45,7 @@ export function DeleteWorkspaceDialog({
       toast.success("Workspace deleted");
 
       onOpenChange(false);
-      
-      const currentPath = window.location.pathname;
-      if (currentPath.includes(`/workspace/${workspace.id}`)) {
-        router.push("/workspace");
-      }
+      router.push("/workspace");
     },
 
     onError: (error) => {

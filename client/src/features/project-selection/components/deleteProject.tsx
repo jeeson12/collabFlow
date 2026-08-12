@@ -44,11 +44,7 @@ export function DeleteProject({
 
       toast.success("Project deleted successfully");
       onOpenChange(false);
-      
-      const currentPath = window.location.pathname;
-      if (currentPath.includes(`/projects/${project.id}`)) {
-        router.push(`/workspace/${project.workspaceId}`);
-      }
+      router.push(`/workspace/${project.workspaceId}/projects`);
     },
 
     onError: (error) => {
