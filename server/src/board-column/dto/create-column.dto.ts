@@ -6,5 +6,6 @@ export class CreateColumnDto {
   name: string;
 
   @IsString()
+  @IsNotEmpty()
   projectId: string;
 }
