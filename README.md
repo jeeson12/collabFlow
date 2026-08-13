@@ -261,36 +261,6 @@ cd projectLoom
 
 ---
 
-## Environment Variables
-
-> **Security Note**: Never commit `.env` or `.env.local` files containing production credentials to version control.
-
-### Backend (`server/.env`)
-| Variable | Description |
-|---|---|
-| `PORT` | Server listening port (default: `3001`) |
-| `NODE_ENV` | Environment mode (`development` / `production`) |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `DIRECT_URL` | Direct connection string for Prisma migrations |
-| `JWT_SECRET` | Secret key for signing JSON Web Tokens |
-| `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key for storage administration |
-| `SUPABASE_BUCKET` | Supabase storage bucket name for attachments |
-| `GOOGLE_CLIENT_ID` | Google Cloud OAuth 2.0 Client ID |
-| `GOOGLE_CLIENT_SECRET` | Google Cloud OAuth 2.0 Client Secret |
-| `GOOGLE_CALLBACK_URL` | OAuth redirect callback URL |
-| `BREVO_API_KEY` | API key for Brevo transactional email |
-| `BREVO_SENDER_EMAIL` | Verified sender email address |
-| `BREVO_SENDER_NAME` | Sender display name |
-| `FRONTEND_URL` | URL of the frontend application (for CORS & email links) |
-
-### Frontend (`client/.env.local`)
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_API_URL` | Base URL of the backend API (`http://localhost:3001` locally) |
-
----
-
 ## API Reference
 
 The ProjectLoom backend exposes modular REST endpoints. For detailed request payloads, parameters, and responses, refer to [`API.md`](./API.md).
