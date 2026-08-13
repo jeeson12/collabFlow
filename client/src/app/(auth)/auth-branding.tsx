@@ -10,7 +10,7 @@ const contents = [
       </>
     ),
     description:
-      "Stop switching between scattered tools. CollabFlow provides a single, secure workspace where your team can manage tasks, share context, and hit every deadline without breaking a sweat.",
+      "Stop switching between scattered tools. ProjectLoom provides a single, secure workspace where your team can manage tasks, share context, and hit every deadline without breaking a sweat.",
   },
   {
     title: (
@@ -19,7 +19,7 @@ const contents = [
       </>
     ),
     description:
-      "Join CollabFlow to organize your work through clear Kanban stages, communicate in real-time with WebSockets, and keep every task tied to the people and files that matter.",
+      "Join ProjectLoom to organize your work through clear Kanban stages, communicate in real-time with WebSockets, and keep every task tied to the people and files that matter.",
   },
   {
     title: (
@@ -28,7 +28,7 @@ const contents = [
       </>
     ),
     description:
-      "Experience a workspace designed for speed and clarity. With instant updates and robust role-based access, CollabFlow keeps your entire team perfectly aligned from planning to execution.",
+      "Experience a workspace designed for speed and clarity. With instant updates and robust role-based access, ProjectLoom keeps your entire team perfectly aligned from planning to execution.",
   },
 ];
 

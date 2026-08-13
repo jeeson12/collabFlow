@@ -14,14 +14,14 @@ export default function AuthLayout({
         <div>
           <Link href="/" className="flex items-center gap-2">
             <FolderKanban className="size-8" />
-            <span className="text-2xl font-serif font-bold tracking-tight">CollabFlow</span>
+            <span className="text-2xl font-serif font-bold tracking-tight">ProjectLoom</span>
           </Link>
         </div>
 
         <AuthBranding />
 
         <div className="text-sm text-white/60">
-          © {new Date().getFullYear()} CollabFlow. All rights reserved.
+          © {new Date().getFullYear()} ProjectLoom. All rights reserved.
         </div>
       </div>
 
@@ -30,7 +30,7 @@ export default function AuthLayout({
         {/* Mobile Header (Only visible on small screens) */}
         <div className="flex items-center gap-2 p-6 lg:hidden shrink-0">
           <FolderKanban className="size-6 text-[#063325]" />
-          <span className="text-xl font-serif font-bold tracking-tight text-[#063325]">CollabFlow</span>
+          <span className="text-xl font-serif font-bold tracking-tight text-[#063325]">ProjectLoom</span>
         </div>
 
         {/* Form Container */}

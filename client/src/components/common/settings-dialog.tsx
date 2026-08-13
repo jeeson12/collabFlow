@@ -309,7 +309,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                     <p className="font-medium">Google authentication</p>
 
                     <p className="mt-1 text-sm text-muted-foreground">
-                      This account does not use a CollabFlow password.
+                      This account does not use a ProjectLoom password.
                       Authentication is handled through Google.
                     </p>
                   </div>

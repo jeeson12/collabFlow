@@ -111,7 +111,7 @@ export default function HomePage() {
             href="/"
             className="text-lg font-semibold tracking-[-0.035em] text-[#063325]"
           >
-            CollabFlow
+            ProjectLoom
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
@@ -172,7 +172,7 @@ export default function HomePage() {
               </h1>
 
               <p className="mt-6 max-w-lg text-base leading-7 text-white/80 sm:text-lg">
-                CollabFlow brings projects, tasks, conversations, files, and
+                ProjectLoom brings projects, tasks, conversations, files, and
                 team activity together in one focused workspace.
               </p>
 
@@ -219,7 +219,7 @@ export default function HomePage() {
               </p>
 
               <p className="mt-4 text-base leading-7 text-[#063325]/75">
-                CollabFlow gives that work one focused place, so the context
+                ProjectLoom gives that work one focused place, so the context
                 stays close to the project.
               </p>
             </div>
@@ -473,7 +473,7 @@ export default function HomePage() {
 
           <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-white/70">
             Organize projects, coordinate tasks, and keep your team aligned with
-            CollabFlow.
+            ProjectLoom.
           </p>
 
           <Link
@@ -498,7 +498,7 @@ export default function HomePage() {
                 href="/"
                 className="text-lg font-semibold tracking-[-0.035em]"
               >
-                CollabFlow
+                ProjectLoom
               </Link>
 
               <p className="mt-2 max-w-xs text-sm leading-6 text-[#063325]/60">
@@ -527,7 +527,7 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 border-t border-[#CBCBCB] pt-6 text-xs text-[#063325]/50">
-            © {new Date().getFullYear()} CollabFlow. All rights reserved.
+            © {new Date().getFullYear()} ProjectLoom. All rights reserved.
           </div>
         </div>
       </footer>
@@ -567,7 +567,7 @@ function HeroProductPreview() {
       <div className="grid min-h-107.5 md:grid-cols-[190px_1fr]">
         {/* Product sidebar */}
         <aside className="hidden border-r border-[#CBCBCB] bg-white p-4 md:block">
-          <div className="text-sm font-semibold">CollabFlow</div>
+          <div className="text-sm font-semibold">ProjectLoom</div>
 
           <div className="mt-8 space-y-1">
             <PreviewNav icon={<LayoutDashboard />} label="Overview" active />

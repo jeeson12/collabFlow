@@ -229,7 +229,7 @@ export function LoginForm() {
           </h1>
 
           <p className="mt-2 text-sm text-muted-foreground">
-            Sign in to continue to CollabFlow.
+            Sign in to continue to ProjectLoom.
           </p>
         </div>
 

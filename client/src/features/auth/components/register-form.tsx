@@ -48,7 +48,7 @@ export function RegisterForm() {
             Create an account
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sign up to get started with CollabFlow.
+            Sign up to get started with ProjectLoom.
           </p>
         </div>
 

@@ -532,7 +532,7 @@ export class WorkspaceService {
     try {
       await this.emailService.sendEmail(
         body.email,
-        `You're invited to ${workspace.name} on CollabFlow`,
+        `You're invited to ${workspace.name} on ProjectLoom`,
         html,
       );
     } catch (error) {

@@ -45,7 +45,7 @@ export function AppHeader() {
             href="/workspace"
             className="text-lg font-semibold tracking-[-0.035em] text-[#063325] mr-2"
           >
-            CollabFlow
+            ProjectLoom
           </Link>
           <WorkspaceSwitcher />
           {/* Navigation */}

@@ -71,7 +71,7 @@ export function workspaceInvitationTemplate(
                       line-height: 1.6;
                     ">
                       ${safeInviterName} invited you to join
-                      <strong>${safeWorkspaceName}</strong> on CollabFlow.
+                      <strong>${safeWorkspaceName}</strong> on ProjectLoom.
                     </p>
 
                     <p style="
@@ -127,7 +127,7 @@ export function workspaceInvitationTemplate(
                 font-size: 12px;
                 color: #999999;
               ">
-                © ${new Date().getFullYear()} CollabFlow
+                © ${new Date().getFullYear()} ProjectLoom
               </p>
 
             </td>

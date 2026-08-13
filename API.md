@@ -1,6 +1,6 @@
-# CollabFlow API Documentation
+# ProjectLoom API Documentation
 
-This document outlines the REST API endpoints available in the CollabFlow backend.
+This document outlines the REST API endpoints available in the ProjectLoom backend.
 All protected endpoints require a valid JWT token sent in the `Authorization` header as a Bearer token or stored in an HTTP-only cookie.
 
 ## Authentication (`/auth`)

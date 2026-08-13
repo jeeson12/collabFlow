@@ -26,7 +26,7 @@ export class EmailService {
     try {
       const response = await this.brevo.transactionalEmails.sendTransacEmail({
         sender: {
-          name: process.env.BREVO_SENDER_NAME || 'CollabFlow',
+          name: process.env.BREVO_SENDER_NAME || 'ProjectLoom',
           email: process.env.BREVO_SENDER_EMAIL!,
         },
 

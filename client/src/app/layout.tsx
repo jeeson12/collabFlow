@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 export const metadata: Metadata = {
-  title: "CollabFlow",
+  title: "ProjectLoom",
   description: "Team collaboration platform",
 };
 

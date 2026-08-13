@@ -12,7 +12,7 @@ export default function AboutPage() {
             href="/"
             className="text-lg font-semibold tracking-[-0.035em] text-[#063325]"
           >
-            CollabFlow
+            ProjectLoom
           </Link>
 
           <div className="flex items-center gap-3">
@@ -39,12 +39,12 @@ export default function AboutPage() {
       <section className="flex-1 py-20 lg:py-15">
         <div className="mx-auto max-w-3xl px-5 sm:px-8 lg:px-10">
           <h1 className="text-4xl font-serif font-bold tracking-tight sm:text-5xl mb-6">
-            About CollabFlow
+            About ProjectLoom
           </h1>
 
           <div className="prose prose-slate max-w-none text-[#063325]/80 space-y-8">
             <p className="text-lg leading-relaxed text-[#063325]">
-              At CollabFlow, our mission is to simplify the way teams work
+              At ProjectLoom, our mission is to simplify the way teams work
               together. We believe that great software shouldn't be complicated.
               By providing a clean, focused, and intuitive workspace, we help
               teams organize their projects, manage their tasks, and achieve
@@ -56,7 +56,7 @@ export default function AboutPage() {
                 What We Do
               </h2>
               <p className="leading-relaxed">
-                CollabFlow provides a comprehensive suite of collaboration tools
+                ProjectLoom provides a comprehensive suite of collaboration tools
                 designed for modern teams. From Kanban boards and task
                 assignments to real-time activity tracking and seamless file
                 sharing, we bring everything your team needs into one unified
@@ -96,12 +96,12 @@ export default function AboutPage() {
                 Have questions or want to learn more? We'd love to hear from
                 you. Reach out to our team at{" "}
                 <a
-                  href="mailto:collabflow.web@gmail.com"
+                  href="mailto:projectloom.web@gmail.com"
                   className="font-semibold underline hover:text-[#063325]"
                 >
-                  collabflow.web@gmail.com
+                  projectloom.web@gmail.com
                 </a>
-                , and we'll be happy to help you get the most out of CollabFlow.
+                , and we'll be happy to help you get the most out of ProjectLoom.
               </p>
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function AboutPage() {
                 href="/"
                 className="text-lg font-semibold tracking-[-0.035em]"
               >
-                CollabFlow
+                ProjectLoom
               </Link>
 
               <p className="mt-2 max-w-xs text-sm leading-6 text-[#063325]/60">
@@ -148,7 +148,7 @@ export default function AboutPage() {
           </div>
 
           <div className="mt-10 border-t border-[#CBCBCB] pt-6 text-xs text-[#063325]/50">
-            © {new Date().getFullYear()} CollabFlow. All rights reserved.
+            © {new Date().getFullYear()} ProjectLoom. All rights reserved.
           </div>
         </div>
       </footer>

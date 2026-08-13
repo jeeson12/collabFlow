@@ -73,7 +73,7 @@ export function forgotPasswordTemplate(resetUrl: string, userName?: string) {
                       font-size: 15px;
                       line-height: 1.6;
                     ">
-                      We received a request to reset your CollabFlow
+                      We received a request to reset your ProjectLoom
                       password. Click the button below to create a new one.
                     </p>
 
@@ -131,7 +131,7 @@ export function forgotPasswordTemplate(resetUrl: string, userName?: string) {
                 font-size: 12px;
                 color: #999999;
               ">
-                © ${new Date().getFullYear()} CollabFlow
+                © ${new Date().getFullYear()} ProjectLoom
               </p>
 
             </td>
