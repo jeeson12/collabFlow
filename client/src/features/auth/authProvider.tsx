@@ -1,41 +1,57 @@
 "use client";
+
 import { createContext, ReactNode, useContext, useEffect } from "react";
-import { User } from "./type";
 import { useQuery } from "@tanstack/react-query";
+import { User } from "./type";
 import { getProfile } from "./api";
 import { getSocket } from "@/lib/socket";
 
-type authContextType = {
+type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
 };
 
-const AuthContext = createContext<authContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-type authProviderProps = {
+type AuthProviderProps = {
   children: ReactNode;
 };
 
-export function AuthProvider({ children }: authProviderProps) {
-  const { data: user, isLoading } = useQuery({
+export function AuthProvider({ children }: AuthProviderProps) {
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["profile"],
     queryFn: getProfile,
     retry: false,
   });
 
   useEffect(() => {
-    if (!user) {
-      getSocket().disconnect();
+    if (isLoading) {
       return;
     }
 
-    getSocket().connect();
+    const socket = getSocket();
+
+    if (!user || isError) {
+      if (socket.connected) {
+        socket.disconnect();
+      }
+
+      return;
+    }
+
+    if (!socket.connected) {
+      socket.connect();
+    }
 
     return () => {
-      getSocket().disconnect();
+      socket.disconnect();
     };
-  }, [user]);
+  }, [user, isLoading, isError]);
 
   return (
     <AuthContext.Provider
@@ -52,8 +68,10 @@ export function AuthProvider({ children }: authProviderProps) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error("useAuth must be used inside AuthProvider");
   }
+
   return context;
 }

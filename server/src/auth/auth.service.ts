@@ -23,6 +23,10 @@ export class AuthService {
     private supabaseService: SupabaseService,
   ) {}
 
+  // =========================
+  // REGISTER
+  // =========================
+
   async register(data: RegisterDto) {
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
@@ -41,6 +45,10 @@ export class AuthService {
     };
   }
 
+  // =========================
+  // LOGIN
+  // =========================
+
   async login(data: { email: string; password: string }) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -49,7 +57,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new NotFoundException('no user found');
+      throw new NotFoundException('No user found');
     }
 
     // Google-only accounts do not have a password.
@@ -62,13 +70,10 @@ export class AuthService {
     const passwordMatch = await bcrypt.compare(data.password, user.password);
 
     if (!passwordMatch) {
-      throw new UnauthorizedException('invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    const token = this.jwt.sign({
-      userId: user.id,
-      userEmail: user.email,
-    });
+    const token = this.generateToken(user.id, user.email);
 
     return {
       token,
@@ -80,12 +85,19 @@ export class AuthService {
     };
   }
 
-  async googleLogin(profile: { emails?: { value: string }[]; displayName: string }) {
+  // =========================
+  // GOOGLE LOGIN
+  // =========================
+
+  async googleLogin(profile: {
+    emails?: { value: string }[];
+    displayName: string;
+  }) {
     const email = profile?.emails?.[0]?.value;
     const name = profile.displayName;
 
     if (!email) {
-      throw new UnauthorizedException('Incomplete email profile from google');
+      throw new UnauthorizedException('Incomplete email profile from Google');
     }
 
     let user = await this.prisma.user.findUnique({
@@ -107,6 +119,45 @@ export class AuthService {
     return this.generateToken(user.id, user.email);
   }
 
+  // =========================
+  // GET PROFILE
+  // =========================
+
+  async getProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        avatarPath: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const avatarUrl = user.avatarPath
+      ? await this.supabaseService.createSignedUrl(user.avatarPath)
+      : null;
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      hasPassword: Boolean(user.password),
+      avatarUrl,
+    };
+  }
+
+  // =========================
+  // FORGOT PASSWORD
+  // =========================
+
   async forgotPassword(email: string) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -115,14 +166,15 @@ export class AuthService {
     });
 
     /*
-     * Google-only accounts do not have a password and therefore
-     * cannot use password reset.
+     * Google-only accounts do not have a password
+     * and therefore cannot use password reset.
      *
-     * We return the same generic response for:
+     * Return the same generic response for:
      * - non-existent accounts
      * - Google-only accounts
      *
-     * This prevents revealing whether an email belongs to an account.
+     * This prevents revealing whether an email
+     * belongs to an account.
      */
     if (!user || !user.password) {
       return {
@@ -168,6 +220,10 @@ export class AuthService {
     };
   }
 
+  // =========================
+  // RESET PASSWORD
+  // =========================
+
   async resetPassword(token: string, newPassword: string) {
     const tokenHash = createHash('sha256').update(token).digest('hex');
 
@@ -190,7 +246,6 @@ export class AuthService {
     }
 
     // Make sure the account still has a password.
-    // This protects the Google-only rule even if a token somehow exists.
     const user = await this.prisma.user.findUnique({
       where: {
         id: resetToken.userId,
@@ -243,6 +298,10 @@ export class AuthService {
     };
   }
 
+  // =========================
+  // CHANGE PASSWORD
+  // =========================
+
   async changePassword(
     userId: string,
     currentPassword: string,
@@ -289,6 +348,10 @@ export class AuthService {
     };
   }
 
+  // =========================
+  // UPDATE PROFILE
+  // =========================
+
   async updateProfile(
     userId: string,
     name?: string,
@@ -318,6 +381,7 @@ export class AuthService {
       if (file.size > 5 * 1024 * 1024) {
         throw new BadRequestException('Avatar must be smaller than 5MB');
       }
+
       avatarPath = `avatars/${userId}`;
 
       await this.supabaseService.uploadFiles(
@@ -333,8 +397,12 @@ export class AuthService {
         id: userId,
       },
       data: {
-        ...(name !== undefined && { name: name.trim() }),
-        ...(avatarPath && { avatarPath }),
+        ...(name !== undefined && {
+          name: name.trim(),
+        }),
+        ...(avatarPath && {
+          avatarPath,
+        }),
       },
     });
 
@@ -351,6 +419,10 @@ export class AuthService {
     };
   }
 
+  // =========================
+  // GENERATE JWT
+  // =========================
+
   generateToken(userId: string, email: string) {
     return this.jwt.sign({
       userId,
@@ -358,15 +430,21 @@ export class AuthService {
     });
   }
 
+  // =========================
+  // GET USER AVATAR
+  // =========================
+
   async getUserAvatarUrl(userId: string) {
     const user = await this.prisma.user.findUnique({
-      where: { id: userId },
+      where: {
+        id: userId,
+      },
     });
-    
+
     if (!user || !user.avatarPath) {
-      throw new NotFoundException('avatar not found');
+      throw new NotFoundException('Avatar not found');
     }
-    
+
     return this.supabaseService.createSignedUrl(user.avatarPath);
   }
 }

@@ -48,23 +48,19 @@ export class AuthController {
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       secure: process.env.NODE_ENV === 'production',
       maxAge: 30 * 24 * 60 * 60 * 1000,
+      path: '/',
     });
 
-    return { ...result.user, token: result.token };
+    return {
+      ...result.user,
+      token: result.token,
+    };
   }
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   async getProfile(@Req() req) {
-    let avatarUrl: string | null = null;
-    if (req.user.avatarPath) {
-      avatarUrl = await this.authService.getUserAvatarUrl(req.user.id);
-    }
-    
-    return {
-      ...req.user,
-      avatarUrl,
-    };
+    return this.authService.getProfile(req.user.id);
   }
 
   @Get('google')
@@ -84,6 +80,7 @@ export class AuthController {
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       secure: process.env.NODE_ENV === 'production',
       maxAge: 30 * 24 * 60 * 60 * 1000,
+      path: '/',
     });
 
     res.redirect(`${process.env.FRONTEND_URL}/workspace`);
@@ -91,8 +88,16 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
-  logout(@Res({ passthrough: true }) res: express.Response) {
-    res.clearCookie('access_token');
+  logout(
+    @Res({ passthrough: true })
+    res: express.Response,
+  ) {
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+    });
 
     return {
       message: 'logout success',
@@ -126,9 +131,11 @@ export class AuthController {
     @Res() res: express.Response,
   ) {
     const url = await this.authService.getUserAvatarUrl(userId);
+
     if (!url) {
       return res.status(404).json({ message: 'Avatar not found' });
     }
+
     res.redirect(url);
   }
 
@@ -138,10 +145,14 @@ export class AuthController {
     FileInterceptor('avatar', {
       fileFilter: (req, file, cb) => {
         const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
         if (allowedMimeTypes.includes(file.mimetype)) {
           cb(null, true);
         } else {
-          cb(new BadRequestException(`Invalid file type: ${file.mimetype}`), false);
+          cb(
+            new BadRequestException(`Invalid file type: ${file.mimetype}`),
+            false,
+          );
         }
       },
     }),
@@ -149,7 +160,8 @@ export class AuthController {
   updateProfile(
     @Req() req,
     @Body('name') name?: string,
-    @UploadedFile() avatar?: Express.Multer.File,
+    @UploadedFile()
+    avatar?: Express.Multer.File,
   ) {
     return this.authService.updateProfile(req.user.id, name, avatar);
   }
