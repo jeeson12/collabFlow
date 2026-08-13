@@ -26,6 +26,10 @@ export class NotificationGateway
     try {
       console.log('🔌 Socket connection:', client.id);
 
+      // ============================================
+      // GET COOKIE
+      // ============================================
+
       const cookie = client.handshake.headers.cookie;
 
       if (!cookie) {
@@ -33,6 +37,10 @@ export class NotificationGateway
         client.disconnect();
         return;
       }
+
+      // ============================================
+      // EXTRACT JWT
+      // ============================================
 
       const PREFIX = 'access_token=';
 
@@ -48,6 +56,10 @@ export class NotificationGateway
         return;
       }
 
+      // ============================================
+      // GET JWT SECRET
+      // ============================================
+
       const secret = this.configService.get<string>('JWT_SECRET');
 
       if (!secret) {
@@ -56,10 +68,22 @@ export class NotificationGateway
         return;
       }
 
+      // Temporary debugging.
+      // DO NOT print the complete secret.
+      console.log('🔐 JWT secret loaded:', `${secret.substring(0, 8)}...`);
+
+      // ============================================
+      // VERIFY JWT
+      // ============================================
+
       const payload = jwt.verify(token, secret) as {
         userId: string;
         userEmail: string;
       };
+
+      // ============================================
+      // GET USER ID
+      // ============================================
 
       const userId = payload.userId;
 
@@ -69,11 +93,22 @@ export class NotificationGateway
         return;
       }
 
+      // ============================================
+      // JOIN USER ROOM
+      // ============================================
+
       client.join(`user:${userId}`);
 
       console.log(`🟢 Socket connected: ${client.id} → user:${userId}`);
     } catch (error) {
-      console.error('❌ Socket authentication failed:', error);
+      if (error instanceof jwt.JsonWebTokenError) {
+        console.error('❌ Socket JWT verification failed:', error.message);
+      } else if (error instanceof jwt.TokenExpiredError) {
+        console.error('❌ Socket JWT expired');
+      } else {
+        console.error('❌ Socket authentication failed:', error);
+      }
+
       client.disconnect();
     }
   }

@@ -28,12 +28,22 @@ async function bootstrap() {
   );
 
   // CORS
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://projectloom-web.vercel.app',
+  ];
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   });
 
-  // Render/Railway provides PORT
   const port = process.env.PORT || 3001;
 
   await app.listen(port, '0.0.0.0');

@@ -8,174 +8,135 @@ datasource db {
 }
 
 model User {
-  id         String  @id @default(cuid())
-  email      String  @unique
-  name       String?
-  password   String
-  avatarPath String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  memberships       WorkspaceMembership[]
-  projectMembership ProjectMembership[]
-
-  createdTasks  Task[] @relation("taskCreator")
-  assignedTasks Task[] @relation("taskAssignee")
-
-  comments    Comment[]
-  attachments Attachment[]
-  activities  Activity[]
-
-  passwordResetTokens PasswordResetToken[]
+  id                  String                @id @default(cuid())
+  email               String                @unique
+  name                String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  password            String
+  avatarPath          String?
+  activities          Activity[]
+  attachments         Attachment[]
+  comments            Comment[]
+  sendInvitation      Invitation[]          @relation("invitationSender")
   notification        Notification[]
-  sendInvitation      Invitation[]         @relation("invitationSender")
+  passwordResetTokens PasswordResetToken[]
+  projectMembership   ProjectMembership[]
+  assignedTasks       Task[]                @relation("taskAssignee")
+  createdTasks        Task[]                @relation("taskCreator")
+  memberships         WorkspaceMembership[]
 }
 
 model Workspace {
-  id   String @id @default(cuid())
-  name String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  memberships WorkspaceMembership[]
-  projects    Project[]
+  id          String                @id @default(cuid())
+  name        String
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
   invitations Invitation[]
+  projects    Project[]
+  memberships WorkspaceMembership[]
 }
 
 model WorkspaceMembership {
-  id String @id @default(cuid())
-
+  id          String         @id @default(cuid())
   userId      String
-  workspaceId String
   role        MembershipRole
-
-  createdAt DateTime @default(now())
-
-  user      User      @relation(fields: [userId], references: [id])
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+  createdAt   DateTime       @default(now())
+  user        User           @relation(fields: [userId], references: [id])
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([userId, workspaceId])
 }
 
 model Project {
-  id String @id @default(cuid())
-
+  id           String              @id @default(cuid())
   name         String
   description  String?
+  workspaceId  String
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
   projectKey   String
-  taskSequence Int     @default(0)
-
-  workspaceId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  workspace   Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  memberships ProjectMembership[]
-  tasks       Task[]
-  columns     BoardColumn[]
+  taskSequence Int                 @default(0)
+  columns      BoardColumn[]
+  workspace    Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  memberships  ProjectMembership[]
+  tasks        Task[]
 
   @@unique([workspaceId, projectKey])
 }
 
 model ProjectMembership {
-  id String @id @default(cuid())
-
+  id        String         @id @default(cuid())
   userId    String
   projectId String
   role      MembershipRole
-
-  createdAt DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id])
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+  project   Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id])
 
   @@unique([userId, projectId])
 }
 
 model Task {
-  id String @id @default(cuid())
-
+  id          String       @id @default(cuid())
   title       String
   description String?
-
-  ticketId String @unique
-
-  projectId  String
-  creatorId  String
-  assigneeId String?
-
-  priority TaskPriority @default(LOW)
-
-  columnId String
-  column   BoardColumn @relation(fields: [columnId], references: [id], onDelete: Cascade)
-
-  dueDate DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  creator  User    @relation("taskCreator", fields: [creatorId], references: [id])
-  assignee User?   @relation("taskAssignee", fields: [assigneeId], references: [id])
-
-  comments    Comment[]
+  projectId   String
+  assigneeId  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  priority    TaskPriority @default(LOW)
+  dueDate     DateTime?
+  creatorId   String
+  ticketId    String       @unique
+  columnId    String
   attachments Attachment[]
+  comments    Comment[]
+  assignee    User?        @relation("taskAssignee", fields: [assigneeId], references: [id])
+  column      BoardColumn  @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  creator     User         @relation("taskCreator", fields: [creatorId], references: [id])
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([columnId])
 }
 
 model Attachment {
-  id String @id @default(cuid())
-
+  id               String   @id @default(cuid())
   originalFileName String
   storagePath      String
   mimeType         String
   size             Int
-
-  taskId     String
-  uploadedBy String
-
-  createdAt DateTime @default(now())
-
-  task     Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  uploader User @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+  taskId           String
+  uploadedBy       String
+  createdAt        DateTime @default(now())
+  task             Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  uploader         User     @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
 
   @@index([taskId])
   @@index([uploadedBy])
 }
 
 model Comment {
-  id String @id @default(cuid())
-
-  content String
-
-  taskId   String
-  authorId String
-
+  id        String   @id @default(cuid())
+  content   String
+  taskId    String
+  authorId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  task   Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  author User @relation(fields: [authorId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id])
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
 }
 
 model Activity {
-  id String @id @default(cuid())
-
-  message String
-
+  id          String   @id @default(cuid())
+  message     String
   workspaceId String?
   projectId   String?
-
-  userId String
-
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model BoardColumn {
@@ -186,73 +147,53 @@ model BoardColumn {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   isCompletionColumn Boolean  @default(false)
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  tasks   Task[]
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks              Task[]
 
   @@index([projectId, order])
 }
 
 model PasswordResetToken {
-  id        String @id @default(cuid())
-  tokenHash String @unique
-
-  userId String
-
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
   expiresAt DateTime
   usedAt    DateTime?
-
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
 model Notification {
-  id String @id @default(cuid())
-
-  userId String
-
-  title   String
-  message String
-
-  entityId   String?
-  entityType String?
-
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  message     String
+  entityId    String?
+  entityType  String?
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
   projectId   String?
   workspaceId String?
-
-  readAt DateTime?
-
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
   @@index([userId, readAt])
 }
 
 model Invitation {
-  id String @id @default(cuid())
-
-  email String
-
-  tokenHash String @unique
-
-  role MembershipRole @default(MEMBER)
-
+  id          String         @id @default(cuid())
+  email       String
+  tokenHash   String         @unique
   workspaceId String
   invitedById String
-
-  expiresAt  DateTime
-  acceptedAt DateTime?
-
-  createdAt DateTime @default(now())
-
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-
-  invitedBy User @relation("invitationSender", fields: [invitedById], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime       @default(now())
+  role        MembershipRole @default(MEMBER)
+  invitedBy   User           @relation("invitationSender", fields: [invitedById], references: [id], onDelete: Cascade)
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([email])
   @@index([workspaceId])

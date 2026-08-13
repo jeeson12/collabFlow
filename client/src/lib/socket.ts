@@ -8,7 +8,12 @@ export function getSocket(): Socket {
 
     socket = io(apiUrl, {
       withCredentials: true,
-      transports: ["websocket"],
+
+      // Allow Socket.IO to fall back to polling
+      // if the WebSocket connection cannot be established.
+      transports: ["websocket", "polling"],
+
+      autoConnect: false,
 
       reconnection: true,
       reconnectionAttempts: 5,
@@ -29,6 +34,17 @@ export function getSocket(): Socket {
   }
 
   return socket;
+}
+
+/**
+ * Connect the shared socket.
+ */
+export function connectSocket(): void {
+  const socket = getSocket();
+
+  if (!socket.connected) {
+    socket.connect();
+  }
 }
 
 /**

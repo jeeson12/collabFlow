@@ -28,13 +28,15 @@ export class AuthService {
   // =========================
 
   async register(data: RegisterDto) {
+    const email = data.email.trim().toLowerCase();
+
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const user = await this.prisma.user.create({
       data: {
-        email: data.email,
+        email,
         password: hashedPassword,
-        name: data.name,
+        name: data.name?.trim(),
       },
     });
 
@@ -50,9 +52,11 @@ export class AuthService {
   // =========================
 
   async login(data: { email: string; password: string }) {
+    const email = data.email.trim().toLowerCase();
+
     const user = await this.prisma.user.findUnique({
       where: {
-        email: data.email,
+        email,
       },
     });
 
@@ -93,7 +97,7 @@ export class AuthService {
     emails?: { value: string }[];
     displayName: string;
   }) {
-    const email = profile?.emails?.[0]?.value;
+    const email = profile?.emails?.[0]?.value?.trim().toLowerCase();
     const name = profile.displayName;
 
     if (!email) {
@@ -159,6 +163,8 @@ export class AuthService {
   // =========================
 
   async forgotPassword(email: string) {
+    email = email.trim().toLowerCase();
+
     const user = await this.prisma.user.findUnique({
       where: {
         email,
