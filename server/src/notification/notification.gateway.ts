@@ -6,6 +6,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
+import { ConfigService } from '@nestjs/config';
 
 @WebSocketGateway({
   cors: {
@@ -18,6 +19,8 @@ export class NotificationGateway
 {
   @WebSocketServer()
   server: Server;
+
+  constructor(private configService: ConfigService) {}
 
   handleConnection(client: Socket) {
     try {
@@ -45,10 +48,15 @@ export class NotificationGateway
         return;
       }
 
-      const payload = jwt.verify(
-        token,
-        process.env.JWT_SECRET || 'secretKey',
-      ) as {
+      const secret = this.configService.get<string>('JWT_SECRET');
+
+      if (!secret) {
+        console.error('❌ JWT_SECRET is not configured');
+        client.disconnect();
+        return;
+      }
+
+      const payload = jwt.verify(token, secret) as {
         userId: string;
         userEmail: string;
       };
