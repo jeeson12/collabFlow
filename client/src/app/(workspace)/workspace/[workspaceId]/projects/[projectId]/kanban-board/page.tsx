@@ -33,7 +33,9 @@ import {
 } from "@/features/project/kanban_board/hooks";
 import { ConfirmDeleteDialog } from "@/components/common/delete-confirmation";
 
-export default function BoardPage() {
+import { Suspense } from "react";
+
+function BoardPageContent() {
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -325,5 +327,13 @@ export default function BoardPage() {
         isLoading={deleteColumnMutation.isPending}
       />
     </div>
+  );
+}
+
+export default function BoardPage() {
+  return (
+    <Suspense fallback={null}>
+      <BoardPageContent />
+    </Suspense>
   );
 }
