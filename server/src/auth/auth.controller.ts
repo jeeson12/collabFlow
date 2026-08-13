@@ -50,7 +50,7 @@ export class AuthController {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
-    return result.user;
+    return { ...result.user, token: result.token };
   }
 
   @Get('profile')
