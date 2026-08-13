@@ -1,8 +1,9 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { LoginForm } from "@/features/auth/components/login-form";
 
-export default function loginPage() {
+export default function LoginPage() {
   return (
     <div className="flex w-full flex-col p-4 sm:p-8">
       <div className="w-full max-w-sm mx-auto mb-6">
@@ -14,9 +15,12 @@ export default function loginPage() {
           Back to home
         </Link>
       </div>
+
       <div className="flex w-full justify-center">
         <div className="w-full max-w-sm">
-          <LoginForm />
+          <Suspense fallback={null}>
+            <LoginForm />
+          </Suspense>
         </div>
       </div>
     </div>
