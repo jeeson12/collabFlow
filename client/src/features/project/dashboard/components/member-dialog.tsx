@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { getInitials, handleApiError } from "@/lib/utils";
 import { deleteMember, updatedMember } from "../api";
 import { ProjectMember } from "../type";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -40,6 +41,7 @@ export function ProjectMembersDialog({
     mutationFn: (userId: string) => deleteMember(projectId, userId),
 
     onSuccess: () => {
+      toast.success("Member removed successfully");
       queryClient.invalidateQueries({
         queryKey: ["project-members", projectId],
       });
@@ -62,6 +64,7 @@ export function ProjectMembersDialog({
       role: "ADMIN" | "MEMBER";
     }) => updatedMember(projectId, userId, role),
     onSuccess: () => {
+      toast.success("Member role updated successfully");
       queryClient.invalidateQueries({
         queryKey: ["project-members", projectId],
       });

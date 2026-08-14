@@ -54,7 +54,6 @@ export function InviteWorkspaceMemberDialog({
     const email = emailId.trim();
 
     if (!email) {
-      toast.error("Please enter an email address");
       return;
     }
 

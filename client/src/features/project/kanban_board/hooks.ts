@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import {
   createColumn,
@@ -17,6 +18,8 @@ export function useCreateTask(projectId: string) {
     mutationFn: createTask,
 
     onSuccess: () => {
+      toast.success("Task created successfully");
+
       queryClient.invalidateQueries({
         queryKey: ["tasks", projectId],
       });
@@ -37,6 +40,8 @@ export function useUpdateTask(projectId: string) {
     mutationFn: ({ taskId, data }: { taskId: string; data: updateTaskType }) =>
       updateTask(taskId, data),
     onSuccess: () => {
+      toast.success("Task updated successfully");
+
       queryClient.invalidateQueries({
         queryKey: ["tasks", projectId],
       });
@@ -57,6 +62,8 @@ export function useCreateColumn(projectId: string) {
     mutationFn: (name: string) => createColumn(projectId, name),
 
     onSuccess: () => {
+      toast.success("Column created successfully");
+
       queryClient.invalidateQueries({
         queryKey: ["overview", projectId],
       });
@@ -74,6 +81,8 @@ export function useUpdateColumn(projectId: string) {
       updateColumn(columnId, name),
 
     onSuccess: () => {
+      toast.success("Column updated successfully");
+
       queryClient.invalidateQueries({
         queryKey: ["overview", projectId],
       });
@@ -90,6 +99,8 @@ export function useDeleteColumn(projectId: string) {
     mutationFn: (columnId: string) => deleteColumn(columnId),
 
     onSuccess: () => {
+      toast.success("Column deleted successfully");
+
       queryClient.invalidateQueries({
         queryKey: ["overview", projectId],
       });

@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getInitials, handleApiError } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
 
 type AddMemberDialogProps = {
   open: boolean;
@@ -34,6 +35,7 @@ export function AddMemberDialog({
   const addMemberMutation = useMutation({
     mutationFn: (userId: string) => addMember(projectId, userId, "MEMBER"),
     onSuccess: () => {
+      toast.success("Member added successfully");
       queryClient.invalidateQueries({
         queryKey: ["project-members", projectId],
       });

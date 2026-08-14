@@ -13,6 +13,8 @@ import { TaskDetailsSidebar } from "./task-details-sidebar";
 import { CreateTaskDialog } from "../create-task-dialog";
 
 import { deleteTask } from "../../api";
+import { AppDialog } from "@/components/common/dialogBox";
+import { toast } from "sonner";
 
 type TaskDetailsDialogProps = {
   open: boolean;
@@ -57,6 +59,8 @@ export function TaskDetailsDialog({
 
     onSuccess: () => {
       if (!task) return;
+
+      toast.success("Task deleted successfully");
 
       queryClient.invalidateQueries({
         queryKey: ["tasks", task.projectId],

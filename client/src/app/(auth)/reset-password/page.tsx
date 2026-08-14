@@ -63,7 +63,6 @@ function ResetPasswordForm() {
 
   const onSubmit = (data: ResetPasswordFormData) => {
     if (!token) {
-      toast.error("Invalid or missing reset token");
       return;
     }
 

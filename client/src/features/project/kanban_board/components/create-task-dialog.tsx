@@ -20,6 +20,7 @@ import { AppDialog } from "@/components/common/dialogBox";
 import { Task, updateTaskType } from "../type";
 import { useCreateTask } from "../hooks";
 import { updateTask } from "../api";
+import { toast } from "sonner";
 
 type CreateTaskDialogProps = {
   open: boolean;
@@ -157,6 +158,9 @@ export function CreateTaskDialog({
     },
 
     onSuccess: (updatedTask: Task) => {
+      /* Show toast */
+      toast.success("Task updated successfully");
+
       /* Update task cache immediately */
       queryClient.setQueryData<Task[]>(["tasks", projectId], (oldTasks) => {
         if (!oldTasks) {

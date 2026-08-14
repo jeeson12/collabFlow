@@ -25,7 +25,10 @@ interface ApiError extends Error {
 
 export function handleApiError(error: unknown) {
   const apiError = error as ApiError;
-  console.error("API Error caught globally:", apiError.response?.data?.message ?? apiError.message ?? String(error));
+  console.error(
+    "API Error caught globally:",
+    apiError.response?.data?.message ?? apiError.message ?? String(error),
+  );
 }
 
 export async function openFiles(attachmentId: string) {

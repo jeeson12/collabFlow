@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AttachmentsSkeleton } from "@/components/common/skeletons";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 import {
   DropdownMenu,
@@ -59,6 +60,7 @@ export function TaskDetailsContent({ task }: TaskDetailsContentProps) {
     mutationFn: (file: File[]) => uploadAttachment(task.id, file),
 
     onSuccess: () => {
+      toast.success("Attachment uploaded successfully");
       queryClient.invalidateQueries({
         queryKey: ["attachments", task.id],
       });
@@ -73,6 +75,7 @@ export function TaskDetailsContent({ task }: TaskDetailsContentProps) {
     mutationFn: (attachmentId: string) => deleteAttachment(attachmentId),
 
     onSuccess: () => {
+      toast.success("Attachment deleted successfully");
       queryClient.invalidateQueries({
         queryKey: ["attachments", task.id],
       });

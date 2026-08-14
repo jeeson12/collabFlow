@@ -16,6 +16,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
 
 import {
   DropdownMenu,
@@ -118,6 +119,7 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
     },
 
     onSuccess: () => {
+      toast.success("Comment added successfully");
       setContent("");
       setMentionedUserIds([]);
 
@@ -149,6 +151,7 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
     }) => updateComment(commentId, content),
 
     onSuccess: () => {
+      toast.success("Comment updated successfully");
       setEditingCommentId(null);
       setEditingContent("");
 
@@ -170,6 +173,7 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
     mutationFn: (commentId: string) => deleteComment(commentId),
 
     onSuccess: () => {
+      toast.success("Comment deleted successfully");
       queryClient.invalidateQueries({
         queryKey: ["comments", task.id],
       });
