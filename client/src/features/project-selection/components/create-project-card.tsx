@@ -6,12 +6,12 @@ export function CreateProjectCard({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       className="
         flex h-full min-h-64 flex-col items-center justify-center
-        rounded-xl border border-dashed border-border
-        bg-white/50
+        rounded-xl border-2 border-dashed border-[#063325]/50
+         bg-white
         transition-all duration-200
         hover:-translate-y-1
-        hover:border-[#063325]/50
-        hover:bg-[#063325]/5
+        hover:border-[#063325]
+        hover:bg-[#063325]/10
       "
     >
       <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#063325]/10">

@@ -40,7 +40,7 @@ export function WorkspaceSwitcher() {
           <Building2 className="h-4 w-4 shrink-0" />
 
           <span className="max-w-45 truncate font-medium hidden sm:block">
-            <p className="text-sm">Switch Workspace</p>
+            <p className="text-sm">{currentWorkspace?.name}</p>
           </span>
 
           <ChevronDown className="hidden sm:block h-4 w-4 shrink-0 text-muted-foreground" />
@@ -81,7 +81,7 @@ export function WorkspaceSwitcher() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem 
+        <DropdownMenuItem
           className="cursor-pointer rounded-md"
           onClick={() => setOpen(true)}
         >
@@ -90,11 +90,7 @@ export function WorkspaceSwitcher() {
         </DropdownMenuItem>
       </DropdownMenuContent>
 
-      <WorkspaceDialog
-        open={open}
-        onOpenChange={setOpen}
-        mode="create"
-      />
+      <WorkspaceDialog open={open} onOpenChange={setOpen} mode="create" />
     </DropdownMenu>
   );
 }

@@ -49,12 +49,6 @@ export function AppHeader() {
           </Link>
           <WorkspaceSwitcher />
           {/* Navigation */}
-          <nav className="hidden sm:flex h-full items-center">
-            <button className="relative flex h-full items-center px-4 text-sm font-medium text-foreground">
-              Workspaces
-              <span className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-primary" />
-            </button>
-          </nav>
         </div>
 
         {/* Right */}

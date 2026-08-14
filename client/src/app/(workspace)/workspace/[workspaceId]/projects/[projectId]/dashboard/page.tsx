@@ -164,6 +164,14 @@ export default function DashboardPage() {
         projectId={project.id}
         open={createTaskOpen}
         onOpenChange={setCreateTaskOpen}
+        columns={columns.map((column) => ({
+          id: column.id,
+          name: column.name,
+        }))}
+        assignee={(membersData?.members ?? []).map((member) => ({
+          id: member.user.id,
+          name: member.user.name,
+        }))}
       />
 
       <AddMemberDialog

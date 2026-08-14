@@ -50,7 +50,7 @@ export function ProjectCard({ project, onEdit }: ProjectCardProps) {
           `/workspace/${workspaceId}/projects/${project.id}/dashboard`,
         )
       }
-      className="flex h-full flex-col cursor-pointer overflow-hidden rounded-xl border border-border/50 bg-white shadow-none transition-all duration-200 hover:-translate-y-1 hover:border-[#063325]/30"
+      className="flex h-full flex-col cursor-pointer overflow-hidden rounded-xl border border-[#063325]/50 bg-white shadow-none transition-all duration-200 hover:-translate-y-1 hover:border-[#063325]/30"
     >
       <div className="flex flex-1 flex-col justify-between space-y-4 p-4">
         {/* Header */}
