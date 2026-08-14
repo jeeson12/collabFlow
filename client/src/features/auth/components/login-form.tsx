@@ -29,7 +29,6 @@ type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export function LoginForm() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-
   const [emailSent, setEmailSent] = useState(false);
 
   const loginForm = useForm<LoginFormData>({
@@ -55,13 +54,24 @@ export function LoginForm() {
     ? searchParams.get("redirect")
     : null;
 
+  // =========================
+  // LOGIN
+  // =========================
+
   const loginMutation = useMutation({
     mutationFn: login,
 
-    onSuccess: async () => {
-      await queryClient.fetchQuery({
-        queryKey: ["profile"],
-      });
+    onSuccess: (user) => {
+      /*
+       * The backend sets the httpOnly access_token cookie.
+       *
+       * The user returned by the login endpoint is already
+       * enough to populate the profile cache.
+       *
+       * No need to immediately make another /auth/profile
+       * request.
+       */
+      queryClient.setQueryData(["profile"], user);
 
       router.replace(redirect || "/workspace");
     },
@@ -70,6 +80,10 @@ export function LoginForm() {
       handleApiError(error);
     },
   });
+
+  // =========================
+  // FORGOT PASSWORD
+  // =========================
 
   const forgotPasswordMutation = useMutation({
     mutationFn: forgotPassword,
@@ -83,6 +97,10 @@ export function LoginForm() {
     },
   });
 
+  // =========================
+  // FORM SUBMIT
+  // =========================
+
   const onLoginSubmit = (data: LoginFormData) => {
     loginMutation.mutate(data);
   };
@@ -90,6 +108,10 @@ export function LoginForm() {
   const onForgotPasswordSubmit = (data: ForgotPasswordFormData) => {
     forgotPasswordMutation.mutate(data.email);
   };
+
+  // =========================
+  // FORGOT PASSWORD UI
+  // =========================
 
   const openForgotPassword = () => {
     setShowForgotPassword(true);
@@ -104,9 +126,17 @@ export function LoginForm() {
     forgotForm.reset();
   };
 
+  // =========================
+  // GOOGLE LOGIN
+  // =========================
+
   const loginWithGoogle = () => {
     window.location.href = `${getApiBaseUrl()}/auth/google`;
   };
+
+  // =========================
+  // FORGOT PASSWORD SCREEN
+  // =========================
 
   if (showForgotPassword) {
     return (
@@ -223,6 +253,10 @@ export function LoginForm() {
     );
   }
 
+  // =========================
+  // LOGIN SCREEN
+  // =========================
+
   return (
     <div className="mx-auto w-full max-w-md">
       <div className="rounded-xl border border-border/50 bg-white p-6 shadow-none">
@@ -249,6 +283,7 @@ export function LoginForm() {
               id="email"
               type="email"
               placeholder="you@example.com"
+              autoComplete="email"
               {...loginForm.register("email")}
             />
 
@@ -278,6 +313,7 @@ export function LoginForm() {
               id="password"
               type="password"
               placeholder="Enter your password"
+              autoComplete="current-password"
               {...loginForm.register("password")}
             />
 
@@ -340,7 +376,7 @@ export function LoginForm() {
           Don&apos;t have an account?{" "}
           <Link
             href="/register"
-            className="text-[#063325] hover:underline font-medium"
+            className="font-medium text-[#063325] hover:underline"
           >
             Register
           </Link>
