@@ -22,6 +22,13 @@ export class CommentService {
       where: {
         id: body.taskId,
       },
+      include: {
+        project: {
+          select: {
+            workspaceId: true,
+          },
+        },
+      },
     });
 
     if (!task) {
@@ -98,6 +105,7 @@ export class CommentService {
           entityId: task.id,
           entityType: 'TASK',
           projectId: task.projectId,
+          workspaceId: task.project.workspaceId,
         })),
       );
     }
@@ -124,6 +132,7 @@ export class CommentService {
           entityId: task.id,
           entityType: 'TASK',
           projectId: task.projectId,
+          workspaceId: task.project.workspaceId,
         })),
       );
     }

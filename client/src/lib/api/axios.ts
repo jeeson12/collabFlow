@@ -62,6 +62,14 @@ api.interceptors.response.use(
       showToastOnce("No internet connection. Please check your network.");
     } else if (status === 403) {
       showToastOnce("Access denied: You do not have permission to perform this action.");
+
+      if (typeof window !== "undefined") {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = "/workspace";
+        }
+      }
     }
 
     // Redirect to login when an authenticated request receives a 401 response

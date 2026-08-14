@@ -27,9 +27,12 @@ import {
   NotificationsResponse,
 } from "@/features/project/dashboard/type";
 
+import { useState } from "react";
+
 export function NotificationDropdown() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
 
   const { data, isLoading } = useQuery<NotificationsResponse>({
     queryKey: ["notifications"],
@@ -60,56 +63,47 @@ export function NotificationDropdown() {
   const unreadCount = data?.unreadCount ?? 0;
 
   const handleNotificationClick = (notification: Notification) => {
+    // Close dropdown on click
+    setOpen(false);
+
     // Mark notification as read
     if (!notification.readAt) {
       markReadMutation.mutate(notification.id);
     }
 
-    // Task notification
+    const { entityType, entityId, projectId, workspaceId } = notification;
+
+    // 1. Task or Comment notification (or any notification targeting a task)
     if (
-      notification.entityType === "TASK" &&
-      notification.workspaceId &&
-      notification.projectId &&
-      notification.entityId
+      (entityType === "TASK" || entityType === "COMMENT") &&
+      workspaceId &&
+      projectId &&
+      entityId
     ) {
       router.push(
-        `/workspace/${notification.workspaceId}/projects/${notification.projectId}/kanban-board?task=${notification.entityId}`,
+        `/workspace/${workspaceId}/projects/${projectId}/kanban-board?task=${entityId}`,
       );
       return;
     }
 
-    // Comment / mention notification
-    //
-    // IMPORTANT:
-    // For this to work, entityId must contain the TASK ID,
-    // not the comment ID.
-    if (
-      notification.entityType === "COMMENT" &&
-      notification.workspaceId &&
-      notification.projectId &&
-      notification.entityId
-    ) {
-      router.push(
-        `/workspace/${notification.workspaceId}/projects/${notification.projectId}/kanban-board?task=${notification.entityId}`,
-      );
+    // 2. Project notification (when both workspaceId and projectId exist)
+    if (workspaceId && projectId) {
+      router.push(`/workspace/${workspaceId}/projects/${projectId}/dashboard`);
       return;
     }
 
-    // Project notification
-    if (notification.entityType === "PROJECT" && notification.workspaceId) {
-      router.push(`/workspace/${notification.workspaceId}/projects`);
+    // 3. Workspace notification (when workspaceId exists)
+    if (workspaceId) {
+      router.push(`/workspace/${workspaceId}/projects`);
       return;
     }
 
-    // Workspace notification
-    if (notification.entityType === "WORKSPACE" && notification.workspaceId) {
-      router.push(`/workspace/${notification.workspaceId}`);
-      return;
-    }
+    // 4. Default fallback
+    router.push("/workspace");
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative rounded-full">
           <Bell className="h-5 w-5" />
