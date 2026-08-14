@@ -17,6 +17,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { AttachmentsSkeleton } from "@/components/common/skeletons";
 import { Separator } from "@/components/ui/separator";
 
 import {
@@ -216,11 +217,7 @@ export function TaskDetailsContent({ task }: TaskDetailsContentProps) {
         </div>
 
         {isLoading ? (
-          <div className="flex h-64 items-center justify-center rounded-xl border bg-muted/20">
-            <p className="text-sm text-muted-foreground">
-              Loading attachments...
-            </p>
-          </div>
+          <AttachmentsSkeleton />
         ) : attachments.length === 0 ? (
           <div className="flex h-48 items-center justify-center rounded-xl border border-dashed bg-muted/20">
             <p className="text-sm text-muted-foreground">No attachments yet.</p>

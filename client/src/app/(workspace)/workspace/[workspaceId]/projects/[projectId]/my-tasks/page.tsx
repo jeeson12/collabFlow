@@ -10,6 +10,7 @@ import { getMyTasks } from "@/features/project/tasks/api";
 import { formatDistanceToNow } from "date-fns";
 import { priorityStyles } from "@/lib/utils";
 import { useParams, useRouter } from "next/navigation";
+import { MyTasksSkeleton } from "@/components/common/skeletons";
 
 export default function MyTasksPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function MyTasksPage() {
     return true;
   });
   if (isLoading) {
-    return <div className="flex justify-center py-20">Loading...</div>;
+    return <MyTasksSkeleton />;
   }
 
   return (

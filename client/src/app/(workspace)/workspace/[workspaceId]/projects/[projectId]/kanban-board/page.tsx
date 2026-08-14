@@ -32,6 +32,7 @@ import {
   useUpdateColumn,
 } from "@/features/project/kanban_board/hooks";
 import { ConfirmDeleteDialog } from "@/components/common/delete-confirmation";
+import { KanbanBoardSkeleton } from "@/components/common/skeletons";
 
 import { Suspense } from "react";
 
@@ -86,7 +87,7 @@ function BoardPageContent() {
   // Project
   // -----------------------------
 
-  const { data: project } = useQuery({
+  const { data: project, isLoading: isProjectLoading } = useQuery({
     queryKey: ["project", projectId],
     queryFn: () => getProject(projectId),
   });
@@ -104,7 +105,7 @@ function BoardPageContent() {
   // Board overview
   // -----------------------------
 
-  const { data: overview } = useQuery({
+  const { data: overview, isLoading: isOverviewLoading } = useQuery({
     queryKey: ["overview", projectId],
     queryFn: () => getTaskOverview(projectId),
   });
@@ -234,6 +235,10 @@ function BoardPageContent() {
     }
   };
 
+  if (isProjectLoading || isOverviewLoading) {
+    return <KanbanBoardSkeleton />;
+  }
+
   return (
     <div className="flex h-full flex-col">
       <BoardHeader
@@ -332,7 +337,7 @@ function BoardPageContent() {
 
 export default function BoardPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<KanbanBoardSkeleton />}>
       <BoardPageContent />
     </Suspense>
   );

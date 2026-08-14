@@ -17,7 +17,14 @@ import Link from "next/link";
 
 import { getApiBaseUrl } from "@/lib/api/axios";
 
-import { ArrowLeft, CheckCircle2, Mail, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Cookie,
+  Mail,
+  ShieldCheck,
+  TriangleAlert,
+} from "lucide-react";
 
 import { z } from "zod";
 
@@ -61,17 +68,10 @@ export function LoginForm() {
   const loginMutation = useMutation({
     mutationFn: login,
 
-    onSuccess: (user) => {
-      /*
-       * The backend sets the httpOnly access_token cookie.
-       *
-       * The user returned by the login endpoint is already
-       * enough to populate the profile cache.
-       *
-       * No need to immediately make another /auth/profile
-       * request.
-       */
-      queryClient.setQueryData(["profile"], user);
+    onSuccess: async () => {
+      await queryClient.fetchQuery({
+        queryKey: ["profile"],
+      });
 
       router.replace(redirect || "/workspace");
     },
@@ -110,7 +110,7 @@ export function LoginForm() {
   };
 
   // =========================
-  // FORGOT PASSWORD UI
+  // FORGOT PASSWORD
   // =========================
 
   const openForgotPassword = () => {
@@ -260,13 +260,25 @@ export function LoginForm() {
   return (
     <div className="mx-auto w-full max-w-md">
       <div className="rounded-xl border border-border/50 bg-white p-6 shadow-none">
-        <div className="mb-7">
+        <div className="mb-5">
           <h1 className="text-2xl font-bold font-serif text-[#063325]">
             Welcome back
           </h1>
 
           <p className="mt-2 text-sm text-muted-foreground">
             Sign in to continue to ProjectLoom.
+          </p>
+        </div>
+
+        {/* Third-party cookie warning */}
+        <div className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+          <p className="mb-1 flex font-medium text-amber-800">
+            <TriangleAlert className="mr-2 mt-1 h-3 w-3" />
+            <span className="text-sm">Third-party cookies are required</span>
+          </p>
+
+          <p className="text-xs text-amber-700 italic">
+            Please enable third-party cookies in your browser to log in.
           </p>
         </div>
 
@@ -356,14 +368,17 @@ export function LoginForm() {
               fill="currentColor"
               d="M21.35 12.27c0-.79-.07-1.55-.23-2.27H12v4.3h5.24a4.48 4.48 0 0 1-1.95 2.94v2.45h3.15c1.85-1.7 2.91-4.2 2.91-7.42Z"
             />
+
             <path
               fill="currentColor"
               d="M12 21.9c2.64 0 4.86-.87 6.48-2.36l-3.15-2.45c-.87.58-1.98.92-3.33.92-2.56 0-4.73-1.73-5.51-4.05H3.23v2.53A9.79 9.79 0 0 0 12 21.9Z"
             />
+
             <path
               fill="currentColor"
               d="M6.49 13.96a5.88 5.88 0 0 1 0-3.76V7.67H3.23a9.8 9.8 0 0 0 0 8.82l3.26-2.53Z"
             />
+
             <path
               fill="currentColor"
               d="M12 6.15c1.44 0 2.73.5 3.75 1.49l2.81-2.81C16.86 3.22 14.64 2.1 12 2.1a9.79 9.79 0 0 0-8.77 5.57l3.26 2.53C7.27 7.88 9.44 6.15 12 6.15Z"

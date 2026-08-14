@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -21,7 +22,10 @@ import {
   markAllNotificationsAsRead,
 } from "@/features/project/dashboard/api";
 
-import { Notification, NotificationsResponse } from "@/features/project/dashboard/type";
+import {
+  Notification,
+  NotificationsResponse,
+} from "@/features/project/dashboard/type";
 
 export function NotificationDropdown() {
   const router = useRouter();
@@ -164,8 +168,17 @@ export function NotificationDropdown() {
         {/* Notification list */}
         <ScrollArea className="h-80">
           {isLoading ? (
-            <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-              Loading notifications...
+            <div className="divide-y p-1">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex gap-3 p-3">
+                  <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <Skeleton className="h-3.5 w-3/4 rounded" />
+                    <Skeleton className="h-3 w-full rounded" />
+                    <Skeleton className="h-2.5 w-16 rounded" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">

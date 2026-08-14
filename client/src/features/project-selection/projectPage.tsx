@@ -17,6 +17,7 @@ import { WorkspaceMembersDialog } from "@/features/workspace/components/member-d
 
 import { Project } from "./type";
 import { InviteWorkspaceMemberDialog } from "../workspace/components/invite-member-dialog";
+import { ProjectSelectionSkeleton } from "@/components/common/skeletons";
 
 type ProjectSelectionPageProps = {
   workspaceId: string;
@@ -49,7 +50,7 @@ export default function ProjectSelectionPage({
   const members = data?.members ?? [];
 
   if (isLoading) {
-    return <div className="mx-auto max-w-7xl px-8 py-8">Loading...</div>;
+    return <ProjectSelectionSkeleton />;
   }
 
   if (isError) {

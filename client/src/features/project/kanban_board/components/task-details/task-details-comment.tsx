@@ -9,6 +9,7 @@ import {
   X,
   Check,
 } from "lucide-react";
+import { CommentsListSkeleton } from "@/components/common/skeletons";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -454,7 +455,7 @@ export function TaskDetailsComments({ task }: TaskDetailsCommentsProps) {
 
       <div className="mt-8 space-y-7">
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">Loading comments...</p>
+          <CommentsListSkeleton />
         ) : isError ? (
           <p className="text-sm text-destructive">Failed to load comments.</p>
         ) : comments.length === 0 ? (

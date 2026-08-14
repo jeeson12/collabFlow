@@ -22,6 +22,7 @@ import { ActivityDialog } from "@/features/project/dashboard/components/activity
 import { downloadFiles, openFiles } from "@/lib/utils";
 import { FilesDialog } from "@/features/project/dashboard/components/file-dialog";
 import { CreateTaskDialog } from "@/features/project/kanban_board/components/create-task-dialog";
+import { DashboardSkeleton } from "@/components/common/skeletons";
 
 export default function DashboardPage() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -74,7 +75,7 @@ export default function DashboardPage() {
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   if (isLoading || !project) {
-    return <div>Loading...</div>;
+    return <DashboardSkeleton />;
   }
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 md:px-6 pt-6 pb-4">

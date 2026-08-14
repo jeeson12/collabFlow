@@ -10,6 +10,7 @@ import { WorkspaceDialog } from "@/features/workspace/components/workspaceDialog
 
 import { useWorkspace } from "@/features/workspace/hooks";
 import { Workspace } from "@/features/workspace/type";
+import { WorkspaceListSkeleton } from "@/components/common/skeletons";
 
 export default function WorkspacePage() {
   const [open, setOpen] = useState(false);
@@ -20,11 +21,7 @@ export default function WorkspacePage() {
   const { data: workspaces = [], isLoading, isError } = useWorkspace();
 
   if (isLoading) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center">
-        Loading...
-      </div>
-    );
+    return <WorkspaceListSkeleton />;
   }
 
   if (isError) {

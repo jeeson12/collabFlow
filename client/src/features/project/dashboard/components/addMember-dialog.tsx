@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { MembersListSkeleton } from "@/components/common/skeletons";
 import { addMember, getAvailableMembers } from "../api";
 import { AppDialog } from "@/components/common/dialogBox";
 import { Search, UserPlus } from "lucide-react";
@@ -71,9 +72,7 @@ export function AddMemberDialog({
 
         <ScrollArea className="h-50 pr-3">
           {isLoading ? (
-            <div className="py-12 text-center text-sm text-muted-foreground">
-              Loading members...
-            </div>
+            <MembersListSkeleton count={2} />
           ) : filteredMembers.length === 0 ? (
             <div className="py-12 text-center text-sm text-muted-foreground">
               No available members found.
