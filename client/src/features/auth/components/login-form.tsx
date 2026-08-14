@@ -68,11 +68,8 @@ export function LoginForm() {
   const loginMutation = useMutation({
     mutationFn: login,
 
-    onSuccess: async () => {
-      await queryClient.fetchQuery({
-        queryKey: ["profile"],
-      });
-
+    onSuccess: (user) => {
+      queryClient.setQueryData(["profile"], user);
       router.replace(redirect || "/workspace");
     },
 
