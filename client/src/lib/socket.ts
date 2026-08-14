@@ -1,20 +1,23 @@
 import { io, Socket } from "socket.io-client";
+import { getApiBaseUrl } from "./api/axios";
 
 let socket: Socket | null = null;
 
 export function getSocket(): Socket {
   if (!socket) {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const apiUrl = getApiBaseUrl();
 
     socket = io(apiUrl, {
+      // Send authentication cookies with the Socket.IO connection.
       withCredentials: true,
 
-      // Allow Socket.IO to fall back to polling
-      // if the WebSocket connection cannot be established.
+      // Try WebSocket first and fall back to HTTP long-polling.
       transports: ["websocket", "polling"],
 
+      // We explicitly connect after authentication.
       autoConnect: false,
 
+      // Reconnect automatically if the connection drops.
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
@@ -24,8 +27,8 @@ export function getSocket(): Socket {
       console.log("[socket] Connected:", socket?.id);
     });
 
-    socket.on("connect_error", (err) => {
-      console.error("[socket] Connection error:", err.message);
+    socket.on("connect_error", (error) => {
+      console.error("[socket] Connection error:", error.message);
     });
 
     socket.on("disconnect", (reason) => {
@@ -38,17 +41,19 @@ export function getSocket(): Socket {
 
 /**
  * Connect the shared socket.
+ * The browser's authentication cookie is sent automatically
+ * because withCredentials is enabled.
  */
 export function connectSocket(): void {
-  const socket = getSocket();
+  const currentSocket = getSocket();
 
-  if (!socket.connected) {
-    socket.connect();
+  if (!currentSocket.connected) {
+    currentSocket.connect();
   }
 }
 
 /**
- * Tear down the shared socket.
+ * Disconnect and destroy the shared socket.
  * Call this when the user logs out.
  */
 export function disconnectSocket(): void {

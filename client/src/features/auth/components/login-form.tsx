@@ -15,6 +15,8 @@ import { login, forgotPassword } from "../api";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+import { getApiBaseUrl } from "@/lib/api/axios";
+
 import { ArrowLeft, CheckCircle2, Mail, ShieldCheck } from "lucide-react";
 
 import { z } from "zod";
@@ -103,7 +105,7 @@ export function LoginForm() {
   };
 
   const loginWithGoogle = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+    window.location.href = `${getApiBaseUrl()}/auth/google`;
   };
 
   if (showForgotPassword) {

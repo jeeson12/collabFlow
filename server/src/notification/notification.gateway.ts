@@ -10,7 +10,13 @@ import { ConfigService } from '@nestjs/config';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://projectloom-web.vercel.app',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean) as string[],
+
     credentials: true,
   },
 })
@@ -33,7 +39,7 @@ export class NotificationGateway
       const cookie = client.handshake.headers.cookie;
 
       if (!cookie) {
-        console.error('❌ No cookie received');
+        console.error('❌ No authentication cookie received');
         client.disconnect();
         return;
       }
@@ -68,10 +74,6 @@ export class NotificationGateway
         return;
       }
 
-      // Temporary debugging.
-      // DO NOT print the complete secret.
-      console.log('🔐 JWT secret loaded:', `${secret.substring(0, 8)}...`);
-
       // ============================================
       // VERIFY JWT
       // ============================================
@@ -101,10 +103,10 @@ export class NotificationGateway
 
       console.log(`🟢 Socket connected: ${client.id} → user:${userId}`);
     } catch (error) {
-      if (error instanceof jwt.JsonWebTokenError) {
-        console.error('❌ Socket JWT verification failed:', error.message);
-      } else if (error instanceof jwt.TokenExpiredError) {
+      if (error instanceof jwt.TokenExpiredError) {
         console.error('❌ Socket JWT expired');
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        console.error('❌ Socket JWT verification failed:', error.message);
       } else {
         console.error('❌ Socket authentication failed:', error);
       }
