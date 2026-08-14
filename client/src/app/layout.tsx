@@ -6,6 +6,7 @@ import { AuthProvider } from "@/features/auth/authProvider";
 import { Toaster } from "sonner";
 import { OfflineOverlay } from "@/components/shared/OfflineOverlay";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
         </QueryProvider>
 
         <GoogleAnalytics gaId="G-J4QGGTG6EC" />
+        <Analytics />
       </body>
     </html>
   );
