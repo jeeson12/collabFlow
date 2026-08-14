@@ -46,6 +46,70 @@ type CreateTaskDialogProps = {
   onTaskUpdated?: (updatedTask: Task) => void;
 };
 
+/* -------------------------------------------------------------------------- */
+/* File Preview                                                               */
+/* -------------------------------------------------------------------------- */
+
+function FilePreview({ file, onRemove }: { file: File; onRemove: () => void }) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!file.type.startsWith("image/")) {
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+
+    setPreviewUrl(url);
+
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [file]);
+
+  return (
+    <div className="group relative overflow-hidden rounded-xl border bg-background shadow-sm transition-shadow hover:shadow-md">
+      {/* Remove button */}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/80"
+        aria-label={`Remove ${file.name}`}
+      >
+        ✕
+      </button>
+
+      {/* Preview */}
+      {previewUrl ? (
+        <img
+          src={previewUrl}
+          alt={file.name}
+          className="h-24 w-full object-cover"
+        />
+      ) : (
+        <div className="flex h-24 items-center justify-center bg-muted">
+          <span className="text-3xl">📄</span>
+        </div>
+      )}
+
+      {/* File information */}
+      <div className="space-y-1 p-3">
+        <p className="truncate text-xs font-medium" title={file.name}>
+          {file.name}
+        </p>
+
+        <p className="text-[11px] text-muted-foreground">
+          {(file.size / 1024).toFixed(1)} KB
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Create Task Dialog                                                         */
+/* -------------------------------------------------------------------------- */
+
 export function CreateTaskDialog({
   open,
   onOpenChange,
@@ -63,60 +127,9 @@ export function CreateTaskDialog({
 
   const createTaskMutation = useCreateTask(projectId);
 
-  const updateTaskMutation = useMutation({
-    mutationFn: (data: updateTaskType) => {
-      if (!task) {
-        throw new Error("Task not found");
-      }
-
-      return updateTask(task.id, data);
-    },
-
-    onSuccess: (updatedTask: Task) => {
-      /*
-       * Update the cached task list immediately.
-       */
-      queryClient.setQueryData<Task[]>(["tasks", projectId], (oldTasks) => {
-        if (!oldTasks) {
-          return oldTasks;
-        }
-
-        return oldTasks.map((currentTask) =>
-          currentTask.id === updatedTask.id ? updatedTask : currentTask,
-        );
-      });
-
-      /*
-       * Refetch in the background as well.
-       */
-      queryClient.invalidateQueries({
-        queryKey: ["tasks", projectId],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["overview", projectId],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["task-overview", projectId],
-      });
-
-      /*
-       * Tell TaskDetailsDialog / BoardPage
-       * about the new task object.
-       */
-      onTaskUpdated?.(updatedTask);
-
-      /*
-       * Close edit dialog.
-       */
-      onOpenChange(false);
-    },
-
-    onError: (error) => {
-      console.error("Failed to update task:", error);
-    },
-  });
+  /* ------------------------------------------------------------------------ */
+  /* Form state                                                               */
+  /* ------------------------------------------------------------------------ */
 
   const [taskTitle, setTaskTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -130,9 +143,62 @@ export function CreateTaskDialog({
 
   const [files, setFiles] = useState<File[]>([]);
 
-  /*
-   * Populate form when editing.
-   */
+  /* ------------------------------------------------------------------------ */
+  /* Update task mutation                                                     */
+  /* ------------------------------------------------------------------------ */
+
+  const updateTaskMutation = useMutation({
+    mutationFn: (data: updateTaskType) => {
+      if (!task) {
+        throw new Error("Task not found");
+      }
+
+      return updateTask(task.id, data);
+    },
+
+    onSuccess: (updatedTask: Task) => {
+      /* Update task cache immediately */
+      queryClient.setQueryData<Task[]>(["tasks", projectId], (oldTasks) => {
+        if (!oldTasks) {
+          return oldTasks;
+        }
+
+        return oldTasks.map((currentTask) =>
+          currentTask.id === updatedTask.id ? updatedTask : currentTask,
+        );
+      });
+
+      /* Refetch task list */
+      queryClient.invalidateQueries({
+        queryKey: ["tasks", projectId],
+      });
+
+      /* Refresh board overview */
+      queryClient.invalidateQueries({
+        queryKey: ["overview", projectId],
+      });
+
+      /* Refresh task overview */
+      queryClient.invalidateQueries({
+        queryKey: ["task-overview", projectId],
+      });
+
+      /* Notify parent */
+      onTaskUpdated?.(updatedTask);
+
+      /* Close dialog */
+      onOpenChange(false);
+    },
+
+    onError: (error) => {
+      console.error("Failed to update task:", error);
+    },
+  });
+
+  /* ------------------------------------------------------------------------ */
+  /* Populate form                                                           */
+  /* ------------------------------------------------------------------------ */
+
   useEffect(() => {
     if (!open) {
       return;
@@ -153,14 +219,16 @@ export function CreateTaskDialog({
         task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
       );
 
+      /*
+       * Attachments are handled separately in edit mode.
+       * Do not mix existing attachments with File objects.
+       */
       setFiles([]);
 
       return;
     }
 
-    /*
-     * CREATE MODE
-     */
+    /* Create mode */
     setTaskTitle("");
     setDescription("");
     setPriority("MEDIUM");
@@ -169,6 +237,10 @@ export function CreateTaskDialog({
     setDueDate("");
     setFiles([]);
   }, [open, isEditMode, task, defaultColumnId]);
+
+  /* ------------------------------------------------------------------------ */
+  /* Reset form                                                               */
+  /* ------------------------------------------------------------------------ */
 
   function resetForm() {
     setTaskTitle("");
@@ -180,14 +252,51 @@ export function CreateTaskDialog({
     setFiles([]);
   }
 
+  /* ------------------------------------------------------------------------ */
+  /* File selection                                                           */
+  /* ------------------------------------------------------------------------ */
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const selectedFiles = event.target.files;
+
+    if (!selectedFiles || selectedFiles.length === 0) {
+      return;
+    }
+
+    const newFiles = Array.from(selectedFiles);
+
+    setFiles((previousFiles) => [...previousFiles, ...newFiles]);
+
+    /*
+     * Reset input so selecting the same file again
+     * triggers onChange.
+     */
+    event.target.value = "";
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /* Remove file                                                              */
+  /* ------------------------------------------------------------------------ */
+
+  function removeFile(index: number) {
+    setFiles((previousFiles) =>
+      previousFiles.filter((_, fileIndex) => fileIndex !== index),
+    );
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /* Submit                                                                   */
+  /* ------------------------------------------------------------------------ */
+
   function handleSubmit() {
     if (!taskTitle.trim()) {
       return;
     }
 
-    /*
-     * EDIT TASK
-     */
+    /* ---------------------------------------------------------------------- */
+    /* EDIT TASK                                                              */
+    /* ---------------------------------------------------------------------- */
+
     if (isEditMode) {
       if (!task) {
         return;
@@ -207,12 +316,12 @@ export function CreateTaskDialog({
         columnId: selectedColumnId,
 
         /*
-         * null = explicitly unassign.
+         * Empty string means explicitly unassign.
          */
         assigneeId: assigneeId || null,
 
         /*
-         * Backend DTO expects string.
+         * Backend expects string/null.
          */
         dueDate: dueDate || null,
       };
@@ -222,9 +331,10 @@ export function CreateTaskDialog({
       return;
     }
 
-    /*
-     * CREATE TASK
-     */
+    /* ---------------------------------------------------------------------- */
+    /* CREATE TASK                                                            */
+    /* ---------------------------------------------------------------------- */
+
     if (!selectedColumnId) {
       return;
     }
@@ -251,9 +361,28 @@ export function CreateTaskDialog({
       formData.append("dueDate", dueDate);
     }
 
+    /* ---------------------------------------------------------------------- */
+    /* Attachments                                                            */
+    /* ---------------------------------------------------------------------- */
+
     files.forEach((file) => {
-      formData.append("files", file);
+      formData.append("files", file, file.name);
     });
+
+    /* Debug: verify files actually exist in FormData */
+    console.log("Creating task with files:", files);
+
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`FormData ${key}:`, value.name, value.type, value.size);
+      } else {
+        console.log(`FormData ${key}:`, value);
+      }
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* Send request                                                           */
+    /* ---------------------------------------------------------------------- */
 
     createTaskMutation.mutate(formData, {
       onSuccess: () => {
@@ -267,6 +396,10 @@ export function CreateTaskDialog({
   const isSubmitting =
     createTaskMutation.isPending || updateTaskMutation.isPending;
 
+  /* ------------------------------------------------------------------------ */
+  /* UI                                                                       */
+  /* ------------------------------------------------------------------------ */
+
   return (
     <AppDialog
       open={open}
@@ -274,7 +407,10 @@ export function CreateTaskDialog({
       title={isEditMode ? "Edit Task" : "Create Task"}
     >
       <div className="space-y-6">
-        {/* Title */}
+        {/* ---------------------------------------------------------------- */}
+        {/* Title                                                             */}
+        {/* ---------------------------------------------------------------- */}
+
         <div className="space-y-2">
           <label className="text-sm font-medium">Task title</label>
 
@@ -286,7 +422,10 @@ export function CreateTaskDialog({
           />
         </div>
 
-        {/* Description */}
+        {/* ---------------------------------------------------------------- */}
+        {/* Description                                                       */}
+        {/* ---------------------------------------------------------------- */}
+
         <div className="space-y-2">
           <label className="text-sm font-medium">Description</label>
 
@@ -299,7 +438,10 @@ export function CreateTaskDialog({
           />
         </div>
 
-        {/* Attachments */}
+        {/* ---------------------------------------------------------------- */}
+        {/* Attachments                                                       */}
+        {/* ---------------------------------------------------------------- */}
+
         {!isEditMode && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -312,80 +454,35 @@ export function CreateTaskDialog({
               )}
             </div>
 
+            {/* File input */}
             <div className="rounded-lg border border-dashed bg-muted/30 p-4">
               <Input
                 type="file"
                 multiple
-                onChange={(event) => {
-                  const selectedFiles = event.target.files;
-
-                  if (!selectedFiles) {
-                    return;
-                  }
-
-                  setFiles((previous) => [
-                    ...previous,
-                    ...Array.from(selectedFiles),
-                  ]);
-
-                  event.target.value = "";
-                }}
+                onChange={handleFileChange}
                 className="cursor-pointer"
               />
             </div>
 
+            {/* Selected files */}
             {files.length > 0 && (
               <div className="grid grid-cols-2 gap-3">
-                {files.map((file, index) => {
-                  const previewUrl = URL.createObjectURL(file);
-
-                  return (
-                    <div
-                      key={`${file.name}-${index}`}
-                      className="group relative overflow-hidden rounded-xl border bg-background shadow-sm transition-shadow hover:shadow-md"
-                    >
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setFiles((previous) =>
-                            previous.filter((_, i) => i !== index),
-                          )
-                        }
-                        className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/80"
-                      >
-                        ✕
-                      </button>
-
-                      {file.type.startsWith("image/") ? (
-                        <img
-                          src={previewUrl}
-                          alt={file.name}
-                          className="h-24 w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-24 items-center justify-center bg-muted">
-                          <span className="text-3xl">📄</span>
-                        </div>
-                      )}
-
-                      <div className="space-y-1 p-3">
-                        <p className="truncate text-xs font-medium">
-                          {file.name}
-                        </p>
-
-                        <p className="text-[11px] text-muted-foreground">
-                          {(file.size / 1024).toFixed(1)} KB
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
+                {files.map((file, index) => (
+                  <FilePreview
+                    key={`${file.name}-${file.lastModified}-${index}`}
+                    file={file}
+                    onRemove={() => removeFile(index)}
+                  />
+                ))}
               </div>
             )}
           </div>
         )}
 
-        {/* Assignee + Due Date */}
+        {/* ---------------------------------------------------------------- */}
+        {/* Assignee + Due Date                                               */}
+        {/* ---------------------------------------------------------------- */}
+
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           {/* Assignee */}
           <div className="space-y-2">
@@ -426,7 +523,10 @@ export function CreateTaskDialog({
           </div>
         </div>
 
-        {/* Priority + Column */}
+        {/* ---------------------------------------------------------------- */}
+        {/* Priority + Column                                                 */}
+        {/* ---------------------------------------------------------------- */}
+
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           {/* Priority */}
           <div className="space-y-2">
@@ -444,7 +544,9 @@ export function CreateTaskDialog({
 
               <SelectContent>
                 <SelectItem value="HIGH">High</SelectItem>
+
                 <SelectItem value="MEDIUM">Medium</SelectItem>
+
                 <SelectItem value="LOW">Low</SelectItem>
               </SelectContent>
             </Select>
@@ -473,7 +575,10 @@ export function CreateTaskDialog({
           </div>
         </div>
 
-        {/* Submit */}
+        {/* ---------------------------------------------------------------- */}
+        {/* Submit                                                            */}
+        {/* ---------------------------------------------------------------- */}
+
         <div className="border-t pt-5">
           <Button
             className="h-10 w-full"

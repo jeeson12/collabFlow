@@ -5,7 +5,7 @@ export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
-  timeout: 10000,
+  timeout: 15000,
 });
 
 api.interceptors.response.use(
@@ -22,7 +22,11 @@ api.interceptors.response.use(
     const isProfileCheck = error.config?.url?.includes("/auth/profile");
 
     // Handle network errors and 4xx/5xx responses
-    if (!status || ([400, 401, 403, 404, 409, 500].includes(status) && !(status === 401 && isProfileCheck))) {
+    if (
+      !status ||
+      ([400, 401, 403, 404, 409, 500].includes(status) &&
+        !(status === 401 && isProfileCheck))
+    ) {
       toast.error(message);
     }
 

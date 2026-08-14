@@ -6,6 +6,7 @@ export async function createTask(formData: FormData) {
     headers: {
       "Content-Type": "multipart/form-data",
     },
+    timeout: 60000,
   });
 
   return task.data;
@@ -83,6 +84,7 @@ export async function uploadAttachment(taskId: string, files: File[]) {
     headers: {
       "Content-Type": "multipart/form-data",
     },
+    timeout: 60000,
   });
 
   return response.data;

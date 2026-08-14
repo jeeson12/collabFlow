@@ -13,6 +13,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { login, forgotPassword } from "../api";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 import { ArrowLeft, CheckCircle2, Mail, ShieldCheck } from "lucide-react";
 
@@ -56,7 +57,7 @@ export function LoginForm() {
     mutationFn: login,
 
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
+      await queryClient.fetchQuery({
         queryKey: ["profile"],
       });
 
@@ -332,6 +333,16 @@ export function LoginForm() {
           </svg>
           Continue with Google
         </Button>
+
+        <div className="mt-6 text-center text-sm text-muted-foreground">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/register"
+            className="text-[#063325] hover:underline font-medium"
+          >
+            Register
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -53,7 +53,6 @@ export class AuthController {
 
     return {
       ...result.user,
-      token: result.token,
     };
   }
 
